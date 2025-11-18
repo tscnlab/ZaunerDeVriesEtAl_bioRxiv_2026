@@ -1,0 +1,175 @@
+---
+title: "Descriptive analysis"
+author: "Johannes Zauner"
+---
+
+# Preface
+
+This is a work-in-progress descriptive analysis of the `HildenEtAl2025` dataset.
+
+```{r}
+#| label: setup
+#| include: false
+library(LightLogR)
+library(glue)
+library(tidyverse)
+library(gt)
+library(readxl)
+library(cowplot)
+library(legendry)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sf)
+library(patchwork)
+library(rlang)
+library(svglite)
+library(webshot2)
+library(here)
+
+source("https://raw.githubusercontent.com/MeLiDosProject/Data_Metadata_Conventions/main/scripts/overview_plot.R")
+source(
+  "https://raw.githubusercontent.com/MeLiDosProject/Data_Metadata_Conventions/main/scripts/summary_table.R"
+)
+```
+
+# Overview
+
+## Data import: wearable data
+
+The first step is the import of wearable data from the `head` position (mounted on glasses).
+
+```{r}
+#| label: "general information"
+#time zone of madrid
+tz <-  "Europe/Berlin"
+#coordinates for Munich
+coordinates <- c(48.1333, 11.5667)
+#regex to extract participant Id and wearing position
+# pattern <- "[A-Z]+_S[0-9]{3}_[hcw]"
+#regex to extract participant Id
+pattern <- "^([0-9]{3})_"
+
+country_colors <- c(
+  Sweden     = "#88CCEE",  # Sky blue
+  Spain      = "#CC6677",  # Coral red
+  Germany    = "#DDCC77",  # Mustard yellow
+  Netherlands= "#117733",  # Dark green
+  Turkey     = "#332288",  # Indigo
+  Ghana      = "#AA4499",  # Purple-pink
+  Costa_Rica = "#44AA99"   # Teal
+)
+
+```
+
+```{r}
+#path to participants
+path_part1 <- "../data/example/raw/individual"
+#path to actlumus data sans wearing position
+path_part2 <- "/continuous/actlumus_"
+#wearing position
+wearing_position <- "head"
+#getting all subfolders
+folders <- dir(path_part1)
+#creating complete folder names
+paths <- glue("{path_part1}/{folders}{path_part2}{wearing_position}")
+#collecting file names
+files <- list.files(paths, full.names = TRUE)
+files <- files[str_detect(files, "Report", negate = TRUE)]
+```
+
+```{r}
+#there remain some early data from a pilot collection. these will be removed
+data <- import$ActLumus(files, tz, auto.id = pattern, dst_adjustment = TRUE)
+```
+
+## Regularizing data
+
+In the first step, we will trim the data by the study time.
+
+```{r}
+#import table with study times
+Study_dates <- read_excel("../data/example/Study_dates_MeLiDos_TUM.xlsx")
+#gather the important information
+Study_dates <-
+  Study_dates |>
+    rename(Id = subjectID_device, start = datetime_trial_start, end = datetime_trial_end) |>
+    select(Id, start, end) |>
+    mutate(across(c(start, end), \(x) force_tz(x, tz)),
+           trial = TRUE) |>
+    filter(str_detect(Id, "_h$")) |>
+    mutate(Id = str_remove(Id, "_h$") |> str_remove("TUM_S")) |>
+  group_by(Id)
+
+#add the trim information to the dataset and filter by it
+data <-
+  data |>
+  add_states(Study_dates) |>
+  dplyr::filter(trial) |>
+  select(-trial)
+
+data |> gg_overview()
+
+```
+
+
+```{r}
+data |> has_gaps()
+data |> has_irregulars()
+
+```
+No irregular data or gaps were found.
+
+```{r}
+#| fig-height: 15
+#| fig-width: 5
+data_cleaned <- data |> gap_handler(full.days = TRUE)
+data_cleaned |> gap_table(MEDI) |> cols_hide(ends_with("_n"))
+```
+
+## Exporting hourly values
+
+```{r}
+data_export <- 
+data_cleaned |> 
+  aggregate_Datetime("1 minute", numeric.handler = \(x) mean(x, na.rm = TRUE)) |> 
+  remove_partial_data(MEDI, threshold.missing = "3 hours", by.date = TRUE)
+
+save(data_export, file = "../data/de_tum_1minute.RData")
+```
+
+
+## Visualization
+
+```{r}
+#| warning: false
+#| message: false
+#| fig-height: 8
+#| fig-width: 12
+#| label: fig-grand_overview
+#| fig-cap: "Overview of light exposure data. (A) location of data collection. (B) collection periods for participants, (C) photoperiods, and (D) double plot of median, interquartile range (50%), 75%, and 95% ribbons of light exposure across all participants. Shaded areas indicate nighttime from civil dusk to civil dawn."
+
+data_cleaned |> 
+grand_overview(coordinates, "Munich", "Germany", country_colors, photoperiod_sequence = 1)
+
+ggsave("../output/figures/Figure_1.png", width = 17, height = 10, scale = 2, units = "cm")
+```
+
+```{r}
+#| message: false
+#| warning: false
+
+table_summary <-
+light_summary_table(
+  data_cleaned, coordinates, "Munich", "Germany", country_colors["Germany"],
+  histograms = TRUE
+)
+
+table_summary
+
+gtsave(table_summary, here("output/tables/table_summary.png"), vwidth = 850)
+gtsave(table_summary, here("output/tables/table_summary.pdf"))
+gtsave(table_summary |> cols_hide(c(plot)), here("output/tables/table_summary.docx"))
+
+```
+
+

@@ -1,0 +1,5 @@
+record_id;redcap_repeat_instrument;redcap_repeat_instance;form_1_complete;instructions;intensity;location;type;commute;sedentary;light_glasses;startdate_3;enddate_3
+001;;;2;;;;;;;;;
+001;exercise_diary;1;;1;3;1;"A short walk in the park";60;360;0;"2024-05-13 23:17:39";"2024-05-13 23:19:15"
+001;exercise_diary;2;;1;3;1;"Walk through a park";30;400;1;"2024-05-15 00:19:08";"2024-05-15 00:19:57"
+001;exercise_diary;3;;1;4;;;30;500;;"2024-05-16 00:16:33";"2024-05-16 00:16:53"

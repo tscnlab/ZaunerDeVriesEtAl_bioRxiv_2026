@@ -1,0 +1,700 @@
+---
+title: "Wearing positions"
+author: "Johannes Zauner"
+format: 
+  html:
+    self-contained: true
+    code-tools: true
+freeze: auto
+---
+
+# Preface
+
+This is a work-in-progress descriptive analysis of the `AkuffoEtAl2025` dataset.
+
+```{r}
+#| label: setup
+#| include: false
+library(LightLogR)
+library(glue)
+library(tidyverse)
+library(gt)
+library(cowplot)
+library(legendry)
+library(patchwork)
+library(see)
+library(lmerTest)
+library(broom.mixed)
+library(gtExtras)
+library(gghighlight)
+```
+
+# Influence of wearing positions
+
+To assess the influence of wearing positions
+
+```{r}
+#time zone of Kumasi
+tz = "Africa/Accra"
+#coordinates for Kumasi
+coordinates <- c(6.6750074282377385, -1.572643823555129)
+#regex to extract participant Id and wearing position
+# pattern <- "[A-Z]+_S[0-9]{3}_[hcw]"
+#regex to extract participant Id
+pattern <- "[A-Z]+_S[0-9]{3}"
+
+country_colors <- c(
+  Sweden     = "#88CCEE",  # Sky blue
+  Spain      = "#CC6677",  # Coral red
+  Germany    = "#DDCC77",  # Mustard yellow
+  Netherlands= "#117733",  # Dark green
+  Turkey     = "#332288",  # Indigo
+  Ghana      = "#AA4499",  # Purple-pink
+  Costa_Rica = "#44AA99"   # Teal
+)
+
+#path to participants
+path_part1 <- "../data/raw/individual"
+
+#path to actlumus data sans wearing position
+path_part2 <- "/continuous/actlumus_"
+
+
+#getting all subfolders
+folders <- dir(path_part1)
+
+#wearing positions
+wearing_position <- c("chest", "wrist", "head")
+
+#creating complete folder names
+paths <- 
+  wearing_position |> 
+  map(\(x) glue("{path_part1}/{folders}{path_part2}{x}")) |> 
+  list_c()
+
+#collecting file names
+files <- list.files(paths, pattern = "[0-9]\\.txt$", full.names = TRUE)
+pattern <- "[A-Z]+_S[0-9]{3}_[chw]"
+```
+
+```{r}
+#| fig-height: 10
+
+#optionally load prepared data (comment out the import and the next code chunk)
+data_cleaned <- read_csv(file = "../data/cleaned/light_all_positions.csv")
+data_cleaned |> group_by(Id = interaction(Id, position, lex.order = TRUE)) |> gg_overview()
+# data <- import$ActLumus(files, tz, auto.id = pattern)
+```
+Next we apply the cleaning steps as above and remove days with more than 50% missing data. We also remove (for now) unnecessary columns to speed up computation. We also remove data points above 120000 lx. 
+
+```{r}
+# data_cleaned <-
+# data |> 
+#   select(Id, Datetime, MEDI, LIGHT) |> 
+#   aggregate_Datetime() |> #remove irregular data
+#   gap_handler(full.days = TRUE) |> #remove implicit gaps
+#   add_clusters(MEDI > 2000 & MEDI < 30000,
+#                cluster.duration = "20 secs",
+#                duration.type = "max") |>
+  # mutate(
+    # MEDI = ifelse(!is.na(state), lag(MEDI, 2), MEDI),
+    # MEDI = ifelse(MEDI > 120000, NA, MEDI)
+         # )
+# 
+# data_cleaned <- 
+#   data_cleaned |> 
+#   remove_partial_data(MEDI, by.date = TRUE, threshold.missing = "12 hours")
+```
+
+Further, we separate the site, participant Id, and wearing position into separate columns.
+
+```{r}
+# data_cleaned <-
+#   data_cleaned |> 
+#     separate_wider_delim(
+#       Id, delim = "_", names = c("site", "Id", "position")
+#       ) |>
+#     mutate(position =
+#              factor(position,
+#                     levels = c("h", "c", "w"),
+#                     labels = c("head", "chest", "wrist")),
+#            Id = factor(Id)
+#            )
+# 
+# #save the cleaned data
+# write_csv(data_cleaned, file = "../data/cleaned/light_all_positions.csv")
+
+```
+
+Let's look at a sample participant for all three wearing positions. Black indicates all wearing positions, with each wearing position superimposed in color.
+
+```{r}
+#| fig-width: 12
+#| fig-height: 15
+#| warning: false
+plot <- 
+data_cleaned |> 
+  filter(Id == "S006") |> 
+  gg_day(aes_col = position, 
+         alpha = 0.5, 
+         facetting = FALSE, x.axis.breaks = hms::hms(hours = seq(0, 24, by = 6))) |> 
+  gg_photoperiod(coordinates) +
+  facet_grid(rows = vars(Day.data), cols = vars(position)) +
+  geom_point(data = \(x) select(x, -position)) +
+  guides(color = "none")
+plot$layers <- c(plot$layers[1:2], plot$layers[4], plot$layers[3])
+plot
+```
+
+```{r}
+#| fig-width: 11
+#| warning: false
+breaks <- c(0, 10^(0:5))
+colors <- ggsci::pal_jco()(3) |> set_names(c("head", "chest", "wrist"))
+
+label <- function(x) format(x, 
+      scientific = FALSE, big.mark = " ")
+data_cleaned |> 
+  pivot_wider(id_cols = c(Id, Datetime), names_from = position, values_from = MEDI) |> 
+  pivot_longer(cols = c(chest, wrist), names_to = "comparison") |> 
+  # slice_sample(n = 100) |> 
+  ggplot(aes(x=head, y = value)) +
+  geom_point(alpha = 0.05, aes(col = comparison)) +
+  geom_abline(slope = 1, intercept = 0, col = "red", linetype = "dashed") +
+  facet_wrap(~comparison) +
+  scale_color_manual(values = colors)+
+  scale_x_continuous(trans = "symlog", breaks = breaks, 
+                     labels = label) + 
+  scale_y_continuous(trans = "symlog", breaks = breaks, labels = label) +
+  guides(color = "none") +
+  labs(y = "Alternate position (mel EDI, lx)", 
+       x = "Reference: head (mel EDI, lx)") +
+  theme_cowplot() +
+  theme(plot.margin = margin(l = 10, b = 10, t = 10, r = 20))
+```
+
+
+
+## Error: light exposure time series - linear scale
+
+For a comparison, we use the `head` position as reference and show Bland-Altman plots. The resulting angular shapes are simply due to the [symlog](https://tscnlab.github.io/LightLogR/reference/symlog_trans.html) scaling.
+
+```{r}
+#| fig-width: 11
+data_widened <- 
+data_cleaned |> 
+  pivot_wider(id_cols = c(Id, Datetime), names_from = position, values_from = MEDI) |> 
+  pivot_longer(cols = c(chest, wrist), names_to = "comparison") |> 
+  drop_na(head, value)
+
+data_widened |> 
+  ggplot(
+    aes(x = (head + value)/2, 
+        y = (head - value), 
+        col = comparison)
+    ) +
+  geom_point(alpha = 0.05) +
+  map(c(-1,1),\(x) {
+  geom_hline(aes(yintercept = x*1.96*sd(head-value)), 
+             col = "red", linetype = "dashed")
+    } )+
+  facet_wrap(~comparison) +
+  scale_color_manual(values = colors)+
+  scale_x_continuous(trans = "symlog", breaks = breaks,
+                     labels = label) +
+  scale_y_continuous(trans = "symlog", breaks = c(-10^(5:0), 0, 10^(0:5)),
+                     labels = label) +
+  theme_cowplot() +
+  guides(color = "none") +
+  labs(x = "Mean mel EDI (lx)", 
+       y = "Difference mel EDI (lx)")
+```
+
+Based on these results - there are similar deviations for both wearing positions, and both exceed the confidence interval (CI) at around 2000-3000 lx mel EDI
+
+## Error: light exposure time series - log scale
+
+This section repeats the analysis above, but on a logarithmic scale appropriate for zero-inflated data.
+
+```{r}
+#| fig-width: 11
+
+data_widened |> 
+  mutate(across(c(head, value), log_zero_inflated)) |> 
+  ggplot(
+    aes(x = (head + value)/2, 
+        y = (head - value), 
+        col = comparison)
+    ) +
+  geom_point(alpha = 0.05) +
+  map(c(-1,1),\(x) {
+  geom_hline(aes(yintercept = x*1.96*sd(head-value)), 
+             col = "red", linetype = "dashed")
+    } )+
+  facet_wrap(~comparison) +
+  scale_color_manual(values = colors)+
+  theme_cowplot() +
+  guides(color = "none") +
+  labs(x = "Mean log10 mel EDI (lx)", 
+       y = "Difference log10 mel EDI (lx)")
+
+ggsave("../output/figures/Figure_2.png", width = 11, height = 5)
+```
+
+We can see that on a logarithmic scale, most data points are within the CI. There are many instances, where the eye-level position has zero-lx readings, but the other position does not (negative diagonal) or vice versa (positive diagonal). 
+
+Because the data have not yet been cleaned for non-wear time, these instances can be more numerous.
+
+## Calculating metrics
+
+In the next steps, several metrics are calculated for the different wearing positions. These can be compared with one another to assess the differences on a by-participant and by-day level.
+
+```{r}
+#convenience function for converting datetime to time to double
+datetime_2_numeric <- function(x) {
+  x |> 
+    mutate(
+      across(
+        where(is.POSIXct),
+        \(x) x |> hms::as_hms() %>% as.numeric()
+      )
+    )
+}
+```
+
+```{r}
+#| warning: false
+metrics <-
+  data_cleaned |> 
+  add_Date_col() |> 
+  group_by(Id, Date, position) |> 
+        summarize(
+          duration_above_threshold(
+            MEDI, Datetime, "above", 10, na.rm = TRUE, as.df = TRUE),
+          duration_above_threshold(
+            MEDI, Datetime, "above", 250, na.rm = TRUE, as.df = TRUE),
+          duration_above_threshold(
+            MEDI, Datetime, "above", 1000, na.rm = TRUE, as.df = TRUE),
+          period_above_threshold(
+            MEDI, Datetime, "above", 10, na.rm = TRUE, as.df = TRUE),
+          period_above_threshold(
+            MEDI, Datetime, "above", 250, na.rm = TRUE, as.df = TRUE),
+          period_above_threshold(
+            MEDI, Datetime, "above", 1000, na.rm = TRUE, as.df = TRUE),
+          pulses_above_threshold(
+            MEDI, Datetime, threshold = 250, na.rm = TRUE, as.df = TRUE
+          )|>
+            datetime_2_numeric(),
+          pulses_above_threshold(
+            MEDI, Datetime, threshold = 1000, na.rm = TRUE, as.df = TRUE
+          )|>
+            datetime_2_numeric(),
+          bright_dark_period(
+                  MEDI |> log_zero_inflated(), 
+                  Datetime, "brightest", "10 hours",
+                  as.df = TRUE, na.rm = TRUE
+                  ) %>% 
+            datetime_2_numeric(),
+          bright_dark_period(
+                  MEDI |> log_zero_inflated(),
+                  Datetime, "darkest", "5 hours", as.df = TRUE,
+                  loop = TRUE, na.rm = TRUE
+                  ) %>% 
+            datetime_2_numeric(),
+          intradaily_variability(MEDI, Datetime, na.rm = TRUE, as.df = TRUE),
+          timing_above_threshold(
+              MEDI, Datetime, "above", 10, as.df = TRUE) |> 
+            datetime_2_numeric(),
+          timing_above_threshold(MEDI, Datetime, "above", 250, as.df = TRUE) |> 
+            datetime_2_numeric(),
+          frequency_crossing_threshold(MEDI, 250, na.rm = TRUE, as.df = TRUE),
+          timing_above_threshold(
+              MEDI, Datetime, "above", 1000, as.df = TRUE) |> 
+            datetime_2_numeric(),
+          barroso_lighting_metrics(
+            MEDI, Datetime, loop = TRUE, na.rm = TRUE, as.df = TRUE
+             ),
+          centroidLE(MEDI, Datetime, na.rm = TRUE, as.df = TRUE) |>
+            datetime_2_numeric(),
+          disparity_index(MEDI, TRUE, TRUE),
+          midpointCE(MEDI, Datetime, TRUE, TRUE)|>
+            datetime_2_numeric(),
+          mean_MEDI = mean(MEDI |> log_zero_inflated(), na.rm = TRUE),
+          nvRD = nvRD(MEDI, LIGHT, Datetime) |> mean(na.rm = TRUE),
+          dose(MEDI, Datetime, na.rm = TRUE, as.df = TRUE),
+          .groups = "drop",
+        ) %>%
+        mutate(across(where(is.duration), as.numeric)) %>% 
+        pivot_longer(cols = -c(Id, Date, position), names_to = "metric")
+
+metrics2 <- 
+  data_cleaned |> 
+  group_by(Id, position) |> 
+  remove_partial_data(MEDI, by.date = TRUE, threshold.missing = "1 hour") |> 
+  add_Date_col() |> 
+        summarize(
+            interdaily_stability(MEDI |> log_zero_inflated(), 
+                                 Datetime, na.rm = TRUE, as.df = TRUE),
+          ) |> 
+  pivot_longer(cols = -c(Id, position), names_to = "metric")
+
+
+#combine metrics
+metrics_combined <- 
+        bind_rows(
+          metrics,
+          metrics2
+          )
+
+families <- c(rep("Time above threshold", 3), 
+              rep("Period above threshold", 3), 
+              rep("Pulses above threshold", 14),
+              rep("L10", 4),
+              rep("M5", 4),
+              "Intradaily variability",
+              rep("Timing above threshold", 6),
+              "Frequency crossing threshold",
+              rep("Timing above threshold", 3),
+              rep("Barroso", 7),
+              "Centroid of light exposure",
+              "Disparity index", 
+              "Midpoint cumulative exposure",
+              "Mean (log) mel EDI",
+              "Mean nvRD",
+              "Light dose",
+              "Interdaily stability"
+              )
+
+#general cleaning
+metrics_combined <- 
+metrics_combined |> 
+  mutate(Date = replace_na(Date, as_date("2024-09-01")),
+         position = factor(position, levels = c("head", "chest", "wrist")),
+         Id = factor(Id),
+         Date = factor(Date)) |> 
+  nest(data = -c(metric)) |> 
+  mutate(family = families, .before = metric)
+
+```
+
+## Visualizing metrics
+
+```{r}
+#| fig-width: 15
+#| fig-height: 20
+#| warning: false
+metrics_combined |> 
+  unnest(data) |> 
+  group_by(Id, metric) |> 
+  mutate(
+    position = fct_relevel(position, c("chest", "head", "wrist")),
+    value = base::scale(value)) |>
+  # filter(metric == "bright_cluster") |>
+  ggplot(aes(x=position, y = value)) +
+  # geom_line(aes(group = interaction(Id, Date)), alpha = 0.1) +
+  geom_jitter(aes(col = position), height = 0,             
+              width = 0.1, alpha = 0.5) +
+  geom_boxplot(aes(col = position, fill = position), alpha = 0.5,
+               width = 0.1,
+              position = position_nudge(x = +0.2)) +
+  geom_violinhalf(aes(x = position, y = value,
+                   col = position, fill = position), 
+              position = position_nudge(x = +0.3),
+                inherit.aes = FALSE, alpha = 0.5) +
+  scale_color_manual(values = colors) + 
+  scale_fill_manual(values = colors) + 
+  facet_wrap(~metric, ncol = 5) +
+  guides(col = "none", fill = "none") +
+  labs(y = "Scaled and centered metric values",
+       x = "Wearing position",
+       title = "Raincloud plots of scaled and centered metric results") +
+  theme_cowplot()
+
+ggsave("../output/figures/Figure_3.pdf", width = 15, height = 20)
+```
+
+## Testing differences
+
+We test differences with a linear mixed-effect model, where the value of a metric depends upon the wearing position, and varies within a participant and also per day. Some models fail to converge - these will have a fallback formula with less complexity, not considering the date. For `interdaily stability`, a single metric is calculated per participant and wearing position. Thus, this model needs to drop the random effect of day. Additionally, the random slope of wearing position within participants has to be dropped, otherwise the number of parameters to be estimated would be equal the measurement observations.
+
+```{r}
+#| message: false
+#| warning: false
+formula_metric <- value ~ position + (position|Id) + (1|Date)
+formula_fallback <- value ~ position + (position|Id)
+formula_is <- value ~ position + (1|Id)
+
+#mixed effect analysis and extraction of core metrics
+do_the_thing <- function(data, formula) {
+
+  data <-
+  data |> 
+  pivot_wider(names_from = position, values_from = value) |>
+  drop_na() |> 
+  pivot_longer(c(head, chest, wrist), names_to = "position") |>
+  mutate(position = factor(position, c("head", "chest", "wrist")))
+
+  
+model <- lmer(formula, data)
+did_not_converge <- 
+  model@optinfo$conv$lme4$messages |> 
+  str_detect("Model failed to converge") |> 
+  isTRUE()
+
+if(did_not_converge) {
+  model <- lmer(formula_fallback, data)
+}
+
+model_summary <- 
+model |> 
+  tidy() |> 
+  mutate(rel_estimate = estimate/estimate[term == "(Intercept)"])
+
+total_var <-
+model_summary |> 
+  filter(str_detect(term, "sd_")) |> 
+  summarize(tot = sum(estimate^2)) |> 
+  pull(tot)
+
+ICC <- 
+  model_summary |> 
+  filter(str_detect(term, "sd_")) |> 
+  reframe(sd = str_c(group, ": ", term) |> 
+            str_replace("sd__", "") |> 
+            str_replace("position", "head to ") |> 
+            str_replace("\\(Intercept\\)", "head"), 
+          sd_coef = rel_estimate,
+          ICC = estimate^2/total_var)
+
+effect_summary <-
+  model_summary |> 
+  filter(effect == "fixed") |> 
+    mutate(term = 
+             term |> 
+             str_replace("\\(Intercept\\)", "head") |> 
+            str_replace("position", "head to "),
+           significant = p.value <= 0.05
+    ) |> 
+    select(term, estimate, rel_estimate, p.value, significant)
+
+model_stats <- tibble(
+  error_chest = effect_summary[2, 3][[1]],
+  signif_chest = effect_summary[2, 5][[1]],
+  error_wrist = effect_summary[3, 3][[1]],
+  signif_wrist = effect_summary[3, 5][[1]],
+  Id_sd = ICC[ICC$sd == "Id: head",]$sd_coef,
+  Id_contrib = ICC[ICC$sd == "Id: head",]$ICC,
+  chest_sd = if("Id: head to chest" %in% ICC$sd) ICC[ICC$sd == "Id: head to chest",]$sd_coef else NA_real_,
+  chest_contrib = if("Id: head to chest" %in% ICC$sd) ICC[ICC$sd == "Id: head to chest",]$ICC else NA_real_,
+  wrist_sd = if("Id: head to wrist" %in% ICC$sd) ICC[ICC$sd == "Id: head to wrist",]$sd_coef else NA_real_,
+  wrist_contrib = if("Id: head to wrist" %in% ICC$sd) ICC[ICC$sd == "Id: head to wrist",]$ICC else NA_real_,
+  Date_sd = if("Date: head" %in% ICC$sd) ICC[ICC$sd == "Date: head",]$sd_coef else NA_real_,
+  Date_contrib = if("Date: head" %in% ICC$sd) ICC[ICC$sd == "Date: head",]$ICC else NA_real_,
+  Residual_sd = ICC[ICC$sd == "Residual: Observation",]$sd_coef,
+  Residual_contrib = ICC[ICC$sd == "Residual: Observation",]$ICC,
+  plot = list(ggplot(data) + geom_histogram(aes(x=value)) + facet_wrap(~position)),
+  formula = c(formula_metric),
+  data = list(data),
+  model = list(model),
+  model_summary = list(model_summary),
+  ICC = list(ICC),
+  effect_summary = list(effect_summary)
+)
+
+model_stats
+
+}
+
+metric_results <- 
+  metrics_combined |> 
+    mutate(formula = list(formula_metric)) |> 
+    filter(metric != "interdaily_stability") |> 
+    rowwise() |> 
+    mutate(do_the_thing(data = data, formula_metric))
+  
+metric_results <- 
+metric_results |> 
+  rbind(
+tibble(family = "Interdaily_stability", metric = "interdaily_stability",
+       do_the_thing(data = metrics_combined[53,]$data[[1]], formula_is)
+)
+)
+
+```
+
+## Summarizing & Visualizing metric differences
+
+The following overview summarizes measurement errors of both `chest` and `wrist` wearing positions, and groups them into whether they show a significant difference from the `head` position. Simplified model structures, as described above, will be shown by missing random effects in the Intraclass correlation (`ICC`) and standard deviations (`SD`).
+
+```{r}
+metric_results <- 
+metric_results |> 
+  ungroup() |> 
+  # dplyr::filter(signif_chest) |> 
+  mutate(signif = case_when(signif_chest & signif_wrist ~ "A",
+                            signif_chest ~ "B",
+                            signif_wrist ~ "C",
+                            .default = "D") |> 
+           factor(levels = c("D", "B", "C", "A"), 
+                  c("None differ significantly from head:",
+                    "Only chest differs significantly from head position:",
+                    "Only wrist differs significantly from head position:",
+                    "Both differ significantly from head position:")) 
+         ) |> 
+  group_by(signif) |> 
+    arrange(.by_group = TRUE, (error_chest + error_wrist)/2)
+
+
+overview <- function(data) {
+  data |> 
+    mutate(position = fct_relevel(position, c("chest", "head", "wrist"))) |> 
+    ggplot(aes(x=position, y = value)) +
+  geom_boxplot(aes(col = position, fill = position), alpha = 0.5) +
+    stat_summary(geom = "point", col = "red", fun = mean, size = 5) +
+    geom_path(data = \(x) x |> 
+                group_by(position) |> 
+                summarize(value = mean(value)), 
+              col = "red", 
+              aes(group = 1)) +
+  scale_color_manual(values = colors) + 
+    guides(fill = "none", color = "none") +
+  scale_fill_manual(values = colors) + 
+    theme_void() + 
+    coord_flip()
+}
+
+table <- 
+metric_results|> 
+  group_by(signif) |> 
+  select(family, signif, metric, error_chest, error_wrist, 
+         Id_sd, chest_sd, wrist_sd, Date_sd, Residual_sd,
+         Id_contrib, chest_contrib, wrist_contrib, Date_contrib, Residual_contrib,
+         Plot = data
+         ) |> 
+  gt(rowname_col = "family") |> 
+  fmt_percent(decimals = 0) |> 
+  tab_spanner(label = "Intraclass correlation (ICC)", columns = contains("_contrib")) |> 
+  tab_spanner(label = "Standard deviation (SD)", columns = contains("_sd")) |> 
+  tab_spanner(label = "Mean error", columns = contains("error_")) |> 
+  cols_label_with(fn = \(x) str_remove(x, "_contrib")) |> 
+  cols_label_with(fn = \(x) str_remove(x, "_sd")) |> 
+  cols_label(contains("chest") ~ "Chest",
+             contains("wrist") ~ "Wrist") |> 
+  fmt(metric, fns = \(x) str_replace_all(x, "_", " ")) |> 
+  fmt_missing() |> 
+  gt_add_divider(c(error_wrist, Plot), weight = "0.5 px") |> 
+  tab_header("Summary of significant and non-significant differences in metrics", 
+             md(glue("<b style = 'color:{colors['head']}'>Reference level: head</b>; random intercepts for Id and Date, random slopes for wearing position"))) |> 
+  tab_footnote("Analysis based on the Akuffo et al. dataset, 2025 (https://github.com/MeLiDosProject/AkuffoEtAl_Dataset_2025)") |> 
+  tab_footnote("No p-value correction was applied, as a significant difference is considered the more undesirable outcome, and should thus not be penalized") |> 
+  tab_footnote("Reduced model complexities are indicated by missing random effects", 
+               locations = 
+                 cells_column_labels(c(chest_contrib, wrist_contrib, Date_contrib,
+                                       chest_sd, wrist_sd, Date_sd))) |> 
+  cols_move(Plot, Residual_sd)|> 
+  summary_rows(columns = -c(metric,Plot),
+    fns = list("Median (abs)" ~ median(abs(.), na.rm = TRUE)),
+                     fmt = ~ fmt_percent(., decimals = 0),
+                     side = "top", missing_text = "Boxplot"
+  ) |> 
+  grand_summary_rows(columns = -c(metric,Plot),
+                     fns = list("Grand minimum (abs)" ~ min(abs(.), na.rm = TRUE),
+                                "Grand median (abs)" ~ median(abs(.), na.rm = TRUE),
+                                "Grand maximum (abs)" ~ max(abs(.), na.rm = TRUE)), 
+                     fmt = ~ fmt_percent(., decimals = 0),
+                     missing_text = "",
+                     side = "top") |> 
+  tab_style(style = cell_text(color = colors["chest"]), 
+            locations = list(cells_column_labels(contains("chest")), 
+                             cells_body(contains("chest")))) |> 
+  tab_style(style = cell_text(color = colors["wrist"]), 
+            locations = list(cells_column_labels(contains("wrist")), 
+                             cells_body(contains("wrist")))) |> 
+  tab_style(style = cell_fill(color = "grey90"), 
+            locations = list(cells_grand_summary(), cells_stub_grand_summary())) |> 
+  tab_style(style = cell_fill(color = "grey95"), 
+            locations = list(cells_summary(), cells_stub_summary())) |> 
+    cols_label(Plot = "Boxplot", metric = "Metric") %>% 
+    text_transform(locations = cells_body(Plot),
+                   fn = \(x) {
+                       gt::ggplot_image(
+                         {
+                           metric_results$data %>%
+                             map(overview)
+                         },
+                         height = gt::px(50), aspect_ratio = 2
+                       )
+                   })
+
+table
+
+gtsave(table, "../output/tables/Table_1.png", vwidth = 1500)
+gtsave(table, "../output/tables/Table_1.html", inline_css = TRUE)
+
+```
+
+
+The final plot shows the distribution of (absolute) error values within a range of 0-100%. Larger values are excluded for visibility.
+
+```{r}
+metric_results |>
+  ungroup() |> 
+  select(metric, error_chest, signif_chest, chest_sd,
+         error_wrist, signif_wrist, wrist_sd) |> 
+  rename(sd_chest = chest_sd, sd_wrist = wrist_sd) |> 
+  pivot_longer(cols = 
+                 c(error_chest, error_wrist, signif_chest, signif_wrist,
+                   sd_chest, sd_wrist), 
+               names_sep = "_", names_to = c(".value", "position")) |> 
+  ggplot(aes(x = abs(error))) +
+    geom_histogram(binwidth = 0.05, aes(fill = position)) +
+    facet_wrap(~position) +
+  scale_fill_manual(values = colors) +
+  scale_x_continuous(labels = scales::label_percent(accuracy = 1),
+                     breaks = seq(0, 1, by = 0.2)) +
+  theme_cowplot() +
+  coord_cartesian(xlim = c(0,1)) +
+  guides(fill = "none") +
+  labs(caption = "Binwidth: 5%", 
+       title = "Histograms of (absolute) metric errors due to wearing position",
+       subtitle = "Significant errors in the histogram are highlighted in the position color",
+       y = "Count (n)", x = "Error (%)") + 
+  theme(panel.spacing = unit(2, "lines")) +
+  gghighlight(signif, use_group_by = FALSE,
+              label_key = metric, calculate_per_facet = TRUE)
+    # geom_histogram(aes(x = sd*1.96),
+    #              color = NA, alpha = 0.2, binwidth = 0.05)
+
+ggsave("../output/figures/Figure_4.pdf", height = 5, width = 8)
+```
+
+Interestingly, both chest- and wrist position seem to err on the higher side, at least overall:
+
+```{r}
+metric_results |>
+  ungroup() |> 
+  select(metric, error_chest, signif_chest, chest_sd,
+         error_wrist, signif_wrist, wrist_sd) |> 
+  rename(sd_chest = chest_sd, sd_wrist = wrist_sd) |> 
+  pivot_longer(cols = 
+                 c(error_chest, error_wrist, signif_chest, signif_wrist,
+                   sd_chest, sd_wrist), 
+               names_sep = "_", names_to = c(".value", "position")) |> 
+  ggplot(aes(x = error)) +
+    geom_histogram(binwidth = 0.05, aes(fill = position)) +
+    facet_wrap(~position) +
+  scale_fill_manual(values = colors) +
+  scale_x_continuous(labels = scales::label_percent(accuracy = 1)) +
+  theme_cowplot() +
+  coord_cartesian(xlim = c(-1,1)) +
+  guides(fill = "none") +
+  labs(caption = "Binwidth: 5%", 
+       title = "Histograms of metric errors due to wearing position",
+       subtitle = "Significant errors in the histogram are highlighted in the position color.\nRed line indicates 0% error",
+       y = "Count (n)", x = "Error (%)") + 
+  theme(panel.spacing = unit(2, "lines")) +
+  gghighlight(signif, use_group_by = FALSE,
+              label_key = metric, calculate_per_facet = TRUE) +
+  geom_vline(aes(xintercept = 0), col = "red", linetype = "dashed")
+
+```
