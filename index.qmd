@@ -116,6 +116,11 @@ The maybe equally nice thing is: once it is rendered/created in the original doc
 
 And that goes for our respective documents in general - once I render a quarto notebook, it stays rendered until I make changes. Same goes for your notebooks. That means we don't have to recreate each others computational environment - it is sufficient that we each are able to execute our notebooks to contribute to the main manuscript. 
 
+## Embedding Test - Contextual Analysis
+Test to embed a figure that was created in the "contex_analysis.qmd" notebook. This is a *very* exploratory figure.
+
+{{< embed notebooks/contex_analysis.qmd#fig-rel_dif >}}
+
 ## References {.unnumbered}
 
 :::{#refs}
