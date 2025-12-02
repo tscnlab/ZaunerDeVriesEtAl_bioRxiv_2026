@@ -1,6 +1,9 @@
 project:
   type: manuscript
 
+website:
+  site-url: https://tscnlab/github.io/WearingPositionError_2026
+
 execute:
   freeze: auto
 
@@ -9,9 +12,10 @@ format:
     toc: true
     comments:
       hypothesis: true
-  docx: default
-  jats: default
-  agu-pdf: default
+    canonical-url: true
+  # docx: default
+  # jats: default
+  # agu-pdf: default
 
 
 
