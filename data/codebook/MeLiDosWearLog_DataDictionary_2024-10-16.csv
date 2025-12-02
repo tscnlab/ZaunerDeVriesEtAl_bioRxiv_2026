@@ -1,0 +1,33 @@
+"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"
+record_id,form_1,,text,"Record ID",,,,,,,,,,,,,
+wearlog_type,wear_log,,radio,"Welcome to your wear log! What event would you like to log?","0, Current event | 1, Past event that I forgot to log before",,,,,,,y,,,,,
+wearlog_event,wear_log,,radio,"What specific event do you want to log?","0, Taking the light glasses off | 1, Putting the light glasses on | 2, Taking the light glasses off and placing them on nightstand following the instructions before sleep | 3, Leaving Munich's surroundings (50km radius) while wearing the light glasses | 4, Coming back to Munich or its surroundings (50km radius) | 5, Putting the light glasses on for the first time at GBR | 6, Taking the light glasses off for the last time at GBR",,,,,,"[wearlog_type] = '0'",y,,,,,
+wearlog_off,wear_log,,text,"Remember to press the button on the light glasses!
+Time of taking light glasses off:",,,datetime_dmy,,,,"[wearlog_event] = '0'",y,,,,,
+reason,wear_log,,radio,"What is prompting you to remove the light glasses?","0, Sport activity | 1, Leisure activity where I do not feel comfortable wearing the light glasses (e.g. public space) | 2, Activity involving contact with water (e.g., showering or bathing) | 3, Discomfort due to wearing the light glasses (e.g. disturbance to eye sight or pain due to weight) | 4, Other (please specify)",,,,,,"[wearlog_event] = '0'",,,,,,
+wearlog_on,wear_log,,text,"Remember to press the button on the light glasses!
+Time of putting light glasses back on:",,,datetime_dmy,,,,"[wearlog_event] = '1'",y,,,,,
+wearlog_bed,wear_log,,text,"Remember to press the button on the light glasses!
+Time of putting light glasses on nightstand or similar surface:",,,datetime_dmy,,,,"[wearlog_event] = '2'",y,,,,,
+radius,wear_log,,text,"<div class=""rich-text-field-label""><p>Please specify broadly where you are located during this time (e.g. name of the town/city)</p></div>",,,,,,,"[wearlog_event] = '3'",y,,,,,
+wearlog_bag,wear_log,,yesno,"Are the light glasses in the black bag we provided you with?",,,,,,,"[wearlog_event] = '0'",y,,,,,
+wearlog_place,wear_log,,text,"Please describe where you placed the light glasses (e.g. on kitchen table, in backpack, in drawer).",,,,,,,"[wearlog_bag] = '0'",y,,,,,
+wearlog_motion,wear_log,,yesno,"Are the light glasses in motion (e.g.: in your backpack as you bike, in your pocket, on the bus)?",,,,,,,"[wearlog_event] = '0'",y,,,,,
+wearlog_past,wear_log,,radio,"What specific event do you want to log?","0, Taking the light glasses off | 1, Putting the light glasses on | 2, Taking the light glasses off and placing them on nightstand following the instructions before sleep | 3, Leaving Munich's surroundings (50km radius) while wearing the light glasses | 4, Coming back to Munich or its surroundings (50km radius) | 5, Putting the light glasses on for the first time at GBR | 6, Taking the light glasses off for the last time at GBR",,,,,,"[wearlog_type] = '1'",y,,,,,
+wearlog_bp,wear_log,,yesno,"Did you press the button on the light glasses?",,,,,,,"[wearlog_past] = '0' or [wearlog_past] = '1' or [wearlog_past] = '2'",y,,,,,
+wearlog_past_off,wear_log,,text,"Time of taking light glasses off (try and be accurate when remembering):",,,datetime_dmy,,,,"[wearlog_past] = '0'",y,,,,,
+wearlog_past_on,wear_log,,text,"Time of putting the light glasses on (try and be accurate when remembering)",,,datetime_dmy,,,,"[wearlog_past] = '1'",y,,,,,
+wearlog_past_sleep,wear_log,,text,"Time of taking light glasses off and placing it on nightstand or similar surface (try to be accurate when remembering):",,,datetime_dmy,,,,"[wearlog_past] = '2'",y,,,,,
+radius_past_time,wear_log,,text,"Please specify at approximately what time you left Munich and its surroundings:",,,datetime_dmy,,,,"[wearlog_past] = '3'",y,,,,,
+radius_past,wear_log,,text,"<div class=""rich-text-field-label""><p>Please specify broadly where you were located during this time (e.g. name of the town/city)</p></div>",,,,,,,"[wearlog_past] = '3'",y,,,,,
+radius_past_back,wear_log,,text,"Please specify at approximately what time you arrived back in Munich and its surroundings",,,datetime_dmy,,,,"[wearlog_past] = '4'",y,,,,,
+wearlog_past_bag,wear_log,,yesno,"Were the light glasses in the black bag we provided you with?",,,,,,,"[wearlog_past] = '0'",y,,,,,
+wearlog_past_location,wear_log,,text,"Please describe where the light glasses were while you were not wearing them (e.g.: on kitchen table, in backpack, in drawer)",,,,,,,"[wearlog_past_bag] = '0'",y,,,,,
+wearlog_past_motion,wear_log,,yesno,"Were the light glasses in motion?",,,,,,,"[wearlog_past] = '0'",y,,,,,
+uuid,wear_log,"MyCap App Fields - Do Not Modify",text,UUID,,,,,,,,,,,,," @MC-TASK-UUID"
+startdate,wear_log,,text,"Start Date",,,,,,,,,,,,," @MC-TASK-STARTDATE"
+enddate,wear_log,,text,"End Date",,,,,,,,,,,,," @MC-TASK-ENDDATE"
+scheduledate,wear_log,,text,"Schedule Date",,,,,,,,,,,,," @MC-TASK-SCHEDULEDATE"
+status,wear_log,,dropdown,Status,"0, Deleted | 1, Completed | 2, Incomplete",,,,,,,,,,,," @MC-TASK-STATUS"
+supplementaldata,wear_log,,notes,"Supplemental Data (JSON)",,,,,,,,,,,,," @MC-TASK-SUPPLEMENTALDATA"
+serializedresult,wear_log,,file,"Serialized Result",,,,,,,,,,,,," @MC-TASK-SERIALIZEDRESULT"

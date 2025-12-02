@@ -1,0 +1,19 @@
+﻿"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"
+record_id,form_1,,text,"Record ID",,,,,,,,,,,,,
+bedtime,morning_sleep_diary,,text,"What time did you get into bed?",,,datetime_dmy,,,,,y,,,,,
+sleep,morning_sleep_diary,,text,"What time did you try to go to sleep?",,,datetime_dmy,,,,,y,,,,,
+sleepdelay,morning_sleep_diary,,text,"<div class=""rich-text-field-label""><p>How long did it take you to fall asleep? <em>Please answer in minutes</em></p></div>",,"If this was past midnight please use today's date!",number,,,,,y,,,,,
+awakenings,morning_sleep_diary,,text,"How many times did you wake up, not counting your final awakening?",,,number,,,,,y,,,,,
+awake_duration,morning_sleep_diary,,text,"<div class=""rich-text-field-label""><p>In total, how long did these awakenings last? <em>Please answer in minutes</em></p></div>",,,number,,,,,,,,,,
+offset,morning_sleep_diary,,text,"What time was your final awakening? i.,e. when did you wake up today?",,,datetime_dmy,,,,,y,,,,,
+out_ofbed,morning_sleep_diary,,text,"What time did you get out of bed for the day?",,,datetime_dmy,,,,,y,,,,,
+sleepquality,morning_sleep_diary,,radio,"How would you rate the quality of your sleep?","1, Very poor | 2, Poor | 3, Fair | 4, Good | 5, Very good",,,,,,,y,,,,,
+comments,morning_sleep_diary,,text,"Any comments?",,,,,,,,y,,,,,
+daytype2,morning_sleep_diary,,radio,"Today is...","1, a free day | 2, a work day",,,,,,,y,,,,,
+uuid,morning_sleep_diary,"MyCap App Fields - Do Not Modify",text,UUID,,,,,,,,,,,,," @MC-TASK-UUID"
+startdate,morning_sleep_diary,,text,"Start Date",,,,,,,,,,,,," @MC-TASK-STARTDATE"
+enddate,morning_sleep_diary,,text,"End Date",,,,,,,,,,,,," @MC-TASK-ENDDATE"
+scheduledate,morning_sleep_diary,,text,"Schedule Date",,,,,,,,,,,,," @MC-TASK-SCHEDULEDATE"
+status,morning_sleep_diary,,dropdown,Status,"0, Deleted | 1, Completed | 2, Incomplete",,,,,,,,,,,," @MC-TASK-STATUS"
+supplementaldata,morning_sleep_diary,,notes,"Supplemental Data (JSON)",,,,,,,,,,,,," @MC-TASK-SUPPLEMENTALDATA"
+serializedresult,morning_sleep_diary,,file,"Serialized Result",,,,,,,,,,,,," @MC-TASK-SERIALIZEDRESULT"

@@ -1,0 +1,28 @@
+"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"
+record_id,form_1,,text,"Record ID",,,,,,,,,,,,,
+ema_light,current_light_mood_and_alertness,,radio,"We would like to know about your current light scenario. The choices are the same as in the light exposure diary that you fill in every evening.
+
+Please confirm","1, Yes",,,,,,,y,,,,,
+currentight,current_light_mood_and_alertness,,radio,"<div class=""rich-text-field-label""><p>Select the main light source you are currently exposed to. If you are unsure which one this is, think about it as the biggest and brightest source from which you are receiving light</p></div>","L, Electric light source indoors (e.g.: LED/halogen/fluorescent lamps) | S, Electric light source outdoors (e.g.: street lights) | I, Daylight indoors (through windows) | O, Daylight outdoors (including being in the shade) | E, Emissive displays (e.g.: smartphone, laptop etc.) | D, Darkness (outdoors and/or indoors) | W, Light entering from outside during sleep (e.g.: skyglow, street lights etc.)",,,,,,,y,,,,,
+check_mixedlight,current_light_mood_and_alertness,,yesno,"Are you also being exposed to an additional, secondary light source?",,,,,,,,y,,,,,
+additional_light,current_light_mood_and_alertness,,radio,"Please select the additional light source you are currently exposed to","L, Electric light source indoors (e.g.: LED/halogen/fluorescent lamps) | S, Electric light source outdoors (e.g.: street lights) | I, Daylight indoors (through windows) | O, Daylight outdoors (including being in the shade) | E, Emissive displays (e.g.: smartphone, laptop etc.) | D, Darkness (outdoors and/or indoors) | W, Light entering from outside during sleep (e.g.: skyglow, street lights etc.)",,,,,,"[check_mixedlight] = '1'",y,,,,,
+currentmood,current_light_mood_and_alertness,,radio,"Now we would like to know about your current mood. Please rate to what extent the following words describe your current mood.
+
+Please confirm","1, Yes",,,,,,,y,,,,,
+anxious,current_light_mood_and_alertness,,radio,Anxious,"0, Not at all | 1, Slightly | 2, Somewhat | 3, Moderately | 4, Quite a bit | 5, Very much so | 6, Extremely",,,,,,,y,,,,,
+elated,current_light_mood_and_alertness,,radio,Elated,"0, Not at all | 1, Slightly | 2, Somewhat | 3, Moderately | 4, Quite a bit | 5, Very much so | 6, Extremely",,,,,,,y,,,,,
+sad,current_light_mood_and_alertness,,radio,Sad,"0, Not at all | 1, Slightly | 2, Somewhat | 3, Moderately | 4, Quite a bit | 5, Very much so | 6, Extremely",,,,,,,y,,,,,
+angry,current_light_mood_and_alertness,,radio,Angry,"0, Not at all | 1, Slightly | 2, Somewhat | 3, Moderately | 4, Quite a bit | 5, Very much so | 6, Extremely",,,,,,,y,,,,,
+irritable,current_light_mood_and_alertness,,radio,Irritable,"0, Not at all | 1, Slightly | 2, Somewhat | 3, Moderately | 4, Quite a bit | 5, Very much so | 6, Extremely",,,,,,,y,,,,,
+energetic,current_light_mood_and_alertness,,radio,Energetic,"0, Not at all | 1, Slightly | 2, Somewhat | 3, Moderately | 4, Quite a bit | 5, Very much so | 6, Extremely",,,,,,,y,,,,,
+kss_instr,current_light_mood_and_alertness,,radio,"Now we would like to know about your sleepiness. 
+
+Please confirm","1, Yes",,,,,,,y,,,,,
+kss,current_light_mood_and_alertness,,radio,"Please rate your sleepiness in the last 5 minutes","1, Extremely alert | 2, Very alert | 3, Alert | 4, Rather alert | 5, Neither alert nor sleepy | 6, Some signs of sleepiness | 7, Sleepy, but no effort to keep awake | 8, Sleepy, but some effort to keep awake | 9, Very sleepy, great effort to keep awake, fighting sleep | 10, Extremely sleepy, can't keep awake",,,,,,,y,,,,,
+uuid_4,current_light_mood_and_alertness,"MyCap App Fields - Do Not Modify",text,UUID,,,,,,,,,,,,," @MC-TASK-UUID"
+startdate_4,current_light_mood_and_alertness,,text,"Start Date",,,,,,,,,,,,," @MC-TASK-STARTDATE"
+enddate_4,current_light_mood_and_alertness,,text,"End Date",,,,,,,,,,,,," @MC-TASK-ENDDATE"
+scheduledate_4,current_light_mood_and_alertness,,text,"Schedule Date",,,,,,,,,,,,," @MC-TASK-SCHEDULEDATE"
+status_4,current_light_mood_and_alertness,,dropdown,Status,"0, Deleted | 1, Completed | 2, Incomplete",,,,,,,,,,,," @MC-TASK-STATUS"
+supplementaldata_4,current_light_mood_and_alertness,,notes,"Supplemental Data (JSON)",,,,,,,,,,,,," @MC-TASK-SUPPLEMENTALDATA"
+serializedresult_4,current_light_mood_and_alertness,,file,"Serialized Result",,,,,,,,,,,,," @MC-TASK-SERIALIZEDRESULT"

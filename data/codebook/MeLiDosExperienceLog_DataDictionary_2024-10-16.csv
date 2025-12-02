@@ -1,0 +1,25 @@
+"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"
+record_id,form_1,,text,"Record ID",,,,,,,,,,,,,
+explog_instr,experience_log,,descriptive,"Here you can report your positive and negative experiences associated with wearing the light glasses during your daily activities.",,,,,,,,,,,,,
+exp_time,experience_log,,radio,"The experience you would like to report is","1, Current (happened in the last 10 minutes) | 2, Past (happened in the past and I forgot to report it)",,,,,,,y,,,,,
+current,experience_log,,text,"Current time",,,datetime_dmy,,,,"[exp_time] = '1'",y,,,,,
+past,experience_log,,text,"Please try to remember or estimate when the experience happened",,,datetime_dmy,,,,"[exp_time] = '2'",y,,,,,
+type,experience_log,,radio,"The experience I would like to report is","1, Positive | 2, Neutral | 3, Negative",,,,,,,y,,,,,
+location,experience_log,,radio,"Please select the option which describes the location where you made the experience","1, Home | 2, Office or work-related space (e.g.: canteen) | 3, Public spaces (e.g.: supermarket, restaurant, shop, park etc.) | 4, Other",,,,,,,y,,,,,
+loc_spec,experience_log,,text,"Please specifiy",,,,,,,"[location] = '4'",y,,,,,
+descr,experience_log,,notes,"Please provide a brief description of your experience, including the location, the activity you were performing and what feelings it triggered for you",,,,,,,,y,,,,,
+feedback,experience_log,,yesno,"Did this experience involve verbal or non-verbal feedback from others?
+
+Example: comments or questions from people",,,,,,,,y,,,,,
+identity,experience_log,,checkbox,"Who provided this feedback?","1, Friend or family member | 2, Colleague | 3, Acquaintance | 4, Stranger | 5, Other",,,,,,"[feedback] = '1'",y,,,,,
+identity_spec,experience_log,,text,"Please specify",,,,,,,"[identity(5)] = '1'",y,,,,,
+social_type,experience_log,,checkbox,"Please select the options that best describes the type feedback you received about the light glasses","1, Comments about the light glasses | 2, Questions about the light glasses | 3, Looks due to the light glasses | 4, Concerns about the light glasses",,,,,,"[feedback] = '1'",y,,,,,
+removal,experience_log,,yesno,"Did this experience prompt you to remove the light glasses?",,,,,,,,y,,,,,
+future_use,experience_log,,notes,"Explain how this experience will influence your future use of the light glasses, if at all",,,,,,,,y,,,,,
+uuid_2,experience_log,"MyCap App Fields - Do Not Modify",text,UUID,,,,,,,,,,,,," @MC-TASK-UUID"
+startdate_2,experience_log,,text,"Start Date",,,,,,,,,,,,," @MC-TASK-STARTDATE"
+enddate_2,experience_log,,text,"End Date",,,,,,,,,,,,," @MC-TASK-ENDDATE"
+scheduledate_2,experience_log,,text,"Schedule Date",,,,,,,,,,,,," @MC-TASK-SCHEDULEDATE"
+status_2,experience_log,,dropdown,Status,"0, Deleted | 1, Completed | 2, Incomplete",,,,,,,,,,,," @MC-TASK-STATUS"
+supplementaldata_2,experience_log,,notes,"Supplemental Data (JSON)",,,,,,,,,,,,," @MC-TASK-SUPPLEMENTALDATA"
+serializedresult_2,experience_log,,file,"Serialized Result",,,,,,,,,,,,," @MC-TASK-SERIALIZEDRESULT"

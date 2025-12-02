@@ -1,0 +1,40 @@
+"Variable / Field Name","Form Name","Section Header","Field Type","Field Label","Choices, Calculations, OR Slider Labels","Field Note","Text Validation Type OR Show Slider Number","Text Validation Min","Text Validation Max",Identifier?,"Branching Logic (Show field only if...)","Required Field?","Custom Alignment","Question Number (surveys only)","Matrix Group Name","Matrix Ranking?","Field Annotation"
+record_id,form_1,,text,"Record ID",,,,,,,,,,,,,
+instructions,exercise_diary,,radio,"Please answer the following questions about the physical activity and/or sports you performed during the last day. 
+
+Please confirm","1, Yes",,,,,,,y,,,,,
+intensity,exercise_diary,,radio,"<div class=""rich-text-field-label""><p>My day involved the following type of physical activity</p></div>","1, Vigorous (causing large increases in heart rate and breathing, e.g. running) | 2, Moderate (causing moderate increases in heart rate and breathing, e.g. cycling in the city) | 3, Light (causing small to no increases in heart rate and breathing, e.g. taking a stroll in the park) | 4, None of the above, I did not perform any type of physical activity",,,,,,,y,,,,,
+location,exercise_diary,,radio,"I performed physical activity","1, Outdoors (e.g. running, cycling in the city) | 2, Indoors (e.g. gym or home workout) | 3, Both indoors and outdoors",,,,,,"[intensity] = '1' or [intensity] = '2' or [intensity] = '3'",y,,,,,"[exercise_intensity] = 1 or 2 or 3"
+type,exercise_diary,,notes,"Please indicate which type of physical activity/activities you engaged with",,,,,,,"[intensity] = '1' or [intensity] = '2' or [intensity] = '3'",y,,,,,
+commute,exercise_diary,,text,"How much time did you spend walking and/or cycling to get to and from places? Please answer in minutes",,,number,,,,,y,,,,,
+sedentary,exercise_diary,,text,"How much time did you spend sitting or reclining? Please answer in minutes",,,number,,,,,y,,,,,
+light_glasses,exercise_diary,,yesno,"Did you wear the light glasses while doing exercises?",,,,,,,"[intensity] = '1' or [intensity] = '2' or [intensity] = '3'",,,,,,"[exercise_intensity] = 1 or 2 or 3"
+uuid_3,exercise_diary,"MyCap App Fields - Do Not Modify",text,UUID,,,,,,,,,,,,," @MC-TASK-UUID"
+startdate_3,exercise_diary,,text,"Start Date",,,,,,,,,,,,," @MC-TASK-STARTDATE"
+enddate_3,exercise_diary,,text,"End Date",,,,,,,,,,,,," @MC-TASK-ENDDATE"
+scheduledate_3,exercise_diary,,text,"Schedule Date",,,,,,,,,,,,," @MC-TASK-SCHEDULEDATE"
+status_3,exercise_diary,,dropdown,Status,"0, Deleted | 1, Completed | 2, Incomplete",,,,,,,,,,,," @MC-TASK-STATUS"
+supplementaldata_3,exercise_diary,,notes,"Supplemental Data (JSON)",,,,,,,,,,,,," @MC-TASK-SUPPLEMENTALDATA"
+serializedresult_3,exercise_diary,,file,"Serialized Result",,,,,,,,,,,,," @MC-TASK-SERIALIZEDRESULT"
+introduction_wellbeing,wellbeing_diary,,radio,"<div class=""rich-text-field-label""><p>Please indicate for each of the five statements which is closest to how you have been feeling over the last day.<br /><br />Please confirm</p></div>","1, Yes",,,,,,,y,RH,,,,
+who5_1998_1,wellbeing_diary,,radio,"I have felt cheerful and in good spirits","5, All of the time | 4, Most of the time | 3, More than half of the time | 2, Less than half of the time | 1, Some of the time | 0, At no time",,,,,,,y,,,,,
+who5_1998_2,wellbeing_diary,,radio,"I have felt calm and relaxed","5, All of the time | 4, Most of the time | 3, More than half of the time | 2, Less than half of the time | 1, Some of the time | 0, At no time",,,,,,,y,,,,,
+who5_1998_3,wellbeing_diary,,radio,"I have felt active and vigorous","5, All of the time | 4, Most of the time | 3, More than half of the time | 2, Less than half of the time | 1, Some of the time | 0, At no time",,,,,,,y,,,,,
+who5_1998_4,wellbeing_diary,,radio,"How would you rate the quality of your sleep last night?","1, Very poor | 2, Poor | 3, Fair | 4, Good | 5, Very good",,,,,,,y,,,,,
+who5_1998_5,wellbeing_diary,,radio,"My daily life has been filled with things that interest me ","5, All of the time | 4, Most of the time | 3, More than half of the time | 2, Less than half of the time | 1, Some of the time | 0, At no time",,,,,,,y,,,,,
+uuid_2,wellbeing_diary,"MyCap App Fields - Do Not Modify",text,UUID,,,,,,,,,,,,," @MC-TASK-UUID"
+startdate_2,wellbeing_diary,,text,"Start Date",,,,,,,,,,,,," @MC-TASK-STARTDATE"
+enddate_2,wellbeing_diary,,text,"End Date",,,,,,,,,,,,," @MC-TASK-ENDDATE"
+scheduledate_2,wellbeing_diary,,text,"Schedule Date",,,,,,,,,,,,," @MC-TASK-SCHEDULEDATE"
+status_2,wellbeing_diary,,dropdown,Status,"0, Deleted | 1, Completed | 2, Incomplete",,,,,,,,,,,," @MC-TASK-STATUS"
+supplementaldata_2,wellbeing_diary,,notes,"Supplemental Data (JSON)",,,,,,,,,,,,," @MC-TASK-SUPPLEMENTALDATA"
+serializedresult_2,wellbeing_diary,,file,"Serialized Result",,,,,,,,,,,,," @MC-TASK-SERIALIZEDRESULT"
+mhla_confirm,light_exposure_diary,,radio,"<div class=""rich-text-field-label""><p>Please complete the ""Light Exposure Diary"" on OneDrive before going to bed, using the link we emailed to you on the first day of the study.</p> <p><span style=""font-weight: normal;""> If you are unsure where to find this, email to Sarina<strong> <a href=""mailto:ge42god@mytum.de"" target=""_blank"" rel=""noopener"">(sarina.hilden@tum.de)</a></strong> or Suyoun<strong> <a href=""mailto:ge42god@mytum.de"" target=""_blank"" rel=""noopener"">(suyoun.lee@tum.de)</a></strong></span></p> <p>Please confirm that you did this</p></div>","1, Yes",,,,,,,y,,,,,
+mhlea_confidence,light_exposure_diary,,radio,"How sure are you about the light exposure categories you chose?","1, Not confident at all | 2, Slightly confident | 3, Somewhat confident | 4, Fairly confident | 5, Completely confident",,,,,,,,,,,,
+uuid,light_exposure_diary,"MyCap App Fields - Do Not Modify",text,UUID,,,,,,,,,,,,," @MC-TASK-UUID"
+startdate,light_exposure_diary,,text,"Start Date",,,,,,,,,,,,," @MC-TASK-STARTDATE"
+enddate,light_exposure_diary,,text,"End Date",,,,,,,,,,,,," @MC-TASK-ENDDATE"
+scheduledate,light_exposure_diary,,text,"Schedule Date",,,,,,,,,,,,," @MC-TASK-SCHEDULEDATE"
+status,light_exposure_diary,,dropdown,Status,"0, Deleted | 1, Completed | 2, Incomplete",,,,,,,,,,,," @MC-TASK-STATUS"
+supplementaldata,light_exposure_diary,,notes,"Supplemental Data (JSON)",,,,,,,,,,,,," @MC-TASK-SUPPLEMENTALDATA"
+serializedresult,light_exposure_diary,,file,"Serialized Result",,,,,,,,,,,,," @MC-TASK-SERIALIZEDRESULT"
