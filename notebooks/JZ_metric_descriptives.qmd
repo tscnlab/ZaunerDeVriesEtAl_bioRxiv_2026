@@ -1,0 +1,46 @@
+---
+title: "JZ_metric_descriptives"
+format: html
+---
+
+```{mermaid}
+flowchart TD
+
+    A["Study sample<br/>191 participants × 8 theoretical days<br/><b>n = 1528 participant-days</b>"]
+
+    B1["glasses position<br/>141 participants<br/><b>n = 1136 participant-days</b>"]
+
+    B2["chest position<br/>157 participants<br/><b>n = 1249 participant-days</b>"]
+
+    B3["wrist position<br/>153 participants<br/><b>n = 1223 participant-days</b>"]
+
+    C["Complete cases only<br/>All three wearing positions available<br/><b>n = 928 participant-days</b>"]
+
+    D["Exclude non-wear and<br/>out-of-range cases<br/><b>n = 850 participant-days</b>"]
+
+    E["Exclude partial days<br/>- Remove hours with &lt; 50% data<br/>- Remove days with &lt; 80% data<br/><b>n = 604 participant-days</b>"]
+
+    F1["Participant-day level metrics<br/>52 metrics per participant-day<br/><b>n = 31,408</b>"]
+
+    F2["Participant-level metrics<br/>2 metrics per participant<br/><b>n = 212</b>"]
+
+    A --> B1
+
+    A --> B2
+
+    A --> B3
+
+    B1 --> C
+
+    B2 --> C
+
+    B3 --> C
+
+    C --> D
+
+    D --> E
+
+    E --> F1
+
+    E --> F2
+```
