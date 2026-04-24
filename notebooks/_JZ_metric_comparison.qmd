@@ -36,6 +36,8 @@ library(broom.mixed)
 library(katex)
 library(gtsummary)
 library(stringr)
+library(knitr)
+library(rmarkdown)
 library(fontawesome)
 ```
 
