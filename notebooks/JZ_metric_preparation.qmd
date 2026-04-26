@@ -26,6 +26,7 @@ library(tidyverse)
 library(LightLogR)
 library(melidosData)
 library(gt)
+library(here)
 library(rlang)
 library(cowplot)
 source("../scripts/site_names.R")
@@ -404,11 +405,46 @@ metrics <-
 rm(metrics2)
 ```
 
+## Hourly values
+
+For the nonlinear analysis, we require 30-minute-values.
+
+```{r}
+time_data <- 
+metrics_data |> 
+  group_by(site, Id, Date, position) |> 
+  aggregate_Datetime(
+    "30 mins",
+    type = "floor",
+    numeric.handler = \(x) x |> mean(na.rm = TRUE),
+    geo.MEDI = MEDI |> log_zero_inflated() |> mean(na.rm = TRUE) |> exp_zero_inflated()
+  )|>
+  add_Date_col(group.by = TRUE) |> 
+  mutate(static = all(MEDI == MEDI[1])) |> 
+  filter_out(static) |> 
+  select(-static) |> 
+  add_Time_col() |> 
+  ungroup() |> 
+  mutate(Time = as.numeric(Time)/3600 + 0.25,
+         across(c(site, Id, sleep, State.Brown, wear, photoperiod.state),
+                fct),
+         Date = factor(Date),
+         Id_date = interaction(Id, Date),
+         lzMEDI = log_zero_inflated(MEDI),
+         photoperiod = (dusk - dawn) |> as.numeric()
+  ) |> 
+  group_by(Id, position) |> 
+  mutate(AR.start = ifelse(row_number() == 1, TRUE, FALSE)) |> 
+  ungroup()
+```
+
+
 ## Export metrics
 
 ```{r}
 #| filename: Export metric data
-save(metrics, file = "../data/prepared_metrics.RData")
+save(metrics, file = here("data/prepared_metrics.RData"))
+save(time_data, file = here("data/prepared_time_data.RData"))
 ```
 
 ## Session info

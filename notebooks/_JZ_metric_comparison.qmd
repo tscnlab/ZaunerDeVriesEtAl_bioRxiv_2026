@@ -28,6 +28,7 @@ library(lme4)
 library(lmerTest)
 library(melidosData)
 library(emmeans)
+library(here)
 library(car)
 library(performance)
 library(LightLogR)
@@ -44,7 +45,7 @@ library(fontawesome)
 ## Import
 
 ```{r}
-load("../data/prepared_metrics.RData")
+load(here("data/prepared_metrics.RData"))
 ```
 
 ## Visualizing metrics
@@ -73,7 +74,7 @@ metrics_nested <-
 
 ```{r}
 #| filename: Load metric information
-metric_info <- read_xlsx("../data/metric_types.xlsx")
+metric_info <- read_xlsx(here("data/metric_types.xlsx"))
 metric_info <- 
 metric_info |> 
   mutate(family = map(engine, \(x) switch(x,
@@ -190,7 +191,7 @@ metrics |>
        title = "Raincloud plots of scaled and centered metric results") +
   theme_cowplot()
 
-ggsave("../output/figures/Figure_metric_distribution.pdf", width = 15, height = 20)
+ggsave(here("output/figures/Figure_metric_distribution.pdf"), width = 15, height = 20)
 ```
 
 ## Prepare modelling
@@ -338,7 +339,7 @@ metrics_nested <-
   metrics_nested |> 
   mutate(
          pvalues = map(H1_model, \(x) Anova(x) |> tidy()),
-         # diagnostics = map(H1_model, check_model),
+         diagnostics = map(H1_model, check_model),
          random_effects = map(H1_model,
                               \(x) x |>
                                   tidy() |>
@@ -395,6 +396,7 @@ metric_table <-
                 engine == "glmmTMB" ~ "log",
                 response == "log_zero_inflated(value)" ~ "log10",
                 response == "qlogis(value)" ~ "logit",
+                map_chr(family, 1) == "poisson" ~ "log",
                 .default = "linear"
                   ),
     pvalues = pvalues |> map(
@@ -629,7 +631,7 @@ df |>
     locations = cells_column_labels(scaling)
   ) |> 
   tab_footnote(
-    "Partial $R^2$ values of the effect compated to a model without the effect. All values within a row does not sum to 1, as they are from different models and variables are partially correlated.", 
+    md("Partial $R^2$ values of the effect compated to a model without the effect. All values within a row does not sum to 1, as they are from different models and variables are partially correlated."), 
     locations = cells_column_labels(contains("r2_"))
   )  |> tab_footnote(
     "No overall p-value correction has been performed, so as not to potentially underestimate individual deviations.", 
@@ -656,7 +658,7 @@ df |>
 ```{r}
 #| filename: Plot and save the table
 table
-gtsave(table, "../output/tables/Table_metrics.png", vwidth = 2000)
+gtsave(table, here("output/tables/Table_metrics.png"), vwidth = 2000)
 ```
 
 ```{r}
@@ -804,7 +806,7 @@ df_summary |>
 ```{r}
 #| filename: Plot and save the summary table
 table_summary
-gtsave(table_summary, "../output/tables/Table_metrics_summary.png", vwidth = 2000)
+gtsave(table_summary, here("output/tables/Table_metrics_summary.png"), vwidth = 2000)
 ```
 
 ## Visualize results
@@ -833,7 +835,7 @@ reduced_df |>
   gghighlight(p, use_group_by = FALSE,
               label_key = metric, calculate_per_facet = TRUE)
 
-ggsave("../output/figures/Fig_metric_abs_error.pdf")
+ggsave(here("output/figures/Fig_metric_abs_error.pdf"))
 ```
 
 ```{r}
@@ -860,7 +862,7 @@ reduced_df |>
   gghighlight(p, use_group_by = FALSE,
               label_key = metric, calculate_per_facet = TRUE)
 
-ggsave("../output/figures/Fig_metric_error.pdf")
+ggsave(here("output/figures/Fig_metric_error.pdf"))
 ```
 
 

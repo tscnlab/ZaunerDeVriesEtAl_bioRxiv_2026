@@ -1,0 +1,266 @@
+---
+title: "Hierarchical analysis of hourly values"
+format: html
+author: Johannes Zauner
+editor_options: 
+  chunk_output_type: console
+---
+
+## Preface
+
+This script uses hierarchical generalized additive model to explore the following hypothesis:
+
+> Personal light exposure patterns depend on wearing position
+
+*Type of model:* HGAM (Hierarchical GAM)
+
+*Base formula:* $\text{melanopic EDI} \sim  s(\text{Time}) + s(\text{Time}, \text{position}) + s(\text{Time}, \text{Site}) + s(\text{Time}, \text{Participant})$
+
+*Additional notes:* 
+- position and site effects are modelled with the `sz` basis, that allows for the most identifiable modelling of parametric differences
+- Participant effects are modelled with the `fs` basis, which models the participant-effects as random smooths
+- melanopic EDI is scaled with `log_zero_inflated()` before model fitting.
+
+## Setup
+
+```{r}
+library(tidyverse)
+library(mgcv)
+library(LightLogR)
+library(here)
+library(gratia)
+library(itsadug)
+```
+
+### Preparation
+
+```{r}
+#| filename: Load prepared data
+load(here("data/prepared_time_data.RData"))
+time_data <- 
+  time_data |> 
+  mutate(position = fct(position))
+```
+
+```{r}
+#| filename: Overview plot of the data (median with IQR)
+time_data|>
+  group_by(position) |> 
+  aggregate_Date(
+    date.handler = \(x) ymd("2025-01-01"),
+    numeric.handler = \(x) median(x, na.rm = TRUE),
+    p75 = quantile(MEDI, p=0.75, na.rm = TRUE),
+    p25 = quantile(MEDI, p=0.25, na.rm = TRUE)
+  ) |> 
+  gg_doubleplot(geom = "blank", jco_color = FALSE, facetting = FALSE,
+                x.axis.breaks.repeat = ~Datetime_breaks(.x, by = "12 hours", shift =
+    lubridate::duration(0, "hours"))) +
+  geom_ribbon(aes(ymin = p25, ymax = p75, fill = position), alpha = 0.5) +
+  geom_line(aes(color = position)) +
+  geom_hline(yintercept = 250, linetype = "dashed") +
+  scale_color_viridis_d()+
+  scale_fill_viridis_d() +
+  guides(fill = "none") +
+  theme(panel.spacing = unit(2, "lines"))
+```
+
+```{r}
+#| filename: H11 formulas
+formula_1 <- lzMEDI ~ s(Time, k = 12) + s(Time, position, bs = "sz", k = 12) + s(Time, site, bs = "sz", k = 12) + s(Time, Id, bs = "fs") + s(Id_date, bs = "re")
+formula_0 <- lzMEDI ~ s(Time, k = 12) + s(Time, site, bs = "sz", k = 12) + s(Time, Id, bs = "fs") + s(Id_date, bs = "re")
+```
+
+### Analysis
+
+#### Base model
+
+```{r}
+#| filename: Main model
+model_1 <- 
+  bam(formula_1, 
+      data = time_data, 
+      discrete = TRUE,
+      method = "fREML",
+      nthreads = 10
+      )
+
+r1 <- start_value_rho(model_1, 
+                      plot=TRUE)
+
+model_1 <- 
+  bam(formula_1, 
+      data = time_data, 
+      discrete = TRUE,
+      method = "fREML",
+      nthreads = 10,
+      rho = r1,
+      AR.start = AR.start
+      )
+
+acf_resid(model_1, split_pred = "AR.start")
+
+summary_1 <- summary(model_1)
+summary_1
+model_1 |> glance()
+
+model_1 |> appraise()
+model_1 |> draw(select = "s(Time,position)")
+```
+
+```{r}
+#| filename: Variance explained
+Xp <- predict(model_1, type = "terms")
+variance <- apply(Xp, 2, var)
+cor(Xp)
+R2 <- (variance/sum(variance)) |> enframe(value = "R2", name = "parameter")
+R2
+```
+
+#### Null model (H11_0)
+
+```{r}
+#| filename: Null model
+model_0 <- 
+  bam(formula_0, 
+      data = time_data, 
+      discrete = TRUE,
+      method = "fREML",
+      nthreads = 8
+      )
+
+r1 <- start_value_rho(model_0, 
+                      plot=TRUE)
+
+model_0 <- 
+  bam(formula_0, 
+      data = time_data, 
+      discrete = TRUE,
+      method = "fREML",
+      nthreads = 10,
+      rho = r1,
+      AR.start = AR.start
+      )
+
+acf_resid(model_0, split_pred = "AR.start")
+
+summary_0 <- summary(model_0)
+summary_0
+model_0 |> glance()
+
+model_0 |> appraise()
+model_0 |> draw()
+```
+
+#### Model comparison
+
+```{r}
+AICs <- AIC(model_1, model_0)
+AICs |> as_tibble(rownames = "model") |> gt()
+```
+
+> While position only explains very little of the overall structure (<1% of variance explained), is has a ∆AIC >2 and will thus be included
+
+#### Model visualization
+
+```{r}
+#| filename: prepare photoperiod model H2 plot
+H11_sex_data <- 
+H11_model_1 |> 
+  conditional_values(
+    condition = list(Time = seq(0.25, 23.75, by = 0.5), "sex"),
+    exclude = c("s(Time,site)", "s(Time,Id)", "s(Id_date)")
+    ) |> 
+  mutate(across(c(.fitted, .lower_ci, .upper_ci),
+                exp_zero_inflated)
+  )
+
+```
+
+```{r}
+#| filename: Visualize sex model H11
+#| fig-height: 6
+#| fig-width: 10
+source("scripts/Brown_bracket.R")
+
+H11_pred <-
+H11_sex_data |> 
+  ggplot(aes()) +
+  map(c(1,10,250, 10^4), 
+          \(x) geom_hline(aes(yintercept = x), 
+                          col = "grey", linetype = "dashed")
+      ) +
+  geom_ribbon(aes(x = Time, ymin = .lower_ci, ymax = .upper_ci, fill = sex), alpha = 0.5) +
+  geom_line(aes(x = Time, y = .fitted, col = sex), linewidth = 0.1) +
+  geom_line(aes(x = Time, y = .fitted), linewidth = 1) +
+  theme_cowplot() +
+  scale_y_continuous(trans = "symlog", breaks = c(0,1,10,100,250, 1000)) +
+  scale_x_continuous(breaks = seq(0, 24, by = 6)) +
+  coord_cartesian(xlim = c(0,24), ylim = c(0,10^4), expand = FALSE) +
+  labs(y = "Melanopic EDI (lx)", x = "Local time (hrs)", fill = "Sex", col = "Sex") +
+  facet_wrap(~sex) +
+  # guides( y = guide_axis_stack(Brown_bracket, "axis")) +
+  gghighlight(
+    label_key = sex,
+    label_params = list(x = 12, y = 4, force = 0, hjust = 0.25)
+  ) +
+  theme_sub_strip(background = element_blank(),
+                  text = element_blank()) +
+  theme(panel.spacing = unit(1, "lines"),
+        plot.caption = element_textbox_simple())
+  # labs(caption = Brown_caption)
+
+```
+
+```{r}
+#| filename: Visualize model terms
+H11_P_terms <-
+H11_model_1 |> 
+  smooth_estimates(select = "s(Time,sex)") |> 
+  mutate(.lower_ci = .estimate -1.96*.se,
+         .upper_ci = .estimate +1.96*.se,
+         .fitted = .estimate,
+         signif = .lower_ci > 0 | .upper_ci < 0,
+         signif_id = consecutive_id(signif),
+         .by = sex) |> 
+  ggplot(aes()) +
+  map(c(log10(c(0.1, 0.2, 0.5, 2, 5, 10))),
+      \(x) geom_hline(yintercept = x, linewidth = 0.5, col = "grey", linetype = 2)) +
+  geom_ribbon(aes(x = Time, ymin = .lower_ci, ymax = .upper_ci, fill = sex), alpha = 0.5) +
+  geom_hline(yintercept = 0, linewidth = 1, linetype = 2) +
+  geom_line(aes(x = Time, y = .fitted), 
+            linewidth = 1) +
+  geom_line(data = \(x) filter(x, signif),
+            aes(x = Time, y = .fitted, group = signif_id), 
+            col = "red", linewidth = 1) +
+  # scale_color_manual(values = c(melidos_colors)) +
+  theme_cowplot() +
+  scale_y_continuous(labels = expression(10^-1, 5^-1, 2^-1, "1  ", "2  ", "5  ", "10  "), 
+                     breaks = log10(c(0.1, 0.2, 0.5, 1, 2, 5, 10)))+
+  scale_x_continuous(breaks = seq(0, 24, by = 6)) +
+  coord_cartesian(xlim = c(0,24), expand = FALSE) +
+  # guides(fill = "none") +
+  labs(y = "Factor", x = "Local time (hrs)", fill = "Sex") +
+  facet_wrap(~sex) +
+  theme_sub_strip(background = element_blank(),
+                  text = element_blank()) +
+  theme(panel.spacing = unit(1, "lines"),
+        plot.caption = element_textbox_simple(),
+        legend.position = "bottom")
+
+```
+
+```{r}
+H11_P_terms
+ggsave("figures/Fig8.pdf")
+```
+
+### Interpretation
+
+- Sex is a minor differentiator in terms of melanopic stimulus, that explanes less than 1% of the variance. The only significant difference between the sexes is a lower value during the morning for females compared to males. This phase lasts about 2 hours and has a peak difference of about factor 2
+
+## Session Info
+
+```{r}
+sessionInfo()
+```
+
