@@ -29,23 +29,30 @@ library(mgcv)
 library(LightLogR)
 library(here)
 library(gratia)
+library(broom)
 library(itsadug)
+library(cowplot)
+library(gghighlight)
+library(ggsci)
+library(gt)
 ```
 
 ### Preparation
 
 ```{r}
 #| filename: Load prepared data
+colors <- ggsci::pal_jco()(3) |> set_names(c("glasses", "chest", "wrist"))
 load(here("data/prepared_time_data.RData"))
 time_data <- 
   time_data |> 
-  mutate(position = fct(position))
+  mutate(position = fct(position, levels = c("glasses", "chest", "wrist")))
 ```
 
 ```{r}
 #| filename: Overview plot of the data (median with IQR)
 time_data|>
   group_by(position) |> 
+  mutate(position = fct_relevel(position, "glasses")) |> 
   aggregate_Date(
     date.handler = \(x) ymd("2025-01-01"),
     numeric.handler = \(x) median(x, na.rm = TRUE),
@@ -58,15 +65,15 @@ time_data|>
   geom_ribbon(aes(ymin = p25, ymax = p75, fill = position), alpha = 0.5) +
   geom_line(aes(color = position)) +
   geom_hline(yintercept = 250, linetype = "dashed") +
-  scale_color_viridis_d()+
-  scale_fill_viridis_d() +
+  scale_color_jco()+
+  scale_fill_jco() +
   guides(fill = "none") +
   theme(panel.spacing = unit(2, "lines"))
 ```
 
 ```{r}
 #| filename: H11 formulas
-formula_1 <- lzMEDI ~ s(Time, k = 12) + s(Time, position, bs = "sz", k = 12) + s(Time, site, bs = "sz", k = 12) + s(Time, Id, bs = "fs") + s(Id_date, bs = "re")
+formula_1 <- lzMEDI ~ s(Time, k = 12) + s(Time, position, bs = "fs", k = 12) + s(Time, site, bs = "sz", k = 12) + s(Time, Id, bs = "fs") + s(Id_date, bs = "re")
 formula_0 <- lzMEDI ~ s(Time, k = 12) + s(Time, site, bs = "sz", k = 12) + s(Time, Id, bs = "fs") + s(Id_date, bs = "re")
 ```
 
@@ -163,11 +170,11 @@ AICs |> as_tibble(rownames = "model") |> gt()
 #### Model visualization
 
 ```{r}
-#| filename: prepare photoperiod model H2 plot
-H11_sex_data <- 
-H11_model_1 |> 
+#| filename: prepare model plot
+model_data <- 
+model_1 |> 
   conditional_values(
-    condition = list(Time = seq(0.25, 23.75, by = 0.5), "sex"),
+    condition = list(Time = seq(0.25, 23.75, by = 0.5), "position"),
     exclude = c("s(Time,site)", "s(Time,Id)", "s(Id_date)")
     ) |> 
   mutate(across(c(.fitted, .lower_ci, .upper_ci),
@@ -177,30 +184,33 @@ H11_model_1 |>
 ```
 
 ```{r}
-#| filename: Visualize sex model H11
+#| filename: Visualize sex model
 #| fig-height: 6
 #| fig-width: 10
-source("scripts/Brown_bracket.R")
+source(here("scripts/Brown_bracket.R"))
 
-H11_pred <-
-H11_sex_data |> 
+# model_pred <-
+model_data |> 
+  mutate(position = fct_relevel(position, "glasses")) |> 
   ggplot(aes()) +
   map(c(1,10,250, 10^4), 
           \(x) geom_hline(aes(yintercept = x), 
                           col = "grey", linetype = "dashed")
       ) +
-  geom_ribbon(aes(x = Time, ymin = .lower_ci, ymax = .upper_ci, fill = sex), alpha = 0.5) +
-  geom_line(aes(x = Time, y = .fitted, col = sex), linewidth = 0.1) +
+  geom_ribbon(aes(x = Time, ymin = .lower_ci, ymax = .upper_ci, fill = position), alpha = 0.5) +
+  geom_line(aes(x = Time, y = .fitted, col = position), linewidth = 0.1) +
   geom_line(aes(x = Time, y = .fitted), linewidth = 1) +
   theme_cowplot() +
   scale_y_continuous(trans = "symlog", breaks = c(0,1,10,100,250, 1000)) +
   scale_x_continuous(breaks = seq(0, 24, by = 6)) +
   coord_cartesian(xlim = c(0,24), ylim = c(0,10^4), expand = FALSE) +
-  labs(y = "Melanopic EDI (lx)", x = "Local time (hrs)", fill = "Sex", col = "Sex") +
-  facet_wrap(~sex) +
+  labs(y = "Melanopic EDI (lx)", x = "Local time (hrs)", fill = "position", col = "Position") +
+  facet_wrap(~position) +
+  scale_color_jco()+
+  scale_fill_jco() +
   # guides( y = guide_axis_stack(Brown_bracket, "axis")) +
   gghighlight(
-    label_key = sex,
+    label_key = position,
     label_params = list(x = 12, y = 4, force = 0, hjust = 0.25)
   ) +
   theme_sub_strip(background = element_blank(),
@@ -212,37 +222,127 @@ H11_sex_data |>
 ```
 
 ```{r}
+#| filename: helper function
+difference_sz <- function(model, data, x, fac, lev1, lev2,
+                          sz_term,
+                          exclude = NULL,
+                          unconditional = FALSE,
+                          level = 0.95) {
+
+  data1 <- data
+  data2 <- data
+
+  fac_levels <- levels(model.frame(model)[[fac]])
+  
+  data1[[fac]] <- factor(rep(lev1, nrow(data1)), levels = fac_levels)
+  
+  data2[[fac]] <- factor(rep(lev2, nrow(data2)), levels = fac_levels)
+  
+  X1 <- predict(
+    
+    model, 
+    newdata = data1,
+    type = "lpmatrix",
+    exclude = exclude,
+    newdata.guaranteed = TRUE
+  )
+
+  X2 <- predict(
+    model, 
+    newdata = data2,
+    type = "lpmatrix",
+    exclude = exclude,
+    newdata.guaranteed = TRUE
+  )
+
+  Xd <- X1 - X2
+
+  ## keep only the sz smooth columns
+  sm_labels <- vapply(model$smooth, `[[`, character(1), "label")
+  i <- match(sz_term, sm_labels)
+
+  if (is.na(i)) {
+    stop(
+      "Smooth not found. Available smooth labels are:\n",
+      paste(sm_labels, collapse = "\n")
+    )
+  }
+
+  keep <- model$smooth[[i]]$first.para:model$smooth[[i]]$last.para
+  Xd[, setdiff(seq_len(ncol(Xd)), keep)] <- 0
+
+  beta <- coef(model)
+  V <- vcov(model, unconditional = unconditional)
+
+  fit <- drop(Xd %*% beta)
+  se <- sqrt(rowSums((Xd %*% V) * Xd))
+
+  crit <- qnorm(1 - (1 - level) / 2)
+
+  tibble(
+    {{ x }} := data[[x]],
+    comparison = paste0(lev1, "_", lev2),
+    diff = fit,
+    se = se,
+    lower = fit - crit * se,
+    upper = fit + crit * se
+  )
+}
+```
+
+
+```{r}
+#| filename: calculate the model comparison
+df <- model_1$model |> distinct(Time, .keep_all = TRUE)
+
+model_comparison <- 
+rbind(
+difference_sz(model_1, df, "Time", "position", "chest", "glasses",
+              "s(Time,position)",
+              exclude = c("s(Time,site)", "s(Time,Id)", "s(Id_date)"),
+              unconditional = FALSE,
+              level = 0.95
+),
+difference_sz(model_1, df, "Time", "position", "wrist", "glasses", 
+              "s(Time,position)",
+              exclude = c("s(Time,site)", "s(Time,Id)", "s(Id_date)"),
+              unconditional = FALSE,
+              level = 0.95
+)
+) |> 
+  mutate(position = str_remove(comparison, "_glasses"))
+
+```
+
+
+```{r}
 #| filename: Visualize model terms
-H11_P_terms <-
-H11_model_1 |> 
-  smooth_estimates(select = "s(Time,sex)") |> 
-  mutate(.lower_ci = .estimate -1.96*.se,
-         .upper_ci = .estimate +1.96*.se,
-         .fitted = .estimate,
-         signif = .lower_ci > 0 | .upper_ci < 0,
+model_terms <-
+model_comparison |> 
+  mutate(
+         signif = lower > 0 | upper < 0,
          signif_id = consecutive_id(signif),
-         .by = sex) |> 
+         .by = comparison) |> 
   ggplot(aes()) +
-  map(c(log10(c(0.1, 0.2, 0.5, 2, 5, 10))),
+  map(c(log10(seq(0.8, 1.2, by = 0.1))),
       \(x) geom_hline(yintercept = x, linewidth = 0.5, col = "grey", linetype = 2)) +
-  geom_ribbon(aes(x = Time, ymin = .lower_ci, ymax = .upper_ci, fill = sex), alpha = 0.5) +
+  geom_ribbon(aes(x = Time, ymin = lower, ymax = upper, fill = position), alpha = 0.5) +
   geom_hline(yintercept = 0, linewidth = 1, linetype = 2) +
-  geom_line(aes(x = Time, y = .fitted), 
+  geom_line(aes(x = Time, y = diff), 
             linewidth = 1) +
   geom_line(data = \(x) filter(x, signif),
-            aes(x = Time, y = .fitted, group = signif_id), 
+            aes(x = Time, y = diff, group = signif_id), 
             col = "red", linewidth = 1) +
   # scale_color_manual(values = c(melidos_colors)) +
   theme_cowplot() +
-  scale_y_continuous(labels = expression(10^-1, 5^-1, 2^-1, "1  ", "2  ", "5  ", "10  "), 
-                     breaks = log10(c(0.1, 0.2, 0.5, 1, 2, 5, 10)))+
+  scale_fill_manual(values = colors[-1]) +
+  scale_y_continuous(labels = c("-20%", "-10%", "±0%", "+10%", "+20%"),
+                     breaks = log10(seq(0.80, 1.20, by = 0.1)))+
   scale_x_continuous(breaks = seq(0, 24, by = 6)) +
   coord_cartesian(xlim = c(0,24), expand = FALSE) +
-  # guides(fill = "none") +
-  labs(y = "Factor", x = "Local time (hrs)", fill = "Sex") +
-  facet_wrap(~sex) +
-  theme_sub_strip(background = element_blank(),
-                  text = element_blank()) +
+  guides(fill = "none") +
+  labs(y = "Factor", x = "Local time (hrs)", fill = "Position") +
+  facet_wrap(~position) +
   theme(panel.spacing = unit(1, "lines"),
         plot.caption = element_textbox_simple(),
         legend.position = "bottom")
@@ -250,13 +350,13 @@ H11_model_1 |>
 ```
 
 ```{r}
-H11_P_terms
-ggsave("figures/Fig8.pdf")
+model_terms
+ggsave(here("output/figures/Fig_time_diff.pdf"))
 ```
 
 ### Interpretation
 
-- Sex is a minor differentiator in terms of melanopic stimulus, that explanes less than 1% of the variance. The only significant difference between the sexes is a lower value during the morning for females compared to males. This phase lasts about 2 hours and has a peak difference of about factor 2
+- There are significant differences between glasses and chest in the afternoon, growing larger towards the evening in the 8 to 10% range. There are significant differences between glasses and wrist during most waking hours and in the 8 to 15% range. Both chest and wrist tend to underestimate the glasses position.
 
 ## Session Info
 
