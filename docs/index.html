@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Johannes Zauner">
+<meta name="author" content="Sietse W. de Vries">
+<meta name="author" content="Altug Didikoglu">
+<meta name="author" content="Juliëtte van Duijnhoven">
+<meta name="author" content="Manuel Spitschan">
+<meta name="dcterms.date" content="2026-05-13">
+<meta name="keywords" content="wearable, light logging, dosimeter, personal light exposure, wearing position, circadian">
+
+<title>Toward scalable ambulatory light dosimetry: sensor-placement bias under naturalistic conditions</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-8ffd5f67044e5306d9846f29df41dda5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="canonical" href="https://tscnlab/github.io/WearingPositionError_2026/">
+<meta name="citation_title" content="Toward scalable ambulatory light dosimetry: sensor-placement bias under naturalistic conditions">
+<meta name="citation_abstract" content="...
+">
+<meta name="citation_keywords" content="wearable,light logging,dosimeter,personal light exposure,wearing position,circadian">
+<meta name="citation_author" content="Johannes Zauner">
+<meta name="citation_author" content="Sietse W. de Vries">
+<meta name="citation_author" content="Altug Didikoglu">
+<meta name="citation_author" content="Juliëtte van Duijnhoven">
+<meta name="citation_author" content="Manuel Spitschan">
+<meta name="citation_publication_date" content="2026-05-13">
+<meta name="citation_cover_date" content="2026-05-13">
+<meta name="citation_year" content="2026">
+<meta name="citation_online_date" content="2026-05-13">
+<meta name="citation_fulltext_html_url" content="https://tscnlab/github.io/WearingPositionError_2026/">
+<meta name="citation_language" content="en">
+<meta name="citation_journal_title" content="Exposure Science and Environmental Epidemiology">
+<meta name="citation_reference" content="citation_title=Protocol for a prospective, multicentre, cross-sectional cohort study to assess personal light exposure;,citation_author=Carolina Guidolin;,citation_author=Sam Aerts;,citation_author=Gabriel Kwaku Agbeshie;,citation_author=Kwadwo Owusu Akuffo;,citation_author=Sema Nur Aydin;,citation_author=David Baeza-Moyano;,citation_author=John Bolte;,citation_author=Kai Broszio;,citation_author=Guadalupe Cantarero-García;,citation_author=Altug Didikoglu;,citation_author=Roberto Alonso González-Lezcano;,citation_author=Hongli Joosten-Ma;,citation_author=Sofía Melero-Tur;,citation_author=Maria Nilsson Tengelin;,citation_author=María Concepción Pérez Gutiérrez;,citation_author=Oliver Stefani;,citation_author=Ingemar Svensson;,citation_author=Ljiljana Udovičić;,citation_author=Johannes Zauner;,citation_author=Manuel Spitschan;,citation_publication_date=2024-11-26;,citation_cover_date=2024-11-26;,citation_year=2024;,citation_fulltext_html_url=http://dx.doi.org/10.1186/s12889-024-20206-4;,citation_issue=1;,citation_doi=10.1186/s12889-024-20206-4;,citation_volume=24;,citation_language=en;,citation_journal_title=BMC Public Health;">
+<meta name="citation_reference" content="citation_title=Personal light exposure dataset for dortmund, germany;,citation_author=Kai Broszio;,citation_author=Johannes Zauner;,citation_author=Manuel Spitschan;,citation_publication_date=2025-12-31;,citation_cover_date=2025-12-31;,citation_year=2025;,citation_fulltext_html_url=https://zenodo.org/doi/10.5281/zenodo.18111232;,citation_doi=10.5281/ZENODO.18111232;">
+<meta name="citation_reference" content="citation_title=Personal light exposure dataset for madrid, spain;,citation_author=David Baeza Moyano;,citation_author=María Concepción Pérez Gutiérrez;,citation_author=Guadalupe Cantarero García;,citation_author=Roberto Alonso González Lezcano;,citation_author=Sofía Melero Tur;,citation_author=Johannes Zauner;,citation_author=Manuel Spitschan;,citation_publication_date=2025-10-09;,citation_cover_date=2025-10-09;,citation_year=2025;,citation_fulltext_html_url=https://zenodo.org/doi/10.5281/zenodo.16834951;,citation_doi=10.5281/ZENODO.16834951;">
+<meta name="citation_reference" content="citation_title=Personal light exposure dataset for izmir, türkiye;,citation_author=Altug Didikoglu;,citation_author=Sena Gulsum Akgun;,citation_author=Sema Nur Aydin;,citation_author=Zeynep Kayar;,citation_author=Johannes Zauner;,citation_author=Manuel Spitschan;,citation_publication_date=2025-07-31;,citation_cover_date=2025-07-31;,citation_year=2025;,citation_fulltext_html_url=https://zenodo.org/doi/10.5281/zenodo.16568109;,citation_doi=10.5281/ZENODO.16568109;">
+<meta name="citation_reference" content="citation_title=Personal light exposure dataset for kumasi, ghana;,citation_author=Kwadwo Owusu Akuffo;,citation_author=Gabriel Kwaku Agbeshie;,citation_author=Johannes Zauner;,citation_author=Manuel Spitschan;,citation_publication_date=2025-07-31;,citation_cover_date=2025-07-31;,citation_year=2025;,citation_fulltext_html_url=https://zenodo.org/doi/10.5281/zenodo.15576731;,citation_doi=10.5281/ZENODO.15576731;">
+<meta name="citation_reference" content="citation_title=Personal light exposure dataset for delft, the netherlands;,citation_author=Sam Aerts;,citation_author=Astrid Astrid Jansen;,citation_author=Nico Hogervorst;,citation_author=Daan Boesten;,citation_author=John Bolte;,citation_author=Johannes Zauner;,citation_author=Manuel Spitschan;,citation_publication_date=2025-12-18;,citation_cover_date=2025-12-18;,citation_year=2025;,citation_fulltext_html_url=https://zenodo.org/doi/10.5281/zenodo.17979893;,citation_doi=10.5281/ZENODO.17979893;">
+<meta name="citation_reference" content="citation_title=Personal light exposure dataset for munich, germany;,citation_author=Sarina Hilden;,citation_author=Suyoun Lee;,citation_author=Johannes Zauner;,citation_author=Manuel Spitschan;,citation_publication_date=2025-10-13;,citation_cover_date=2025-10-13;,citation_year=2025;,citation_fulltext_html_url=https://zenodo.org/doi/10.5281/zenodo.16893901;,citation_doi=10.5281/ZENODO.16893901;">
+<meta name="citation_reference" content="citation_title=Personal light exposure dataset for san pedro, san josé, costa rica;,citation_author=Andrea Sancho-Salas;,citation_author=Helga Breymann;,citation_author=Johannes Zauner;,citation_author=Manuel Spitschan;,citation_publication_date=2026-02-14;,citation_cover_date=2026-02-14;,citation_year=2026;,citation_fulltext_html_url=https://zenodo.org/doi/10.5281/zenodo.17289456;,citation_doi=10.5281/ZENODO.17289456;">
+<meta name="citation_reference" content="citation_title=LightLogR: Reproducible analysis of personal light exposure data;,citation_author=Johannes Zauner;,citation_author=Steffen Hartmeyer;,citation_author=Manuel Spitschan;,citation_publication_date=2025-03-13;,citation_cover_date=2025-03-13;,citation_year=2025;,citation_fulltext_html_url=http://dx.doi.org/10.21105/joss.07601;,citation_issue=107;,citation_doi=10.21105/joss.07601;,citation_volume=10;,citation_journal_title=Journal of Open Source Software;">
+<meta name="citation_reference" content="citation_title=Personal light exposure dataset for borås, sweden;,citation_author=Maria Nilsson Tengelin;,citation_author=Ingemar Svensson;,citation_author=Stefan Källberg;,citation_author=Johannes Zauner;,citation_author=Manuel Spitschan;,citation_publication_date=2026-03-11;,citation_cover_date=2026-03-11;,citation_year=2026;,citation_fulltext_html_url=https://zenodo.org/doi/10.5281/zenodo.18925834;,citation_doi=10.5281/ZENODO.18925834;">
+<meta name="citation_reference" content="citation_title=Impact of wear position on dosimeter performance: A hybrid measurement-simulation approach to quantify in-situ factors;,citation_author=S. W. De Vries;,citation_author=J. Mardaljevic;,citation_author=J Duijnhoven;,citation_journal_title=npj Biological Timing and Sleep;">
+<meta name="citation_reference" content="citation_title=Impact of wear position on dosimeter performance: Measurement reliability under simulated indoor illumination;,citation_author=S. W. De Vries;,citation_author=J. Mardaljevic;,citation_author=J Duijnhoven;,citation_journal_title=npj Biological Timing and Sleep;">
+<meta name="citation_reference" content="citation_title=Why, When and How to Adjust Your P Values?;,citation_author=Mohieddin Jafari;,citation_author=Naser Ansari-Pour;,citation_publication_date=2018-08;,citation_cover_date=2018-08;,citation_year=2018;,citation_fulltext_html_url=https://doi.org/10.22074/cellj.2019.5992;,citation_issue=4;,citation_doi=10.22074/cellj.2019.5992;,citation_volume=20;,citation_language=eng;,citation_journal_title=Cell Journal (Yakhteh);">
+<meta name="citation_reference" content="citation_title=Illuminating the future of wearable light metrology: Overview of the MeLiDos project;,citation_author=Manuel Spitschan;,citation_author=Johannes Zauner;,citation_author=Maria Nilsson Tengelin;,citation_author=Constantinos A. Bouroussis;,citation_author=Patrik Caspar;,citation_author=Fabien Eloi;,citation_publication_date=2024-08;,citation_cover_date=2024-08;,citation_year=2024;,citation_fulltext_html_url=http://dx.doi.org/10.1016/j.measurement.2024.114909;,citation_doi=10.1016/j.measurement.2024.114909;,citation_volume=235;,citation_language=en;,citation_journal_title=Measurement;">
+<meta name="citation_reference" content="citation_title=The coefficient of determination &amp;amp;amp;lt;i&amp;gt;R&amp;lt;/i&amp;gt; <sup>2</sup> and intra-class correlation coefficient from generalized linear mixed-effects models revisited and expanded;,citation_author=Shinichi Nakagawa;,citation_author=Paul C. D. Johnson;,citation_author=Holger Schielzeth;,citation_publication_date=2017-09;,citation_cover_date=2017-09;,citation_year=2017;,citation_fulltext_html_url=http://dx.doi.org/10.1098/rsif.2017.0213;,citation_issue=134;,citation_doi=10.1098/rsif.2017.0213;,citation_volume=14;,citation_language=en;,citation_journal_title=Journal of The Royal Society Interface;">
+</head>
+
+<body class="quarto-light">
+
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Toward scalable ambulatory light dosimetry: sensor-placement bias under naturalistic conditions</h1>
+          </div>
+
+    
+    <div class="quarto-title-meta-container">
+      <div class="quarto-title-meta-column-start">
+            <div class="quarto-title-meta-author">
+          <div class="quarto-title-meta-heading">Authors</div>
+          <div class="quarto-title-meta-heading">Affiliations</div>
+          
+                <div class="quarto-title-meta-contents">
+            <p class="author">Johannes Zauner <a href="mailto:johannes.zauner@tum.de" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0000-0003-2171-4566" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+          </div>
+                <div class="quarto-title-meta-contents">
+                    <p class="affiliation">
+                        Technical University of Munich, Germany
+                      </p>
+                  </div>
+                      <div class="quarto-title-meta-contents">
+            <p class="author">Sietse W. de Vries <a href="mailto:s.w.d.vries@tue.nl" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0009-0009-2534-4129" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+          </div>
+                <div class="quarto-title-meta-contents">
+                    <p class="affiliation">
+                        Eindhoven University of Technology
+                      </p>
+                  </div>
+                      <div class="quarto-title-meta-contents">
+            <p class="author">Altug Didikoglu <a href="https://orcid.org/0000-0002-5582-6956" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+          </div>
+                <div class="quarto-title-meta-contents">
+                    <p class="affiliation">
+                        Department of Neuroscience, Izmir Institute of Technology, Izmir, Türkiye
+                      </p>
+                    <p class="affiliation">
+                        Centre for Biological Timing, Division of Neuroscience, School of Biological Sciences, Faculty of Biology Medicine and Health, University of Manchester, Manchester, UK
+                      </p>
+                  </div>
+                      <div class="quarto-title-meta-contents">
+            <p class="author">Juliëtte van Duijnhoven <a href="https://orcid.org/0000-0003-1145-7033" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+          </div>
+                <div class="quarto-title-meta-contents">
+                    <p class="affiliation">
+                        Eindhoven University of Technology
+                      </p>
+                  </div>
+                      <div class="quarto-title-meta-contents">
+            <p class="author">Manuel Spitschan <a href="https://orcid.org/0000-0002-8572-9268" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+          </div>
+                <div class="quarto-title-meta-contents">
+                    <p class="affiliation">
+                        Technical University of Munich, Germany
+                      </p>
+                    <p class="affiliation">
+                        Max Planck Institute for Biological Cybernetics, Germany
+                      </p>
+                    <p class="affiliation">
+                        Technical University of Munich, Institute for Advanced Study (TUM-IAS), Germany
+                      </p>
+                    <p class="affiliation">
+                        TUMCREATE ltd., Singapore
+                      </p>
+                  </div>
+                    </div>
+        
+        <div class="quarto-title-meta">
+
+                      
+                <div>
+            <div class="quarto-title-meta-heading">Published</div>
+            <div class="quarto-title-meta-contents">
+              <p class="date">May 13, 2026</p>
+            </div>
+          </div>
+          
+                
+              </div>
+      </div>
+      <div class="quarto-title-meta-column-end quarto-other-formats-target">
+      </div>
+    </div>
+
+    <div>
+      <div class="abstract">
+        <div class="block-title">Abstract</div>
+        <p>…</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="keywords">
+        <div class="block-title">Keywords</div>
+        <p>wearable, light logging, dosimeter, personal light exposure, wearing position, circadian</p>
+      </div>
+    </div>
+
+    <div class="quarto-other-links-text-target">
+    </div>  </div>
+</header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-intro" id="toc-sec-intro" class="nav-link active" data-scroll-target="#sec-intro"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#sec-methods" id="toc-sec-methods" class="nav-link" data-scroll-target="#sec-methods"><span class="header-section-number">2</span> Methods</a>
+  <ul class="collapse">
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset"><span class="header-section-number">2.1</span> Dataset</a></li>
+  <li><a href="#software-resources" id="toc-software-resources" class="nav-link" data-scroll-target="#software-resources"><span class="header-section-number">2.2</span> Software Resources</a></li>
+  <li><a href="#preprocessing-and-cleaning-of-data" id="toc-preprocessing-and-cleaning-of-data" class="nav-link" data-scroll-target="#preprocessing-and-cleaning-of-data"><span class="header-section-number">2.3</span> Preprocessing and cleaning of data</a></li>
+  <li><a href="#statistical-analysis" id="toc-statistical-analysis" class="nav-link" data-scroll-target="#statistical-analysis"><span class="header-section-number">2.4</span> Statistical analysis</a></li>
+  </ul></li>
+  <li><a href="#sec-results" id="toc-sec-results" class="nav-link" data-scroll-target="#sec-results"><span class="header-section-number">3</span> Results</a></li>
+  <li><a href="#sec-disc" id="toc-sec-disc" class="nav-link" data-scroll-target="#sec-disc"><span class="header-section-number">4</span> Discussion</a>
+  <ul class="collapse">
+  <li><a href="#summarizing-results" id="toc-summarizing-results" class="nav-link" data-scroll-target="#summarizing-results"><span class="header-section-number">4.1</span> Summarizing results</a></li>
+  <li><a href="#comparing-results-to-literature" id="toc-comparing-results-to-literature" class="nav-link" data-scroll-target="#comparing-results-to-literature"><span class="header-section-number">4.2</span> Comparing results to literature</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations"><span class="header-section-number">4.3</span> Limitations</a></li>
+  <li><a href="#recommendations" id="toc-recommendations" class="nav-link" data-scroll-target="#recommendations"><span class="header-section-number">4.4</span> Recommendations</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="quarto-alternate-notebooks"><h2>Notebooks</h2><ul><li><a href="notebooks/JZ_metric_comparison-preview.html"><i class="bi bi-journal-code"></i>Comparison of metrics</a></li><li><a href="notebooks/JZ_HGAM_analysis-preview.html"><i class="bi bi-journal-code"></i>Hierarchical analysis of hourly values</a></li><li><a href="notebooks/JZ_metric_preparation-preview.html"><i class="bi bi-journal-code"></i>Preparation of metrics for participant-day analyses</a></li></ul></div></nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+  
+
+
+<section id="sec-intro" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="sec-intro"><span class="header-section-number">1</span> Introduction</h2>
+<ul>
+<li><p>summary of importance of retinal exposure, proxies in use, current issues, our approach</p></li>
+<li><p>intro to non-visual effects of light and its metrology</p></li>
+<li><p>overview over a few relevant publications in the past decades and their methods of light data collection</p></li>
+<li><p>describing the usability/acceptability - fidelity tradeoff and its implication for scaleable ambulatory light dosimetry</p></li>
+<li><p>Overview of Sietse’s comparison studies</p></li>
+<li><p>the MeLiDos project, multi-position wearable</p></li>
+<li><p>Our approach, glasses-mounted as reference for wrist and chest, explain the two directions of investigation</p>
+<ul>
+<li>measurement focused: momentary measurements, contextually dependent, fidelity oriented</li>
+<li>metric focused: (daily) exposure metrics, outcome oriented</li>
+</ul></li>
+</ul>
+</section>
+<section id="sec-methods" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="sec-methods"><span class="header-section-number">2</span> Methods</h2>
+<section id="dataset" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="dataset"><span class="header-section-number">2.1</span> Dataset</h3>
+<ul>
+<li>MeLiDos project: overview, collected modalities, size of data collection, times, brief summary of the protocol</li>
+</ul>
+<p>Wearable light exposure data, diaries, logs, screening and discharge questionnaires, as well as ecological momentary assessments are used from the MeLiDos project. The MeLiDos project is a European project about <em>Metrology for wearable light loggers and optical radiation dosimeters</em> <span class="citation" data-cites="spitschan2024">(<a href="#ref-spitschan2024" role="doc-biblioref">Spitschan et al. 2024</a>)</span>. In the second workpackage of the project, a field study was conducted in seven countries (Ghana, Costa Rica, Turkey, Spain, Germany, the Netherlands, and Sweden), using a harmonized protocol <span class="citation" data-cites="guidolin2024">(<a href="#ref-guidolin2024" role="doc-biblioref">Guidolin et al. 2024</a>)</span>.</p>
+<ul>
+<li><p>Measurement device, sensor placement, instructions to participants</p></li>
+<li><p>How the data were acquired: CC-BY-0 license, Github repositories, melidosData package</p></li>
+</ul>
+</section>
+<section id="software-resources" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="software-resources"><span class="header-section-number">2.2</span> Software Resources</h3>
+<ul>
+<li>R</li>
+<li>melidosData</li>
+<li>LightLogR</li>
+<li>tidyverse</li>
+<li>mgcv</li>
+<li>gratia</li>
+<li>glmmTMB</li>
+<li>lme4</li>
+<li>emmeans</li>
+<li>performance</li>
+</ul>
+</section>
+<section id="preprocessing-and-cleaning-of-data" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="preprocessing-and-cleaning-of-data"><span class="header-section-number">2.3</span> Preprocessing and cleaning of data</h3>
+<ul>
+<li>describing how the data has been pre-processed for melidosData
+<ul>
+<li>importing wearable data</li>
+<li>trimming by trial dates</li>
+<li>removing unplausible values for individual participants that indicate device malfunction</li>
+<li>removing irregular data and implicit gaps by creating a continuous, uninterrupted time series. Irregular measurements are either averaged (&gt;1 measurements within 10 seconds) or rounded to the next 10-second interval (1 measurement).</li>
+</ul></li>
+<li>rationale for two preprocessing pipelines
+<ul>
+<li>data for daily metrics can’t be trimmed as much.</li>
+</ul></li>
+</ul>
+<section id="for-measurement-based-analysis" class="level4" data-number="2.3.1">
+<h4 data-number="2.3.1" class="anchored" data-anchor-id="for-measurement-based-analysis"><span class="header-section-number">2.3.1</span> For measurement-based analysis</h4>
+</section>
+<section id="for-metric-based-analysis" class="level4" data-number="2.3.2">
+<h4 data-number="2.3.2" class="anchored" data-anchor-id="for-metric-based-analysis"><span class="header-section-number">2.3.2</span> For metric-based analysis</h4>
+<ul>
+<li>merging of measurements for melanopic EDI and photopic illuminance of all wearing positions</li>
+<li>removing instances where not all three measurements are available</li>
+<li>merging sleep and non-wear information with time series</li>
+<li>removing non-wear (but retaining sleep) instances</li>
+<li>removing measurement values &gt; 10^5 lx melanopic EDI / photopic illuminance</li>
+<li>removing hourse with less than 50% data available</li>
+<li>removing days with less than 80% data available</li>
+<li>calculate participant-day metrics</li>
+<li>calculate participant metrics</li>
+<li>calculate 30-minute averages for melanopic EDI</li>
+<li>scaling of nighttime metrics to avoid circularity requirement</li>
+</ul>
+</section>
+</section>
+<section id="statistical-analysis" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="statistical-analysis"><span class="header-section-number">2.4</span> Statistical analysis</h3>
+<ul>
+<li>no power analysis has been performed, as the size of the sample is determined by the dataset used</li>
+</ul>
+<section id="for-measurement-based-analysis-1" class="level4" data-number="2.4.1">
+<h4 data-number="2.4.1" class="anchored" data-anchor-id="for-measurement-based-analysis-1"><span class="header-section-number">2.4.1</span> For measurement-based analysis</h4>
+</section>
+<section id="for-metric-based-analysis-1" class="level4" data-number="2.4.2">
+<h4 data-number="2.4.2" class="anchored" data-anchor-id="for-metric-based-analysis-1"><span class="header-section-number">2.4.2</span> For metric-based analysis</h4>
+<ul>
+<li>table describing the metrics and parametrization, scaling, modelling family, engine</li>
+<li>data were modelled with linear or generalized mixed-effect models.</li>
+<li>generalized models used the tweedie, or poisson error distribution, all others a gaussian error distribution</li>
+<li>models were constructed with the following formula in Wilkinson notation, based on theoretical considerations:</li>
+</ul>
+<p><span id="eq-metricbase"><span class="math display">\[\text{metric} \sim \text{site} * \text{position} + (\text{position}|\text{participant}) + (1|\text{date}) \tag{1}\]</span></span></p>
+<ul>
+<li>where <em>metric</em> is the outcome metric to be modelled. Fixed effects include the measurement <em>site</em> (e.g., Dortmund, Germany), in an interaction effect with the wearing <em>position</em>. The random effect structure consists of random slopes for wearing <em>position</em> per <em>participant</em>, as well as random intercepts per <em>participant</em> and random intercepts per calendar <em>date</em> (participant-day).</li>
+<li>the glasses <em>position</em> is the reference level, with parameter estimates for differences due to the wrist or the chest.</li>
+<li><em>site</em> was sum-coded, meaning that the average across site is the reference.</li>
+<li>If models failed to converge with the full model structure, they were refit in a stepwise procedure, where the model complexity was reduced. In the first instance, random intercepts per <em>date</em> were removed, followed by random slopes or <em>position</em> per <em>participant</em>. All models converged an were non-singular with that procedure.</li>
+<li>Model diagnostics were created with the {performance} package and included plots for normality of residuals and random effects, homogeneity of variance, linearity, and collinearity.</li>
+<li>Significance of effects were derived with the <em>Anova</em> function from the {car} package, using Wald chi-square tests, with a significance level of 0.05. Despite the large number of comparisons, no correction for multiple testing was applied. This is due to the fact that a null-result might tempt readers to assume equality between two positions, where the analysis tests for differences. Thus, each individual effect must be read with an type II error of 5%.</li>
+<li><em>position</em> and <em>site</em> effects and p-values were derived with the <em>contrast</em> function from the {emmeans} package, using the <em>trt.vs.ctrl</em> method for <em>position</em> and the <em>eff.emmc</em> method for <em>site</em>.</li>
+<li>Marginal and conditional <span class="math inline">\(R^2\)</span> values were calculated based on <span class="citation" data-cites="nakagawa2017">Nakagawa et al. (<a href="#ref-nakagawa2017" role="doc-biblioref">2017</a>)</span>. Unique contributions of fixed effects to <span class="math inline">\(R^2\)</span> were calculated as differences from a model with and without the effect in question.</li>
+<li>To derive relative differences (on the modelling scale), effects were transformed with <a href="#eq-trans" class="quarto-xref">Equation&nbsp;2</a></li>
+</ul>
+<p><span id="eq-trans"><span class="math display">\[\text{relative effect} = (\frac{\text{effect}} {|\text{Intercept}|} -1) * 100\% \tag{2}\]</span></span></p>
+<ul>
+<li>where the <em>Intercept</em> is the average effect for the glasses <em>position</em> and the average <em>site</em>.</li>
+<li>to give contextual information when in the time of day wear position matters, a hierarchical generalized additive model accordiing to formula <a href="#eq-hgam" class="quarto-xref">Equation&nbsp;3</a></li>
+</ul>
+<p><span id="eq-hgam"><span class="math display">\[log_{10}(\text{melanopic EDI}) \sim s(\text{time}) + s(\text{time, position}) + s(\text{time, site}) + s(\text{time, participant}) + s(\text{participant-day}) \tag{3}\]</span></span></p>
+<ul>
+<li>where the pattern of 30-minute aggregated and logarithmically scaled values of melanopic EDI are decomposed into a smooth (nonlinear effect) of time, deviation-smooths of wearing <em>position</em> over time, deviation-smooths of <em>site</em> over time, deviation-smooths of <em>participants</em> over time, and random intercepts of <em>participant-days</em>.</li>
+<li>The effect of <em>position</em> is tested against a reduced model without the effect. Differences in AIC values larger than 2 are considered significant support for a more complex model with lower AIC.</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="sec-results" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="sec-results"><span class="header-section-number">3</span> Results</h2>
+</section>
+<section id="sec-disc" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="sec-disc"><span class="header-section-number">4</span> Discussion</h2>
+<section id="summarizing-results" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="summarizing-results"><span class="header-section-number">4.1</span> Summarizing results</h3>
+<ul>
+<li>explain conceptual differences between the two approaches in their results (moment-based vs.&nbsp;aggregated)</li>
+</ul>
+</section>
+<section id="comparing-results-to-literature" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="comparing-results-to-literature"><span class="header-section-number">4.2</span> Comparing results to literature</h3>
+<ul>
+<li>comparison to de Vries publications</li>
+</ul>
+</section>
+<section id="limitations" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="limitations"><span class="header-section-number">4.3</span> Limitations</h3>
+<ul>
+<li>interindividual variance is high - results from individuals will vary strongly and it is unknown, whether and how different populations (here: adult, health, working indoors) differ in their bias</li>
+<li>glasses-mount is near-eye level but not corneal and certainly not retinal</li>
+<li>non-wear was removed, but was self-reported (will only cover part)</li>
+<li>fixed sample size, reduced for UCR and TUM</li>
+</ul>
+</section>
+<section id="recommendations" class="level3" data-number="4.4">
+<h3 data-number="4.4" class="anchored" data-anchor-id="recommendations"><span class="header-section-number">4.4</span> Recommendations</h3>
+<ul>
+<li>remain with glasses-position (considered gold-standard), if (- momentary measurement values are the main outcome)?
+<ul>
+<li>protocol covers a short amount of time</li>
+<li>occlusion is a likely issue</li>
+<li>individuals or only a small sample are collected</li>
+<li>temporal dynamic metrics are the main outcome</li>
+</ul></li>
+<li></li>
+</ul>
+</section>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-guidolin2024" class="csl-entry" role="listitem">
+Guidolin, Carolina, Sam Aerts, Gabriel Kwaku Agbeshie, et al. 2024. <span>“Protocol for a Prospective, Multicentre, Cross-Sectional Cohort Study to Assess Personal Light Exposure.”</span> <em>BMC Public Health</em> 24 (1). <a href="https://doi.org/10.1186/s12889-024-20206-4">https://doi.org/10.1186/s12889-024-20206-4</a>.
+</div>
+<div id="ref-nakagawa2017" class="csl-entry" role="listitem">
+Nakagawa, Shinichi, Paul C. D. Johnson, and Holger Schielzeth. 2017. <span>“The Coefficient of Determination <span><em>R</em></span> <span><sup>2</sup></span> and Intra-Class Correlation Coefficient from Generalized Linear Mixed-Effects Models Revisited and Expanded.”</span> <em>Journal of The Royal Society Interface</em> 14 (134): 20170213. <a href="https://doi.org/10.1098/rsif.2017.0213">https://doi.org/10.1098/rsif.2017.0213</a>.
+</div>
+<div id="ref-spitschan2024" class="csl-entry" role="listitem">
+Spitschan, Manuel, Johannes Zauner, Maria Nilsson Tengelin, Constantinos A. Bouroussis, Patrik Caspar, and Fabien Eloi. 2024. <span>“Illuminating the Future of Wearable Light Metrology: Overview of the MeLiDos Project.”</span> <em>Measurement</em> 235 (August): 114909. <a href="https://doi.org/10.1016/j.measurement.2024.114909">https://doi.org/10.1016/j.measurement.2024.114909</a>.
+</div>
+</div>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{zauner2026,
+  author = {Zauner, Johannes and W. de Vries, Sietse and Didikoglu,
+    Altug and van Duijnhoven, Juliëtte and Spitschan, Manuel},
+  title = {Toward Scalable Ambulatory Light Dosimetry: Sensor-Placement
+    Bias Under Naturalistic Conditions},
+  date = {2026-05-13},
+  url = {https://tscnlab/github.io/WearingPositionError_2026/},
+  langid = {en},
+  abstract = {...}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-zauner2026" class="csl-entry quarto-appendix-citeas" role="listitem">
+Zauner, Johannes, Sietse W. de Vries, Altug Didikoglu, Juliëtte van
+Duijnhoven, and Manuel Spitschan. 2026. <span>“Toward Scalable
+Ambulatory Light Dosimetry: Sensor-Placement Bias Under Naturalistic
+Conditions.”</span> Exposure Science and Environmental Epidemiology, May
+13. <a href="https://tscnlab/github.io/WearingPositionError_2026/">https://tscnlab/github.io/WearingPositionError_2026/</a>.
+</div></div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/tscnlab\/github\.io\/WearingPositionError_2026");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

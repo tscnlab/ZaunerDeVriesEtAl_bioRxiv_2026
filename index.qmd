@@ -1,128 +1,200 @@
 ---
-title: La Palma Earthquakes
+title: "Toward scalable ambulatory light dosimetry: sensor-placement bias under naturalistic conditions"
 author:
-  - name: Steve Purves
-    orcid: 0000-0002-0760-5497
+  - name: "Johannes Zauner"
+    id: JZ
+    affiliation: 
+      - Technical University of Munich, Germany
+    orcid: "0000-0003-2171-4566"
+    attributes:
+      equal-contributor: true
+      corresponding: true
+    email: johannes.zauner@tum.de
+  - name: "Sietse W. de Vries"
+    id: SV
+    affiliations:
+      - name: Eindhoven University of Technology
+        id: 1
+        department: Building Lighting group, Department of the Built Environment
+        city: Eindhoven
+        country: the Netherlands
+        postal-code: 02138
+    orcid: "0009-0009-2534-4129"
+    attributes:
+      equal-contributor: true
+      corresponding: true
     corresponding: true
-    email: steve@curvenote.com
-    roles:
-      - Investigation
-      - Project administration
-      - Software
-      - Visualization
+    email: s.w.d.vries@tue.nl
+  - name: "Altug Didikoglu"
+    id: AD
+    affiliation:
+      - Department of Neuroscience, Izmir Institute of Technology, Izmir, Türkiye
+      - Centre for Biological Timing, Division of Neuroscience, School of Biological Sciences, Faculty of Biology Medicine and Health, University of Manchester, Manchester, UK
+    orcid: "0000-0002-5582-6956"
+  - name: "Juliëtte van Duijnhoven"
+    id: JD
     affiliations:
-      - Curvenote
-  - name: Rowan Cockett
-    orcid: 0000-0002-7859-8394
-    corresponding: false
-    roles: []
-    affiliations:
-      - Curvenote
+      - ref: 1
+    orcid: "0000-0003-1145-7033"
+  - name: "Manuel Spitschan"
+    id: MS
+    affiliation: 
+      - Technical University of Munich, Germany
+      - Max Planck Institute for Biological Cybernetics, Germany
+      - Technical University of Munich, Institute for Advanced Study (TUM-IAS), Germany
+      - TUMCREATE ltd., Singapore
+    orcid: "0000-0002-8572-9268"
 keywords:
-  - La Palma
-  - Earthquakes
+  - wearable
+  - light logging
+  - dosimeter
+  - personal light exposure
+  - wearing position
+  - circadian
 abstract: |
-  In September 2021, a significant jump in seismic activity on the island of La Palma (Canary Islands, Spain) signaled the start of a volcanic crisis that still continues at the time of writing. Earthquake data is continually collected and published by the Instituto Geográphico Nacional (IGN). ...
-plain-language-summary: |
-  Earthquake data for the island of La Palma from the September 2021 eruption is found ...
-key-points:
-  - A web scraping script was developed to pull data from the Instituto Geogràphico Nacional into a machine-readable form for analysis
-  - Earthquake events on La Palma are consistent with the presence of both mantle and crustal reservoirs.
+  ...
+funding: "JZ's position is funded by the MeLiDos project. The project MeLiDos (22NRM05 MeLiDos) has received funding from the European Partnership on Metrology, co-financed from the European Union’s Horizon Europe Research and Innovation Programme and by the Participating States. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or EURAMET. Neither the European Union nor the granting authority can be held responsible for them."
 date: last-modified
 bibliography: references.bib
 citation:
-  container-title: Earth and Space Science
+  container-title: Exposure Science and Environmental Epidemiology
 number-sections: true
 ---
 
-## Introduction
+## Introduction {#sec-intro}
 
-```{r}
-eruptions <- c(1492, 1585, 1646, 1677, 1712, 1949, 1971, 2021)
-n_eruptions <- length(eruptions)
-```
+- summary of importance of retinal exposure, proxies in use, current issues, our approach
 
-```{r}
-#| label: fig-timeline
-#| fig-cap: Timeline of recent earthquakes on La Palma
-#| fig-alt: An event plot of the years of the last 8 eruptions on La Palma.
-#| fig-height: 1.5
-#| fig-width: 6
-par(mar = c(3, 1, 1, 1) + 0.1)
-plot(eruptions, rep(0, n_eruptions), 
-  pch = "|", axes = FALSE)
-axis(1)
-box()
-```
+- intro to non-visual effects of light and its metrology
 
-```{r}
-#| output: false
-avg_years_between_eruptions <- mean(diff(eruptions[-n_eruptions]))
-avg_years_between_eruptions
-```
+- overview over a few relevant publications in the past decades and their methods of light data collection
 
-Based on data up to and including 1971, eruptions on La Palma happen every `{r} round(avg_years_between_eruptions, 1)` years on average.
+- describing the usability/acceptability - fidelity tradeoff and its implication for scaleable ambulatory light dosimetry
 
-Studies of the magma systems feeding the volcano, such as @marrero2019, have proposed that there are two main magma reservoirs feeding the Cumbre Vieja volcano; one in the mantle (30-40km depth) which charges and in turn feeds a shallower crustal reservoir (10-20km depth).
+- Overview of Sietse's comparison studies
 
-Eight eruptions have been recorded since the late 1400s (@fig-timeline).
+- the MeLiDos project, multi-position wearable
 
-Data and methods are discussed in @sec-data-methods.
+- Our approach, glasses-mounted as reference for wrist and chest, explain the two directions of investigation
 
-Let $x$ denote the number of eruptions in a year. Then, $x$ can be modeled by a Poisson distribution
+  - measurement focused: momentary measurements, contextually dependent, fidelity oriented
+  - metric focused: (daily) exposure metrics, outcome oriented
 
-$$
-p(x) = \frac{e^{-\lambda} \lambda^{x}}{x !}
-$$ {#eq-poisson}
+## Methods {#sec-methods}
 
-where $\lambda$ is the rate of eruptions per year. Using @eq-poisson, the probability of an eruption in the next $t$ years can be calculated.
+### Dataset
 
-| Name                 | Year   |
-| -------------------- | ------ |
-| Current              | 2021   |
-| Teneguía             | 1971   |
-| Nambroque            | 1949   |
-| El Charco            | 1712   |
-| Volcán San Antonio   | 1677   |
-| Volcán San Martin    | 1646   |
-| Tajuya near El Paso  | 1585   |
-| Montaña Quemada      | 1492   |
+- MeLiDos project: overview, collected modalities, size of data collection, times, brief summary of the protocol
 
-: Recent historic eruptions on La Palma {#tbl-history}
+Wearable light exposure data, diaries, logs, screening and discharge questionnaires, as well as ecological momentary assessments are used from the MeLiDos project. The MeLiDos project is a European project about *Metrology for wearable light loggers and optical radiation dosimeters* [@spitschan2024]. In the second workpackage of the project, a field study was conducted in seven countries (Ghana, Costa Rica, Turkey, Spain, Germany, the Netherlands, and Sweden), using a harmonized protocol [@guidolin2024].
 
-@tbl-history summarises the eruptions recorded since the colonization of the islands by Europeans in the late 1400s.
+- Measurement device, sensor placement, instructions to participants
 
-![Map of La Palma](images/la-palma-map.png){#fig-map}
+- How the data were acquired: CC-BY-0 license, Github repositories, melidosData package
 
-La Palma is one of the west most islands in the Volcanic Archipelago of the Canary Islands (@fig-map). 
+### Software Resources
 
-{{< embed notebooks/explore-earthquakes.qmd#fig-spatial-plot >}}
+- R
+- melidosData
+- LightLogR
+- tidyverse
+- mgcv
+- gratia
+- glmmTMB
+- lme4
+- emmeans
+- performance
 
-@fig-spatial-plot shows the location of recent Earthquakes on La Palma.
+### Preprocessing and cleaning of data
 
-## Data & Methods {#sec-data-methods}
+- describing how the data has been pre-processed for melidosData
+  - importing wearable data
+  - trimming by trial dates
+  - removing unplausible values for individual participants that indicate device malfunction
+  - removing irregular data and implicit gaps by creating a continuous, uninterrupted time series. Irregular measurements are either averaged (\>1 measurements within 10 seconds) or rounded to the next 10-second interval (1 measurement).
+- rationale for two preprocessing pipelines
+  - data for daily metrics can't be trimmed as much.
 
-## Conclusion
+#### For measurement-based analysis
 
-## Adding our own things
+#### For metric-based analysis
 
-Hi **Sietse** 👋😀. This is our manuscript file, where we bring our results together. They don't have to be generated here. Using the `embed` method from above, I bring in @fig-grand_overview that was created in the document `notebooks/desc_analysis.qmd`:
+- merging of measurements for melanopic EDI and photopic illuminance of all wearing positions
+- removing instances where not all three measurements are available
+- merging sleep and non-wear information with time series
+- removing non-wear (but retaining sleep) instances
+- removing measurement values \> 10\^5 lx melanopic EDI / photopic illuminance
+- removing hourse with less than 50% data available
+- removing days with less than 80% data available
+- calculate participant-day metrics
+- calculate participant metrics
+- calculate 30-minute averages for melanopic EDI
+- scaling of nighttime metrics to avoid circularity requirement
 
-{{< embed notebooks/desc_analysis.qmd#fig-grand_overview >}}
+### Statistical analysis
 
-The nice thing is: @fig-grand_overview does not even exist in this manuscript, it is merely referenced. That means it will always be the latest version and can not be forgotten to update. 
+- no power analysis has been performed, as the size of the sample is determined by the dataset used
 
-The maybe equally nice thing is: once it is rendered/created in the original document, it will only be re-rendered, if the document changes (or you manually re-run it). That cuts down on computation time for iterative changes of the manuscript.
+#### For measurement-based analysis
 
-And that goes for our respective documents in general - once I render a quarto notebook, it stays rendered until I make changes. Same goes for your notebooks. That means we don't have to recreate each others computational environment - it is sufficient that we each are able to execute our notebooks to contribute to the main manuscript. 
+#### For metric-based analysis
 
-## Embedding Test - Contextual Analysis
-Test to embed a figure that was created in the "contex_analysis.qmd" notebook. This is just an exploratory figure.
+- table describing the metrics and parametrization, scaling, modelling family, engine
+- data were modelled with linear or generalized mixed-effect models.
+- generalized models used the tweedie, or poisson error distribution, all others a gaussian error distribution
+- models were constructed with the following formula in Wilkinson notation, based on theoretical considerations:
 
-{{< embed notebooks/contex_analysis.qmd#fig-rel_dif >}}
+$$\text{metric} \sim \text{site} * \text{position} + (\text{position}|\text{participant}) + (1|\text{date})$$ {#eq-metricbase}
+
+- where *metric* is the outcome metric to be modelled. Fixed effects include the measurement *site* (e.g., Dortmund, Germany), in an interaction effect with the wearing *position*. The random effect structure consists of random slopes for wearing *position* per *participant*, as well as random intercepts per *participant* and random intercepts per calendar *date* (participant-day).
+- the glasses *position* is the reference level, with parameter estimates for differences due to the wrist or the chest.
+- *site* was sum-coded, meaning that the average across site is the reference.
+- If models failed to converge with the full model structure, they were refit in a stepwise procedure, where the model complexity was reduced. In the first instance, random intercepts per *date* were removed, followed by random slopes or *position* per *participant*. All models converged an were non-singular with that procedure.
+- Model diagnostics were created with the {performance} package and included plots for normality of residuals and random effects, homogeneity of variance, linearity, and collinearity.
+- Significance of effects were derived with the *Anova* function from the {car} package, using Wald chi-square tests, with a significance level of 0.05. Despite the large number of comparisons, no correction for multiple testing was applied. This is due to the fact that a null-result might tempt readers to assume equality between two positions, where the analysis tests for differences. Thus, each individual effect must be read with an type II error of 5%.
+- *position* and *site* effects and p-values were derived with the *contrast* function from the {emmeans} package, using the *trt.vs.ctrl* method for *position* and the *eff.emmc* method for *site*.
+- Marginal and conditional $R^2$ values were calculated based on @nakagawa2017. Unique contributions of fixed effects to $R^2$ were calculated as differences from a model with and without the effect in question.
+- To derive relative differences (on the modelling scale), effects were transformed with @eq-trans
+
+$$\text{relative effect} = (\frac{\text{effect}} {|\text{Intercept}|} -1) * 100\%$$ {#eq-trans}
+
+- where the *Intercept* is the average effect for the glasses *position* and the average *site*.
+- to give contextual information when in the time of day wear position matters, a hierarchical generalized additive model accordiing to formula @eq-hgam
+
+$$log_{10}(\text{melanopic EDI}) \sim s(\text{time}) + s(\text{time, position}) + s(\text{time, site}) + s(\text{time, participant}) + s(\text{participant-day})$$ {#eq-hgam}
+
+- where the pattern of 30-minute aggregated and logarithmically scaled values of melanopic EDI are decomposed into a smooth (nonlinear effect) of time, deviation-smooths of wearing *position* over time, deviation-smooths of *site* over time, deviation-smooths of *participants* over time, and random intercepts of *participant-days*. 
+- The effect of *position* is tested against a reduced model without the effect. Differences in AIC values larger than 2 are considered significant support for a more complex model with lower AIC.
+
+## Results {#sec-results}
+
+## Discussion {#sec-disc}
+
+### Summarizing results
+
+- explain conceptual differences between the two approaches in their results (moment-based vs. aggregated)
+
+### Comparing results to literature
+
+- comparison to de Vries publications
+
+### Limitations
+
+- interindividual variance is high - results from individuals will vary strongly and it is unknown, whether and how different populations (here: adult, health, working indoors) differ in their bias
+- glasses-mount is near-eye level but not corneal and certainly not retinal
+- non-wear was removed, but was self-reported (will only cover part)
+- fixed sample size, reduced for UCR and TUM
+
+### Recommendations
+
+- remain with glasses-position (considered gold-standard), if (- momentary measurement values are the main outcome)?
+  - protocol covers a short amount of time
+  - occlusion is a likely issue
+  - individuals or only a small sample are collected
+  - temporal dynamic metrics are the main outcome
+- 
 
 ## References {.unnumbered}
 
-:::{#refs}
-
+::: {#refs}
 :::

@@ -1,5 +1,6 @@
 project:
   type: manuscript
+  output-dir: docs
 
 website:
   site-url: https://tscnlab/github.io/WearingPositionError_2026
