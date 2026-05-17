@@ -18,7 +18,6 @@ author:
         department: Building Lighting group, Department of the Built Environment
         city: Eindhoven
         country: the Netherlands
-        postal-code: 02138
     orcid: "0009-0009-2534-4129"
     attributes:
       equal-contributor: true
@@ -51,8 +50,7 @@ keywords:
   - personal light exposure
   - wearing position
   - circadian
-abstract: |
-  ...
+abstract: "..."
 funding: "JZ's position is funded by the MeLiDos project. The project MeLiDos (22NRM05 MeLiDos) has received funding from the European Partnership on Metrology, co-financed from the European Union’s Horizon Europe Research and Innovation Programme and by the Participating States. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or EURAMET. Neither the European Union nor the granting authority can be held responsible for them."
 date: last-modified
 bibliography: references.bib
@@ -187,7 +185,8 @@ $$log_{10}(\text{melanopic EDI}) \sim s(\text{time}) + s(\text{time, position}) 
 
 ### Recommendations
 
-- remain with glasses-position (considered gold-standard), if (- momentary measurement values are the main outcome)?
+- remain with glasses-position (considered gold-standard), if 
+ (- momentary measurement values are the main outcome)?
   - protocol covers a short amount of time
   - occlusion is a likely issue
   - individuals or only a small sample are collected

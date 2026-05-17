@@ -73,7 +73,7 @@ time_data|>
 
 ```{r}
 #| filename: H11 formulas
-formula_1 <- lzMEDI ~ s(Time, k = 12) + s(Time, position, bs = "fs", k = 12) + s(Time, site, bs = "sz", k = 12) + s(Time, Id, bs = "fs") + s(Id_date, bs = "re")
+formula_1 <- lzMEDI ~ s(Time, k = 12) + s(Time, position, bs = "sz", k = 12) + s(Time, site, bs = "sz", k = 12) + s(Time, Id, bs = "fs") + s(Id_date, bs = "re")
 formula_0 <- lzMEDI ~ s(Time, k = 12) + s(Time, site, bs = "sz", k = 12) + s(Time, Id, bs = "fs") + s(Id_date, bs = "re")
 ```
 
