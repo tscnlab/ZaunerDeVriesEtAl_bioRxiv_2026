@@ -1,0 +1,398 @@
+---
+title: "Wrist metric-error summary workbook"
+format: html
+author: Johannes Zauner
+editor_options:
+  chunk_output_type: console
+execute:
+  warning: false
+  message: false
+---
+
+## Purpose
+
+This workbook is a stripped-down, reproducible version of the metric-based analysis used for the wrist-versus-glasses comparison. It starts from the prepared participant-day metric file (`data/prepared_metrics.RData`), fits the metric models, and builds only the summary table object `metrics_summary`. Chest comparisons, exploratory figures, the full metric table, and ancillary diagnostics are intentionally omitted.
+
+## Methods
+
+### Dataset and reference position
+
+The analysis uses the MeLiDos field-study wearable light-exposure data. The study collected synchronous light measurements from multiple wearing positions. For the metric-based analysis, glasses-mounted measurements are treated as the reference proxy for near-eye exposure, and wrist-worn measurements are compared against that reference.
+
+### Prepared metric data
+
+The prepared data used here are created in `notebooks/JZ_metric_preparation.qmd`. In brief, the preparation workflow:
+
+1. imports glasses, chest, and wrist light logger data from `melidosData`, retaining melanopic equivalent daylight illuminance (`MEDI`) and photopic illuminance (`LIGHT`);
+2. removes the MPI site from this analysis because comparable ActLumus chest/wrist data were not collected there;
+3. aligns the three wearing positions into one time series and keeps only timestamps where all positions have valid melanopic measurements;
+4. merges sleep-diary windows and non-wear logs;
+5. removes non-wear intervals unless they are sleep intervals;
+6. removes implausible high values (`>= 100000` lx) for melanopic and photopic measurements;
+7. removes hours with less than 50% data availability and days with less than 80% availability;
+8. calculates daily light-exposure metrics per participant, date, and wearing position, plus participant-level rhythm metrics; and
+9. stores the resulting long metric table as `data/prepared_metrics.RData`.
+
+Although the preparation stage uses all three positions to enforce matched valid timestamps, this workbook filters the prepared metric data to the `glasses` and `wrist` positions before modelling. This keeps the analysis focused on the wrist error relative to the glasses reference.
+
+### Metric modelling
+
+Each metric is modelled according to `data/metric_types.xlsx`, which defines the metric family, model engine, response transformation, and random-effects structure. The full model tests whether metric values differ by wearing position while accounting for study site and repeated observations. In formula form, the model is constructed as:
+
+```{=markdown}
+`response ~ site * position + [metric-specific random effects]`
+```
+
+where `position` has `glasses` as the reference level and `wrist` as the comparison level. Gaussian, Tweedie, or Poisson families are used according to the metric specification. If a mixed model does not converge or is singular, the random-effects structure is simplified stepwise, following the original metric-comparison notebook.
+
+### Summary statistic
+
+For each metric, the wrist error is the estimated wrist-minus-glasses contrast from the fitted model, divided by the absolute estimated glasses reference value. The resulting relative error is summarized by metric type as:
+
+- median absolute wrist error;
+- minimum and maximum absolute wrist error;
+- number of significant wrist errors (`p <= 0.05`) out of all estimable metrics; and
+- count of positive and negative wrist deviations.
+
+Two overall rows are added: one across all estimable metrics and one restricted to metrics with significant wrist errors.
+
+## Setup
+
+```{r}
+library(tidyverse)
+library(gt)
+library(readxl)
+library(glmmTMB)
+library(lme4)
+library(lmerTest)
+library(emmeans)
+library(here)
+library(performance)
+library(LightLogR)
+```
+
+```{r}
+sig.level <- 0.05
+wrist_color <- ggsci::pal_jco()(3)[3]
+```
+
+## Import prepared metrics
+
+```{r}
+load(here("data/prepared_metrics.RData"))
+```
+
+## Prepare wrist-versus-glasses metric data
+
+```{r}
+metrics_nested <-
+  metrics |>
+  filter(position %in% c("glasses", "wrist")) |>
+  mutate(
+    Date = replace_na(Date, as_date("2024-09-01")),
+    position = factor(position, levels = c("glasses", "wrist")),
+    Id = factor(Id),
+    site = factor(site),
+    Date = factor(Date)
+  ) |>
+  nest(data = -metric)
+```
+
+```{r}
+metric_info <-
+  read_xlsx(here("data/metric_types.xlsx")) |>
+  mutate(
+    family = map2(engine, note, \(engine, note) {
+      if (!is.na(note)) {
+        poisson()
+      } else if (engine %in% c("lm", "lmer")) {
+        gaussian()
+      } else if (engine == "glmmTMB") {
+        tweedie(link = "log")
+      } else {
+        gaussian()
+      }
+    })
+  ) |>
+  select(-note)
+
+metrics_nested <-
+  metrics_nested |>
+  left_join(metric_info, by = join_by(metric == name))
+```
+
+Timing metrics that cross midnight are shifted so that values after midday are interpreted as times before midnight. This avoids artificial discontinuities in linear timing models.
+
+```{r}
+metrics_nested <-
+  metrics_nested |>
+  mutate(
+    data = map2(
+      data, metric,
+      \(data, name) {
+        if (name %in% c("darkest_10h_midpoint", "darkest_10h_onset")) {
+          data |>
+            mutate(value = ifelse(value >= 12 * 60 * 60, value - 24 * 60 * 60, value))
+        } else {
+          data
+        }
+      }
+    )
+  )
+```
+
+## Fit models
+
+```{r}
+metrics_nested <-
+  metrics_nested |>
+  mutate(H1 = paste0("~ site*position", random))
+
+Formula_cols <- names(metrics_nested) |> keep(\(x) str_detect(x, "H1|H0_"))
+
+make_formula <- function(response, rhs) {
+  if (is.na(rhs) || is.na(response)) {
+    return(NULL)
+  }
+
+  as.formula(paste(response, rhs))
+}
+
+metrics_nested <-
+  metrics_nested |>
+  mutate(
+    response = str_replace(response, "metric", "value"),
+    across(all_of(Formula_cols), \(x) map2(x, response, \(rhs, resp) make_formula(resp, rhs)))
+  )
+```
+
+```{r}
+main_formula <- value ~ site * position + site + position + (position | Id) + (1 | Date)
+red_formula <- value ~ site * position + site + position + (position | Id)
+red_formula2 <- value ~ site * position + site + position + (1 | Id)
+
+rhs_same <- function(f1, f2) {
+  identical(
+    attr(terms(formula(f1, rhs = 1)), "term.labels"),
+    attr(terms(formula(f2, rhs = 1)), "term.labels")
+  )
+}
+
+fit_model <- function(data, formula, engine, family) {
+  if (is.null(formula)) {
+    return(NULL)
+  }
+
+  model <- switch(
+    engine,
+    "lm" = lm(formula, data = data, contrasts = list(site = "contr.sum")),
+    "glm" = glm(formula, data = data, family = family, contrasts = list(site = "contr.sum")),
+    "lmer" = lmer(formula, data = data, contrasts = list(site = "contr.sum")),
+    "glmer" = glmer(formula, data = data, family = family, contrasts = list(site = "contr.sum")),
+    "glmmTMB" = glmmTMB(formula, data = data, family = family, contrasts = list(site = "contr.sum"))
+  )
+
+  did_converge <- performance::check_convergence(model) && !performance::check_singularity(model)
+
+  if (!did_converge) {
+    if (rhs_same(main_formula, formula)) {
+      formula <- update(formula, . ~ . - (1 | Date))
+    } else if (rhs_same(red_formula, formula)) {
+      formula <- update(formula, . ~ . - (position | Id) + (1 | Id))
+    } else if (rhs_same(red_formula2, formula)) {
+      formula <- update(formula, . ~ . - site:position)
+    } else {
+      return(model)
+    }
+
+    model <- fit_model(data, formula, engine, family)
+  }
+
+  model
+}
+```
+
+```{r}
+metrics_nested <-
+  metrics_nested |>
+  mutate(
+    H1_model = pmap(list(data, H1, engine, family), fit_model, .progress = "H1 model fitting"),
+    converged = map_lgl(H1_model, performance::check_convergence),
+    singular = map_lgl(H1_model, performance::check_singularity)
+  )
+```
+
+```{r}
+all(metrics_nested$converged)
+any(metrics_nested$singular)
+```
+
+## Extract wrist errors
+
+```{r}
+metric_results <-
+  metrics_nested |>
+  mutate(
+    main_effect = map_dbl(
+      H1_model,
+      \(model) model |>
+        emmeans(specs = ~1, at = list(position = "glasses")) |>
+        as_tibble() |>
+        pull(2)
+    ),
+    position_effect = map(
+      H1_model,
+      \(model) model |>
+        emmeans(specs = ~position) |>
+        contrast(method = "trt.vs.ctrl") |>
+        as_tibble()
+    ),
+    wrist_error = map_dbl(position_effect, \(x) x$estimate[x$contrast == "wrist - glasses"]),
+    p_wrist = map_dbl(position_effect, \(x) x$p.value[x$contrast == "wrist - glasses"]),
+    wrist_error = wrist_error / abs(main_effect)
+  ) |>
+  select(metric, metric_family, metric_type, wrist_error, p_wrist)
+```
+
+```{r}
+format_metric <- function(x) {
+  case_when(
+    x %in% c("MDER", "nvRD") ~ x,
+    x == "centroidLE" ~ "Centroid LE",
+    x == "midpointCE" ~ "Midpoint CE",
+    x == "mean_MEDI" ~ "Mean mel EDI",
+    TRUE ~ x |>
+      str_replace_all("_", " ") |>
+      str_to_sentence() |>
+      str_replace_all("(\\d+)(?!\\d|h)", "\\1 lx mel EDI")
+  )
+}
+
+metric_results <-
+  metric_results |>
+  mutate(across(c(metric, metric_family, metric_type), format_metric))
+```
+
+## Build `metrics_summary`
+
+```{r}
+summarize_wrist_errors <- function(data, metric_type = NULL, significant_only = FALSE) {
+  data <-
+    data |>
+    mutate(
+      p_wrist = p_wrist <= sig.level,
+      wrist_error = if (significant_only) ifelse(p_wrist, wrist_error, NA_real_) else wrist_error
+    )
+
+  out <-
+    data |>
+    summarize(
+      n = n(),
+      wrist_median = median(abs(wrist_error), na.rm = TRUE),
+      wrist_min = min(abs(wrist_error), na.rm = TRUE),
+      wrist_max = max(abs(wrist_error), na.rm = TRUE),
+      wrist_positive = sum(wrist_error > 0, na.rm = TRUE),
+      wrist_negative = sum(wrist_error < 0, na.rm = TRUE),
+      wrist_significant = sum(p_wrist, na.rm = TRUE),
+      wrist_estimable = sum(!is.na(wrist_error))
+    ) |>
+    mutate(
+      across(c(wrist_min, wrist_max), \(x) ifelse(is.infinite(x), NA_real_, x))
+    )
+
+  if (significant_only) {
+    out <-
+      out |>
+      mutate(
+        wrist_significant = NA_integer_,
+        wrist_estimable = NA_integer_
+      )
+  }
+
+  if (!is.null(metric_type)) {
+    out <- mutate(out, metric_type = metric_type, .before = n)
+  }
+
+  out
+}
+
+summary_by_type <-
+  metric_results |>
+  group_by(metric_type) |>
+  group_modify(\(.x, .y) summarize_wrist_errors(.x)) |>
+  ungroup()
+
+summary_overall <- summarize_wrist_errors(metric_results, metric_type = "Overall")
+summary_significant <- summarize_wrist_errors(
+  metric_results,
+  metric_type = "Overall (significant)",
+  significant_only = TRUE
+)
+
+metrics_summary_data <-
+  bind_rows(summary_by_type, summary_overall, summary_significant) |>
+  mutate(
+    metric_type = factor(
+      metric_type,
+      levels = c(
+        setdiff(metric_type, c("Overall", "Overall (significant)")),
+        "Overall",
+        "Overall (significant)"
+      )
+    )
+  ) |>
+  arrange(metric_type)
+```
+
+```{r}
+metrics_summary <-
+  metrics_summary_data |>
+  gt(rowname_col = "metric_type") |>
+  fmt_percent(c(wrist_median, wrist_min, wrist_max), decimals = 0) |>
+  cols_merge(
+    columns = c(
+      wrist_median,
+      wrist_min,
+      wrist_max,
+      wrist_significant,
+      wrist_estimable,
+      wrist_positive,
+      wrist_negative
+    ),
+    pattern = "<b>{1}</b> ({2} - {3})<br><b><<signif {4}/{5}, >></b>+{6}/-{7}"
+  ) |>
+  cols_label(wrist_median = "Wrist") |>
+  cols_hide(n) |>
+  sub_missing() |>
+  tab_footnote("median error (min - max), significant errors / all metrics, positive / negative deviations") |>
+  tab_style(cell_text(weight = "bold"), list(cells_stub(), cells_column_labels())) |>
+  tab_header(
+    "Summary overview of metric errors due to wrist wearing position, compared to glasses",
+    subtitle = "Errors are all based on their modelling scale"
+  ) |>
+  tab_style(
+    cell_fill(color = "lightgrey", alpha = 0.25),
+    locations = list(
+      cells_body(rows = metric_type == "Overall (significant)"),
+      cells_stub(rows = c("Overall", "Overall (significant)"))
+    )
+  ) |>
+  tab_style(cell_text(color = wrist_color), cells_column_labels(wrist_median)) |>
+  tab_style(cell_fill(color = wrist_color, alpha = 0.1), cells_body(wrist_median)) |>
+  tab_style(
+    cell_fill(color = wrist_color, alpha = 0.5),
+    cells_body(wrist_median, metric_type %in% c("Overall", "Overall (significant)"))
+  )
+
+metrics_summary
+```
+
+```{r}
+gtsave(metrics_summary, here("output/tables/Table_metrics_summary_wrist.png"), vwidth = 1000)
+```
+
+## Session info
+
+```{r}
+sessionInfo()
+```
