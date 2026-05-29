@@ -81,6 +81,7 @@ metric_info |>
   mutate(family = map(engine, \(x) switch(x,
                               "lm" = gaussian(),
                               "lmer" = gaussian(),
+                              "glmer" = poisson(),
                               "glmmTMB" = tweedie(link = "log"))),
          family = map2(family, note, 
                        \(x,y) ifelse(is.na(y), return(x), return(poisson()))
@@ -192,7 +193,7 @@ metrics |>
        title = "Raincloud plots of scaled and centered metric results") +
   theme_cowplot()
 
-ggsave(here("output/figures/Figure_metric_distribution.pdf"), width = 15, height = 20)
+ggsave(here("output/figures/Figure_metric_distribution.pdf"), width = 15, height = 20, device = cairo_pdf)
 ```
 
 ## Prepare modelling
@@ -836,7 +837,7 @@ reduced_df |>
   gghighlight(p, use_group_by = FALSE,
               label_key = metric, calculate_per_facet = TRUE)
 
-ggsave(here("output/figures/Fig_metric_abs_error.pdf"))
+ggsave(here("output/figures/Fig_metric_abs_error.pdf"), device = cairo_pdf)
 ```
 
 ```{r}
@@ -863,7 +864,7 @@ reduced_df |>
   gghighlight(p, use_group_by = FALSE,
               label_key = metric, calculate_per_facet = TRUE)
 
-ggsave(here("output/figures/Fig_metric_error.pdf"))
+ggsave(here("output/figures/Fig_metric_error.pdf"), device = cairo_pdf)
 ```
 
 

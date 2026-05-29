@@ -414,7 +414,7 @@ time_data <-
 metrics_data |> 
   group_by(site, Id, Date, position) |> 
   aggregate_Datetime(
-    "30 mins",
+    "1 hour",
     type = "floor",
     numeric.handler = \(x) x |> mean(na.rm = TRUE),
     geo.MEDI = MEDI |> log_zero_inflated() |> mean(na.rm = TRUE) |> exp_zero_inflated()
@@ -425,7 +425,7 @@ metrics_data |>
   select(-static) |> 
   add_Time_col() |> 
   ungroup() |> 
-  mutate(Time = as.numeric(Time)/3600 + 0.25,
+  mutate(Time = as.numeric(Time)/3600 + 0.5,
          across(c(site, Id, sleep, State.Brown, wear, photoperiod.state),
                 fct),
          Date = factor(Date),
