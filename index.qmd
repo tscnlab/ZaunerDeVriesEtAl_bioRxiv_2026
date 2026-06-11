@@ -61,137 +61,181 @@ number-sections: true
 
 ## Introduction {#sec-intro}
 
-- summary of importance of retinal exposure, proxies in use, current issues, our approach
+-   summary of importance of retinal exposure, proxies in use, current issues, our approach
 
-- intro to non-visual effects of light and its metrology
+-   intro to non-visual effects of light and its metrology
 
-- overview over a few relevant publications in the past decades and their methods of light data collection
+-   overview over a few relevant publications in the past decades and their methods of light data collection
 
-- describing the usability/acceptability - fidelity tradeoff and its implication for scaleable ambulatory light dosimetry
+-   describing the usability/acceptability - fidelity tradeoff and its implication for scaleable ambulatory light dosimetry
 
-- Overview of Sietse's comparison studies
+-   Overview of Sietse's comparison studies
 
-- the MeLiDos project, multi-position wearable
+-   the MeLiDos project, multi-position wearable
 
-- Our approach, glasses-mounted as reference for wrist and chest, explain the two directions of investigation
+-   Our approach, glasses-mounted as reference for wrist and chest, explain the two directions of investigation
 
-  - measurement focused: momentary measurements, contextually dependent, fidelity oriented
-  - metric focused: (daily) exposure metrics, outcome oriented
+    -   measurement focused: momentary measurements, contextually dependent, fidelity oriented
+    -   metric focused: (daily) exposure metrics, outcome oriented
 
 ## Methods {#sec-methods}
 
 ### Dataset
 
-- MeLiDos project: overview, collected modalities, size of data collection, times, brief summary of the protocol
+-   MeLiDos project: overview, collected modalities, size of data collection, times, brief summary of the protocol
 
 Wearable light exposure data, diaries, logs, screening and discharge questionnaires, as well as ecological momentary assessments are used from the MeLiDos project. The MeLiDos project is a European project about *Metrology for wearable light loggers and optical radiation dosimeters* [@spitschan2024]. In the second workpackage of the project, a field study was conducted in seven countries (Ghana, Costa Rica, Turkey, Spain, Germany, the Netherlands, and Sweden), using a harmonized protocol [@guidolin2024].
 
-- Measurement device, sensor placement, instructions to participants
+-   Measurement device, sensor placement, instructions to participants
 
-- How the data were acquired: CC-BY-0 license, Github repositories, melidosData package
+-   How the data were acquired: CC-BY-0 license, Github repositories, melidosData package
 
 ### Software Resources
 
-- R
-- melidosData
-- LightLogR
-- tidyverse
-- mgcv
-- gratia
-- glmmTMB
-- lme4
-- emmeans
-- performance
+-   R
+-   melidosData
+-   LightLogR
+-   tidyverse
+-   mgcv
+-   gratia
+-   glmmTMB
+-   lme4
+-   emmeans
+-   performance
 
 ### Preprocessing and cleaning of data
 
-- describing how the data has been pre-processed for melidosData
-  - importing wearable data
-  - trimming by trial dates
-  - removing unplausible values for individual participants that indicate device malfunction
-  - removing irregular data and implicit gaps by creating a continuous, uninterrupted time series. Irregular measurements are either averaged (\>1 measurements within 10 seconds) or rounded to the next 10-second interval (1 measurement).
-- rationale for two preprocessing pipelines
-  - data for daily metrics can't be trimmed as much.
+-   describing how the data has been pre-processed for melidosData
+    -   importing wearable data
+    -   trimming by trial dates
+    -   removing unplausible values for individual participants that indicate device malfunction
+    -   removing irregular data and implicit gaps by creating a continuous, uninterrupted time series. Irregular measurements are either averaged (\>1 measurements within 10 seconds) or rounded to the next 10-second interval (1 measurement).
+-   rationale for two preprocessing pipelines
+    -   data for daily metrics can't be trimmed as much.
 
 #### For measurement-based analysis
 
+m-EDI measurements from the three dosimeters were temporally aligned using the *data2reference* function of the *LightLogR* package [@zauner2025]. The resulting combined dataset was then processed through several filtering steps. First, only observations (points in time) with data from all three dosimeters were retained. Second, based on the participants' logbooks, observations during sleep and other periods when one (or more) of the dosimeters was not worn were removed. Third, only observations for which all dosimeters recorded a measurement below their maximum operating range (\<100,000 lx m-EDI, as specified by the manufacturer) were retained. Fourth, days on which all three dosimeters recorded near continuous zero values were removed. Finally, each observation was paired with (hourly) contextual data derived from the participant logbooks, specifically the activity performed and the primary light source in the environment. The different activities and light source categories that participants could choose from are detailed in the study protocol [@guidolin2024]. When these data were not available in the logbooks, the corresponding observations were removed. Additionally, the photoperiod (i.e. day or night based on civil dawn and dusk) was matched to each observation using the *add_photoperiod* function of the *LightLogR* package. The resulting number of observations in terms of unique participants and measurement days after each processing step is shown in Figure X *\[combined figure with metric-based analysis\]*.
+
+The resulting measurements were log-transformed after adding a very small offset (0.1 lx m-EDI, i.e. -1 on the log~10~ scale) to avoid taking the logarithm of zero [@zauner2025a]. This offset lies below the operating range of the dosimeters and therefore has no meaningful impact on the results. For each observation, the wear position error was calculated as the difference between each body-worn dosimeter's measurement and the eye-level reference. These observation-level errors were then aggregated to an hourly resolution to align with the temporal resolution of the contextual data. This pairwise-difference approach preserves the wear position error, whereas averaging before computing the error would attenuate the error estimates. Accordingly, the (hourly aggregated) wear position error $\bar{D}_x$ is defined as:
+
+$$
+\bar{D}_x = \frac{1}{n}\sum_{i=1}^{n}\left[\log_{10}(E_{x,i} + 0.1) - \log_{10}(E_{glasses,i} + 0.1)\right]
+$$ where $E_{glasses,i}$ denotes the eye-level measurement and $E_{x,i}$ denotes the measurement at wear position $x$, both recorded at timestamp $i$, and $n$ is the number of measurements within the hour. A positive wear position error indicates that the body-worn dosimeter overestimates actual eye-level light exposure.
+
 #### For metric-based analysis
 
-- merging of measurements for melanopic EDI and photopic illuminance of all wearing positions
-- removing instances where not all three measurements are available
-- merging sleep and non-wear information with time series
-- removing non-wear (but retaining sleep) instances
-- removing measurement values \> 10\^5 lx melanopic EDI / photopic illuminance
-- removing hourse with less than 50% data available
-- removing days with less than 80% data available
-- calculate participant-day metrics
-- calculate participant metrics
-- calculate 30-minute averages for melanopic EDI
-- scaling of nighttime metrics to avoid circularity requirement
+-   merging of measurements for melanopic EDI and photopic illuminance of all wearing positions
+-   removing instances where not all three measurements are available
+-   merging sleep and non-wear information with time series
+-   removing non-wear (but retaining sleep) instances
+-   removing measurement values \> 10\^5 lx melanopic EDI / photopic illuminance
+-   removing hourse with less than 50% data available
+-   removing days with less than 80% data available
+-   calculate participant-day metrics
+-   calculate participant metrics
+-   calculate 30-minute averages for melanopic EDI
+-   scaling of nighttime metrics to avoid circularity requirement
 
 ### Statistical analysis
 
-- no power analysis has been performed, as the size of the sample is determined by the dataset used
+-   no power analysis has been performed, as the size of the sample is determined by the dataset used
 
 #### For measurement-based analysis
 
+A statistical analysis was conducted to investigate whether the wear position error is systematically dependent on the measurement context. Previous studies have shown that wear position errors are influenced by both the illumination environment surrounding the participant and the participant’s posture, during the measurements [@devries2026; @devries2026a]. As these characteristics were not directly quantified, four sets of contextual classifications (@tbl-context-class) were defined from the available contextual data to serve as proxies for grouping illumination fields and postures. The first set combined the environment, i.e. whether the participant was indoors (in a building) or outdoors, with the photoperiod (day or night). The second combined the environment with the local time of day. The third combined activity with photoperiod. Activity categories included being awake at home, working (at home or in an office), traveling in a vehicle, and time outdoors. This last category grouped walking or cycling, outdoor work, and outdoor leisure, as each was too sparsely reported in the logbooks to be examined separately. The fourth set considered the primary light source in the environment during indoor work at home or in an office. The number of participants and participant-days included for each set is shown in Figure X.
+
+| Set of contextual classifications | Categories | Number of unique classifications |
+|------------------------|------------------------|------------------------|
+| Environment & photoperiod | (*indoor*s or *outdoors*) × (*day* or *night*) | 4 |
+| Environment & time of day | (*indoors* or *outdoors*) × (*15-minute interval^1^*) | 192 |
+| Activity & photoperiod | (*awake at home* or *working in the office/home* or *in a vehicle* or *time outdoors) × (day* or *night*) | 8 |
+| Indoor work lighting | (*electric* or *daylight* or *display*) | 3 |
+
+: Four sets of contextual classifications used to group wear position errors by measurement context. Each set was defined as a combination of contextual data from the participant's logbook data, photoperiod, and/or local time of day. The sets represent overlapping classifications of the same measurements rather than mutually exclusive partitions. ^1^Time of day was modeled as a cyclic smooth; the 15-minute discretization was used only to extract estimates, not in model fitting. {#tbl-context-class}
+
+Generalized additive mixed models (GAMMs) were fitted to model wear position error as a function of these four sets of contextual classifications. To avoid multicollinearity and facilitate interpretation, separate models were constructed for each set. In addition, separate models were fitted for each wear position (chest and wrist), resulting in a total of eight models. The contextual classifications were defined as fixed effects, except for local time of day, which was defined as a cyclic smooth. As the distribution of wear position errors was observed to have heavy tails, a scaled t-distribution was specified for residuals. Random effects (random intercepts) were specified for site, participant (nested within site), and day (nested within participant). This structure reflects the study protocol [@guidolin2024], under which measurements were collected across multiple days for each participant at a site. Although some of these random effects explained little variance in certain models, all were retained as their inclusion is theoretically justified by the study protocol. Additionally, for each participant, a first order autoregressive (AR(1)) structure was implemented to account for temporal autocorrelation in repeated measurements. The AR(1) correlation parameter (*rho*) was set to the lag-1 residual autocorrelation estimated from an initial model fitted without the AR(1) structure. The resulting model formulas are given in @tbl-formulas-context.
+
+| Model formulas |
+|------------------------------------------------------------------------|
+| wear_position_error_x \~ environment \* photoperiod + s(site, bs = "re") + s(participant, bs = "re") + s(participant_day, bs = "re") |
+| wear_position_error_x \~ environment + s(site, bs = "re") + s(participant, bs = "re") + s(participant_day, bs = "re") + s(timeofday, by = environment, bs = "cc", k = 12, m = 2) + s(timeofday, bs = "cc", k = 12) |
+| wear_position_error_x \~ activity \* photoperiod + s(site, bs = "re") + s(participant, bs = "re") + s(participant_day, bs = "re") |
+| wear_position_error_x \~ indoor_work_lighting + s(site, bs = "re") + s(participant, bs = "re") + s(participant_day, bs = "re") |
+
+: Model formulas for the eight fitted generalized additive mixed models (GAMMs). The subscript x denotes the wear position (chest or wrist), with each formula fitted separately for both positions. Participants were implicitly nested within sites since each participant belonged to only one site and had a unique identifier. Because measurement days were not unique across participants, a constructed grouping factor (*participant_day*) was used to nest days within participants. {#tbl-formulas-context}
+
+Models were fitted using the *mgcv package*. Given the size of the dataset (approximately 10,000 observations), models were fitted using the *bam()* function with fast restricted maximum likelihood (fREML) and discretization enabled. Fixed-effect estimates agreed to three decimal places (maximum absolute difference \< 0.001 log~10~ units) with those from the *gam()* function with REML and no discretization (both fitted without the AR(1) structure), indicating no meaningful impact on model estimates.
+
+All models converged. As wear position errors represent differences between paired dosimeter measurements and the contextual classifications represent relatively coarse descriptions of the measurement context, the proportion of deviance explained by the models was modest, ranging from 11.3% to 32.9%. As the models were intended to identify systematic differences in wear position error across contexts rather than to predict individual errors, these levels were considered acceptable. The degrees-of-freedom parameter (ν) of the scaled-t residual distribution, however, was estimated at its lower bound (3) in all models, suggesting that the true residual distribution may be heavier-tailed than the models can represent. Consistent with this, the residual distributions showed fair agreement in the central portion but slight deviations in the tails (model diagnostics are available in the \[supplementary material\]). Since there was no residual family available within *mgcv* that could accommodate heavier tails, and additional transformations of the data were not appropriate given the log transform already applied, no further optimization of the model fit was deemed feasible. Given these limitations, model interpretation is based primarily on estimated mean effects across contexts.
+
+Using the fitted models, two complementary analyses were performed. First, we assessed whether wear position errors differed across the contextual classifications. For each pairwise comparison of contexts, the null hypothesis stated that the difference in wear position error is zero. Estimated marginal means of the wear position error under each context were computed with the *emmeans* package, and contexts were pairwise compared using model-based t-tests (using the *contrast()* function of *emmeans*). The contextual classifications that included the time of day smooth (@tbl-context-class) were excluded from this analysis to limit the number of comparisons. Second, we assessed the mean wear position error for each contextual classification, with the null hypothesis stating that under each context, the mean wear position error equals zero (i.e. no systematic difference between body-worn and eye-level measurements). Each estimated marginal mean was tested against zero using model-based t-tests (the *test()* function of *emmeans*), and for interpretability the estimates (on the log~10~ scale) were back-transformed to percentage errors. In both analyses a significance level of 0.05 was used. P-values and confidence intervals were not adjusted for multiple comparisons, as failing to detect a wear position error (a type II error) was considered more consequential than a false positive.
+
 #### For metric-based analysis
 
-- table describing the metrics and parametrization, scaling, modelling family, engine
-- data were modelled with linear or generalized mixed-effect models.
-- generalized models used the tweedie, or poisson error distribution, all others a gaussian error distribution
-- models were constructed with the following formula in Wilkinson notation, based on theoretical considerations:
+-   table describing the metrics and parametrization, scaling, modelling family, engine
+-   data were modelled with linear or generalized mixed-effect models.
+-   generalized models used the tweedie, or poisson error distribution, all others a gaussian error distribution
+-   models were constructed with the following formula in Wilkinson notation, based on theoretical considerations:
 
 $$\text{metric} \sim \text{site} * \text{position} + (\text{position}|\text{participant}) + (1|\text{date})$$ {#eq-metricbase}
 
-- where *metric* is the outcome metric to be modelled. Fixed effects include the measurement *site* (e.g., Dortmund, Germany), in an interaction effect with the wearing *position*. The random effect structure consists of random slopes for wearing *position* per *participant*, as well as random intercepts per *participant* and random intercepts per calendar *date* (participant-day).
-- the glasses *position* is the reference level, with parameter estimates for differences due to the wrist or the chest.
-- *site* was sum-coded, meaning that the average across site is the reference.
-- If models failed to converge with the full model structure, they were refit in a stepwise procedure, where the model complexity was reduced. In the first instance, random intercepts per *date* were removed, followed by random slopes or *position* per *participant*. All models converged an were non-singular with that procedure.
-- Model diagnostics were created with the {performance} package and included plots for normality of residuals and random effects, homogeneity of variance, linearity, and collinearity.
-- Significance of effects were derived with the *Anova* function from the {car} package, using Wald chi-square tests, with a significance level of 0.05. Despite the large number of comparisons, no correction for multiple testing was applied. This is due to the fact that a null-result might tempt readers to assume equality between two positions, where the analysis tests for differences. Thus, each individual effect must be read with an type II error of 5%.
-- *position* and *site* effects and p-values were derived with the *contrast* function from the {emmeans} package, using the *trt.vs.ctrl* method for *position* and the *eff.emmc* method for *site*.
-- Marginal and conditional $R^2$ values were calculated based on @nakagawa2017. Unique contributions of fixed effects to $R^2$ were calculated as differences from a model with and without the effect in question.
-- To derive relative differences (on the modelling scale), effects were transformed with @eq-trans
+-   where *metric* is the outcome metric to be modelled. Fixed effects include the measurement *site* (e.g., Dortmund, Germany), in an interaction effect with the wearing *position*. The random effect structure consists of random slopes for wearing *position* per *participant*, as well as random intercepts per *participant* and random intercepts per calendar *date* (participant-day).
+-   the glasses *position* is the reference level, with parameter estimates for differences due to the wrist or the chest.
+-   *site* was sum-coded, meaning that the average across site is the reference.
+-   If models failed to converge with the full model structure, they were refit in a stepwise procedure, where the model complexity was reduced. In the first instance, random intercepts per *date* were removed, followed by random slopes or *position* per *participant*. All models converged an were non-singular with that procedure.
+-   Model diagnostics were created with the {performance} package and included plots for normality of residuals and random effects, homogeneity of variance, linearity, and collinearity.
+-   Significance of effects were derived with the *Anova* function from the {car} package, using Wald chi-square tests, with a significance level of 0.05. Despite the large number of comparisons, no correction for multiple testing was applied. This is due to the fact that a null-result might tempt readers to assume equality between two positions, where the analysis tests for differences. Thus, each individual effect must be read with an type II error of 5%.
+-   *position* and *site* effects and p-values were derived with the *contrast* function from the {emmeans} package, using the *trt.vs.ctrl* method for *position* and the *eff.emmc* method for *site*.
+-   Marginal and conditional $R^2$ values were calculated based on @nakagawa2017. Unique contributions of fixed effects to $R^2$ were calculated as differences from a model with and without the effect in question.
+-   To derive relative differences (on the modelling scale), effects were transformed with @eq-trans
 
 $$\text{relative effect} = (\frac{\text{effect}} {|\text{Intercept}|} -1) * 100\%$$ {#eq-trans}
 
-- where the *Intercept* is the average effect for the glasses *position* and the average *site*.
-- to give contextual information when in the time of day wear position matters, a hierarchical generalized additive model accordiing to formula @eq-hgam
+-   where the *Intercept* is the average effect for the glasses *position* and the average *site*.
+-   to give contextual information when in the time of day wear position matters, a hierarchical generalized additive model accordiing to formula @eq-hgam
 
 $$log_{10}(\text{melanopic EDI}) \sim s(\text{time}) + s(\text{time, position}) + s(\text{time, site}) + s(\text{time, participant}) + s(\text{participant-day})$$ {#eq-hgam}
 
-- where the pattern of 30-minute aggregated and logarithmically scaled values of melanopic EDI are decomposed into a smooth (nonlinear effect) of time, deviation-smooths of wearing *position* over time, deviation-smooths of *site* over time, deviation-smooths of *participants* over time, and random intercepts of *participant-days*. 
-- The effect of *position* is tested against a reduced model without the effect. Differences in AIC values larger than 2 are considered significant support for a more complex model with lower AIC.
+-   where the pattern of 30-minute aggregated and logarithmically scaled values of melanopic EDI are decomposed into a smooth (nonlinear effect) of time, deviation-smooths of wearing *position* over time, deviation-smooths of *site* over time, deviation-smooths of *participants* over time, and random intercepts of *participant-days*.
+-   The effect of *position* is tested against a reduced model without the effect. Differences in AIC values larger than 2 are considered significant support for a more complex model with lower AIC.
 
 ## Results {#sec-results}
+
+#### For measurement-based analysis
+The estimated differences in wear position errors between contextual classifications are shown in Figure @fig-ratio-context. In each cell, the ratio is the wear position error in the second context relative to the first context, indicating how many times larger or smaller the error is between contexts. Significant differences in wear position errors are shown in bold. Considering chest-worn dosimeters, six of the seventeen investigated comparisons were significant, whereas seven of the seventeen comparisons were significant for wrist-worn dosimeters. Among the contextual classifications evaluated separately by photoperiod (Table @tbl-context-class), all significant differences for chest-worn dosimeters were observed during daytime, whereas significant differences for wrist-worn dosimeters occurred during both daytime and nighttime. For classifications based on the primary light source in indoor work environments, significant differences in wear position error were observed only between electric and display lighting, for both chest- and wrist-worn dosimeters.
+
+![Ratios of wear position errors (m-EDI) between contexts. Significant differences in wear position errors between contexts (p \<0.05, unadjusted for multiple comparisons) are shown in bold. The ratio in each cell is the wear position error in the second context relative to that in the first context, indicating how many times larger (ratio \> 1) or smaller (ratio \< 1) the error is in the second context.](output/figures/ratio_context_error.pdf){#fig-ratio-context}
+
+Estimated wear position errors across contextual classifications are shown in Figure @fig-abs-context. Errors were consistently larger in magnitude for wrist-worn dosimeters than for chest-worn dosimeters, and were generally larger at night than during the day. Across all contextual classifications (environment, activity, and indoor work lighting source) and for nearly all hours of the day, mean errors were negative, indicating that body-worn dosimeters underestimated eye-level light exposure. Almost all errors differed significantly from zero, the only exceptions were chest-worn measurements taken in vehicles during the day and outdoor measurements during the night and morning hours (approximately 02:00–12:00 local time).
+
+![Wear position errors (% m-EDI) by context. Significant deviations from zero (p \< 0.05, unadjusted for multiple comparisons) are marked by filled circles or bold curve segments. An error of 0% indicates no difference between the body-worn and eye-level measurements, while a negative error indicates that the body-worn dosimeter underpredicts eye-level light exposure.](output/figures/absolute_context_error.pdf){#fig-abs-context}
 
 ## Discussion {#sec-disc}
 
 ### Summarizing results
 
-- explain conceptual differences between the two approaches in their results (moment-based vs. aggregated)
+-   explain conceptual differences between the two approaches in their results (moment-based vs. aggregated)
 
 ### Comparing results to literature
 
-- comparison to de Vries publications
+-   comparison to de Vries publications
 
 ### Limitations
 
-- interindividual variance is high - results from individuals will vary strongly and it is unknown, whether and how different populations (here: adult, health, working indoors) differ in their bias
-- glasses-mount is near-eye level but not corneal and certainly not retinal
-- non-wear was removed, but was self-reported (will only cover part)
-- fixed sample size, reduced for UCR and TUM
+-   interindividual variance is high - results from individuals will vary strongly and it is unknown, whether and how different populations (here: adult, health, working indoors) differ in their bias
+-   glasses-mount is near-eye level but not corneal and certainly not retinal
+-   non-wear was removed, but was self-reported (will only cover part)
+-   fixed sample size, reduced for UCR and TUM
 
 ### Recommendations
 
-- remain with glasses-position (considered gold-standard), if 
- (- momentary measurement values are the main outcome)?
-  - protocol covers a short amount of time
-  - occlusion is a likely issue
-  - individuals or only a small sample are collected
-  - temporal dynamic metrics are the main outcome
-- 
+-   remain with glasses-position (considered gold-standard), if (- momentary measurement values are the main outcome)?
+    -   protocol covers a short amount of time
+    -   occlusion is a likely issue
+    -   individuals or only a small sample are collected
+    -   temporal dynamic metrics are the main outcome
+-   
 
 ## References {.unnumbered}
 
