@@ -303,12 +303,16 @@ acf_resid(m1_logdif_c, split_pred = "AR.start")
 acf_resid(m1_logdif_w, split_pred = "AR.start")
 ```
 
-### **\[temporary\] Investigation of modeling approach for time of day smooth (m2)**
+### **Environment \* time-of-day model (m2)**
+
+#### **Investigation on time of day smooth modeling approach**
+
+An average time of day smooth and separate smooths for each environment are defined. If the standard second derivative penalty (m=2) is applied to the average and by environment smooths, the two functions may look very similar, which could result in the model not being able to attribute structure to one versus the other (resulting in very large confidence intervals). This can be prevented by specifying m=1 for the by environment smooths, so that the penalty acts on the first derivative, and thus the by environment smooth measures deviations from the average smooth. However, this fix is only valid for TPRS and B-splines, and may induce piecewise linear behavior.
+
+To investigate how the time of day smooths should be implemented, six different modeling approaches are compared. The first three treat the smooth as non-cyclic, the latter three as cyclic.
 
 ```{r}
 #| label: temp-model-investigation
-
-# Testing 6 different ways of modeling the time of day smooth, see model specifications below
 
 # Fit models without AR
 # Non-cyclic models
@@ -382,15 +386,12 @@ rho_F <- start_value_rho(mF_init)
 mA <- bam(
   logdif_c ~ environment +
     s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
-    s(timeofday, by = environment, m = 1, k = 12) + # One time of day smooth for each environment (grey lines in video)
-    s(timeofday, k = 12), # Average smooth effect of time of day (dotted black line in video)
+    s(timeofday, by = environment, m = 1, k = 12) + # One time of day smooth for each environment
+    s(timeofday, k = 12), # Average smooth effect of time of day
   data = m1m2_data, family = scat(),
   discrete = TRUE, nthreads = 10, method = "fREML",
   rho = rho_A, AR.start = AR.start
 )
-# Both functions may look very similar, the model cannot tell which one to fit. What can happen is that this result in very large CI on the smooth.
-# That can be fixed by specifying m=1 for the by smooth. Then the penalty is not on the wiggliness (second derivative; its curvature) but on the first derivative (flat function). So the flat function measures deviations from the average smooth effect.
-# Limitations: Only valid for TPRS and B-splines. Also induced piecewise linear behavior (seems to be the case here.)
 
 mB <- bam(
   logdif_c ~ environment +
@@ -402,20 +403,20 @@ mB <- bam(
   rho = rho_B, AR.start = AR.start
 )
 
-# Sz basis allows us to do a factor by smooth without changing to a first derivative penalty (m=1)
+# Sz basis allows us to do a factor by smooth without changing to a first derivative
+# penalty (m=1). So basically all advantages of the factor by model, but not the possible limitations.
 mC <- bam(
   logdif_c ~ 
     s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
-    s(timeofday, k = 12) + # Average term (dotted black lines in video)
+    s(timeofday, k = 12) + # Average term
     s(timeofday, environment, bs = "sz", k = 12), # Smooths are uncorrelated with average term
   data = m1m2_data, family = scat(),
   discrete = TRUE, nthreads = 10, method = "fREML",
   rho = rho_C, AR.start = AR.start
 )
-# So all advantages of the factor by model, but not the limitations.
 
 
-# The m=1 fix is only valid for TPRS and b-splines (from the YouTube video)
+# The m=1 fix is only valid for TPRS and b-splines
 # So, this fix is actually not valid for this model. But kept in for completeness.
 mD <- bam(
   logdif_c ~ environment +
@@ -461,14 +462,18 @@ labels <- c(
   F = "F: bs=cc + sz"
 )
 
+rhos <- c(A = rho_A, B = rho_B, C = rho_C, D = rho_D, E = rho_E, F = rho_F)
+
 fit_summary <- tibble(
   model     = labels,
+  rho       = rhos[names(models)],
   fREML     = sapply(models, function(m) m$gcv.ubre),
   edf_total = sapply(models, function(m) sum(m$edf)),
-  R2_adj    = sapply(models, function(m) summary(m)$r.sq)
+  R2_adj    = sapply(models, function(m) summary(m)$r.sq),
+  AIC       = sapply(models, AIC)
 )
 print(fit_summary)
-
+# Rho is very similar, alllowing model comparison through AIC
 
 # Plot model predictions
 backtrans_pct <- function(x) (10^x - 1) * 100
@@ -528,17 +533,11 @@ ggplot(curves_all, aes(x = timeofday, y = pct_error,
   theme_minimal() +
   theme(panel.spacing = unit(1.5, "lines"))
 
-
-# The non-cyclic models have larger uncertainty at their boundaries (expected)
-# Cyclic models do have a lower fREML and higher R2. So maybe a cyclic model is more sensible.
-# Regarding a non-cyclic model, A and C have the lowest fREML and highest R2. However, the plot of the results seems off for model A (though it has the fix as specified in the Youtube video. On the other hand, the problem mentioned in the video (very large CI) doesn't seem present in model B).
-# Model B and C appear to give the same predictions (so that would favour model B over C).
-
-# But the cyclic models appear to generally perform better. And from a theoretical argument I would be drawn to using a cyclic model.
-# Model E seems the most straightforward, as the modeling approach is most similar to the other models.
 ```
 
-### **Environment \* time-of-day model (m2)**
+The cyclic models outperformed the non-cyclic ones on AIC and R^2^. A cyclic specification is also more appropriate on theoretical grounds, since wear position errors just before and after midnight should roughly align. On visual inspection, the predictions for the cyclic models (D, E, and F) were approximately identical. Models D and E were identical in AIC and R^2^, and outperformed model F. Because model D applies the m=1 fix, which is not valid for the cyclic (cc) basis (but was kept in for consistency with the non-cyclic models), it behaves identically to model E (which uses the standard m=2 penalty). Since E outperforms F and the wide confidence interval problem that the m=1 fix is meant to address does not appear present for the m=2 specification, the time-of-day smooth was implemented as in model E.
+
+#### **Model fit**
 
 ```{r}
 #| label: fit-m2
@@ -1748,6 +1747,18 @@ ggsave(here("output/figures/absolute_context_error.pdf"),
        width  = 8,
        height = 9,
        units  = "in")
+
+
+# Extract minimum and maximum wear position error for time of day
+curves |>
+  group_by(position, environment) |>
+  summarise(
+    min_pct   = min(pct_error),
+    min_time  = timeofday[which.min(pct_error)],
+    max_pct   = max(pct_error),
+    max_time  = timeofday[which.max(pct_error)],
+    .groups = "drop"
+  )
 ```
 
 ## Session info
