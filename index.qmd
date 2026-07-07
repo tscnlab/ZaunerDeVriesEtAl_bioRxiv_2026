@@ -50,102 +50,125 @@ keywords:
   - personal light exposure
   - wearing position
   - circadian
-abstract: "..."
 funding: "JZ's position is funded by the MeLiDos project. The project MeLiDos (22NRM05 MeLiDos) has received funding from the European Partnership on Metrology, co-financed from the European Union’s Horizon Europe Research and Innovation Programme and by the Participating States. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or EURAMET. Neither the European Union nor the granting authority can be held responsible for them."
 date: last-modified
 bibliography: references.bib
 citation:
-  container-title: Exposure Science and Environmental Epidemiology
+  container-title: Journal of Exposure Science and Environmental Epidemiology
 number-sections: true
+crossref:
+  custom:
+    - kind: float
+      key: suppfig
+      latex-env: suppfig
+      reference-prefix: Supplementary Figure S
+      caption-prefix: Supplementary Figure S
+      space-before-numbering: false
+      latex-list-of-description: Supplementary Figure
+    - kind: float
+      key: supptbl
+      latex-env: supptbl
+      reference-prefix: Supplementary Table S
+      caption-prefix: Supplementary Table S
+      space-before-numbering: false
+      latex-list-of-description: Supplementary Table
+format:
+  html:
+    toc: true
+    toc-depth: 1
+    toc-location: right
+    number-sections: true
+    code-link: true
+    code-tools: true
+    grid:
+      body-width: 850px
+    html-math-method:
+      method: mathjax
+      url: "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML"
+  docx:
+    toc: false
+    number-sections: false
+    reference-doc: assets/reference.docx
+filters:
+  - authors-block
+csl: nature.csl
+lightbox: true
 ---
 
 ## Introduction {#sec-intro}
 
--   summary of importance of retinal exposure, proxies in use, current issues, our approach
+Ocular light is a physical environmental exposure with effects extending beyond vision. Light reaching the eye regulates circadian entrainment, sleep–wake timing, acute alertness and other physiological and behavioural responses [@brown2020; @brown2022; @spitschan2026]. Emerging epidemiological evidence further associates patterns of daytime and nighttime light exposure with sleep, mental health, metabolic outcomes, and mortality [@didikoglu2023; @burns2023; @windred2024; @windred2024a; @zheng2026]. These findings have increased interest in personal light exposure as a potentially modifiable component of the human exposome [@spitschan2026]. However, evaluating its health relevance depends on accurately characterising the light that individuals receive as they move through natural and built environments.
 
--   intro to non-visual effects of light and its metrology
+Wearable light loggers make it possible to capture this temporally dynamic exposure under free-living conditions [@vanduijnhoven2025]. Unlike stationary measurements or estimates based on outdoor conditions, wearable devices accompany participants across locations and activities and can therefore record exposure patterns arising from the interaction of environmental light, architecture and individual behaviour [@siraji2023; @spitschan2024; @zauner2026]. This advantage has supported increasingly large observational studies [@burns2023; @windred2024; @windred2024a; @zheng2026] and creates opportunities to integrate personal light exposure into environmental epidemiology. At the same time, wearable assessment introduces a fundamental measurement problem: the sensor is rarely positioned at the anatomical site corresponding to the exposure of interest, the eye.
 
--   overview over a few relevant publications in the past decades and their methods of light data collection
+For research on non-visual responses to light, the target quantity is generally the spectrally resolved optical radiation incident at the retina, which cannot be directly measured [@Spitschan2022V3]. Ideally, exposure is therefore measured close to the corneal plane, with a sensor orientation approximating the participant’s direction of view [@Spitschan2022V3; @zauner2026]. Near-eye devices can, however, be conspicuous or uncomfortable and may interfere with everyday activities, limiting adherence and study duration [@zauner2025b]. Sensors placed on the chest or wrist impose less participant burden and are consequently attractive for larger and longer studies. The choice of wear position thus represents a trade-off between measurement fidelity and operational scalability. Whether that trade-off is acceptable depends not only on the average agreement between positions, but also on how placement-related differences vary across participants, environments and activities and how they affect the exposure summary metrics used in subsequent analyses.
 
--   describing the usability/acceptability - fidelity tradeoff and its implication for scaleable ambulatory light dosimetry
+The influence of anatomical placement has long been recognised in optical-radiation dosimetry. First in research on the effects of ultraviolet radiation (UVR) on humans, where studies quantified relative UVR doses across body surfaces using a mannequin [@diffey1977], characterised surface specific UVR doses for a variety of occupations and recreational activities [@holman1983], and assessed whether measurements of wrist-worn UVR dosimeters correlate with exposure measured on the top of the head [@thieden2000]. Comparable concerns subsequently emerged in personal visible-light dosimetry. Field studies in which participants wore sensors at multiple positions have compared measurements at the eye, chest and wrist [@Okudaira1983; @Cole1990; @Figueiro2013; @Bhandari2021; @aarts2017; @Wen2023; @gibaldi2024]. See @supptbl-wearing-position for a summary of results. The protocols of these studies are generally similar, differing mainly in the number of participants (one to twenty-nine), measurement duration (a few hours to several days), dosimeter type used, and the occupations and geographical locations of the participants. In addition to the raw recorded values (e.g. photopic illuminances), some studies examined errors in derived metrics such as circadian stimulus [@Figueiro2013], luminous exposure [@aarts2017], and time above threshold [@Bhandari2021; @Wen2023]. Collectively, these studies suggest that chest measurements generally approximate eye-level exposure more closely than wrist measurements, but they also report substantial variability and inconsistent directions of bias. Depending on the protocol and context, body-worn sensors have been found to either underestimate or overestimate measurements obtained near the eyes [see @devries2026].
 
--   Overview of comparison studies
+Such inconsistencies are plausible because placement bias is generated by the spatial structure of the surrounding light field and by the participant’s posture and orientation. A chest-mounted sensor may be shaded by clothing, directed away from a light source or exposed to light that does not reach the eyes. Wrist measurements are additionally affected by frequent changes in arm position and occlusion, e.g., from sleeves. Laboratory and simulation studies confirm that illuminance ratios between anatomical positions depend on factors such as source direction, light distribution, head and body orientation, and body morphology [@Yoshimura04052022; @Mohammadian2024; @devries2025; @devries2026; @devries2026a]. These studies establish the mechanisms through which placement affects measurement validity, but controlled illumination scenes cannot reproduce the diversity and temporal sequencing of environments encountered during daily life.
 
-Quantifying how exposure to optical radiation differs across positions on the human body has been of interest for the last few decades. First in research on the effects of ultraviolet radiation (UVR) on humans, where studies quantified relative UVR doses across body surfaces using a mannequin [@diffey1977], characterised surface specific UVR doses for a variety of occupations and recreational activities [@holman1983], and assessed whether measurements of wrist-worn UVR dosimeters correlate with exposure measured on the top of the head [@thieden2000]. Later, in research on the effects of retinal (visible) light exposure, measurements from body-worn (light) dosimeters were used as a proxy for measuring at the eyes. Various studies therefore considered the adequacy of such proxies, typically by having participants wear multiple dosimeters during their daily activities and comparing the resulting measurements to identify the errors at each wear position relative to measuring at the eyes [@Okudaira1983; @Cole1990; @Figueiro2013; @aarts2017; @Bhandari2011; @Wen2025]. The protocols of these studies are generally similar, differing mainly in the number of participants (one to twenty-nine), measurement duration (a few hours to several days), dosimeter type used, and the occupations and geographical locations of the participants. In addition to the raw recorded values (e.g. photopic illuminances), some studies examined errors in derived metrics such as circadian stimulus [@Figueiro2013], luminous exposure [@aarts2017], and time above threshold [@Bhandari2011; @Wen2025].
+The practical consequences of placement bias also depend on the analytical scale and intended use of the exposure data. For time-resolved analyses, differences between simultaneous measurements indicate how closely a proxy sensor reproduces momentary eye-level exposure. Positive and negative deviations remain distinct at this scale and may reveal context-dependent measurement bias. Epidemiological and intervention studies, however, commonly reduce light time series to daily or phase-specific metrics, including mean exposure, cumulative exposure, time above a threshold, or the timing of exposure [@hartmeyer2022, @hartmeyer2023, @zauner2025]. When measurements are aggregated, overestimation during some periods can offset underestimation during others. Consequently, a body position may poorly reproduce individual measurements yet yield a comparatively similar daily summary, or, conversely, small systematic differences may accumulate into substantial differences in an exposure metric. Correlation between positions alone therefore cannot establish whether a proxy is fit for a particular scientific purpose. This distinction is especially rrelevant to environmental epidemiology because placement-dependent error may alter exposure ranking, attenuate associations, bias threshold-based classifications or affect estimates of compliance with exposure recommendations.
 
-Most of these prior studies indicate that body-worn dosimeter measurements correlate with those at the eyes, with larger errors at the wrist than the chest, and note that considerable errors can be present. However, they disagree on the direction of these wear position errors, as some studies report that measurements at the chest or wrist underestimate eye-level exposure, while others report overestimation. For an overview of the protocols and results of each study, we refer to [@devries2026]. While differences in measurement protocols and data analyses may contribute, these discrepancies are thought to stem mainly from the differing contexts under which the studies were conducted, specifically the environments (types of illumination fields surrounding the participants) and the participants’ activities (types of postures). Consequently, more recent studies have considered how such contextual factors affect wear position errors, highlighting that the measurement context influences the error [@Yoshimura04052022; @Mohammadian2024; @devries2026; @devries2026a]. Notably, these studies relied on laboratory or simulated environments, so although differences in wear position error across contexts are established in principle, the practical magnitude of these differences under real-world free-living conditions remains untested. Moreover, whether a certain error is acceptable depends on the intended use of the data, i.e. the outcome metric. Beyond the few metrics considered in these prior studies, it remains unknown how such wear position errors propagate into other outcome metrics. Thus, under real-world free-living conditions, it remains unclear when a body-worn proxy, rather than measuring at the eyes, is adequate since the magnitude of wear position errors across typical contexts and the consequences for most outcome metrics have not yet been established.
-
--   the MeLiDos project, multi-position wearable
-
--   Our approach, glasses-mounted as reference for wrist and chest, explain the two directions of investigation
-
-    -   measurement focused: momentary measurements, contextually dependent, fidelity oriented
-    -   metric focused: (daily) exposure metrics, outcome oriented
+Here, we evaluate sensor-placement bias using data from the MeLiDos project, a harmonised field study of wearable light exposure conducted across sites in Ghana, Costa Rica, Türkiye, Spain, Germany, the Netherlands and Sweden [@spitschan2024; @guidolin2024; @zauner2026b]. Participants wore calibrated light loggers near the corneal plane, on the chest, and at the wrist during their normal daily activities, accompanied by repeated contextual reports. We use near-corneal measurements as the reference estimate of ocular exposure and assess chest- and wrist-based proxies at two complementary levels. At the measurement level, we quantify time-resolved differences and examine how they vary with activity, primary light source, photoperiod, and indoor-outdoor context. At the metric level, we determine how wear position affects 54 commonly used daily and phase-specific exposure summaries. By evaluating both instantaneous fidelity and outcome-level agreement under diverse free-living conditions, this study aims to establish when less burdensome sensor positions [@zauner2025b] provide fit-for-purpose estimates and when their use may introduce consequential exposure misclassification.
 
 ## Methods {#sec-methods}
 
 ### Dataset
 
--   MeLiDos project: overview, collected modalities, size of data collection, times, brief summary of the protocol
+Data were obtained from the field-study component of the MeLiDos project (Metrology for wearable light loggers and optical radiation dosimeters) [@spitschan2024]. The study used a harmonised protocol across nine study sites in seven countries: Ghana, Costa Rica, Türkiye, Spain, Germany, the Netherlands, and Sweden [@guidolin2024]. The complete MeLiDos field-study dataset comprises 191 participants and includes temporally resolved personal light-exposure measurements, participant wear and sleep logs, repeated contextual assessments, and questionnaire data. Light exposure was recorded concurrently at the near-corneal plane, chest, and wrist, although device availability and measurement completeness differed between sites and participants [@zauner2026b].
 
-Wearable light exposure data, diaries, logs, screening and discharge questionnaires, as well as ecological momentary assessments are used from the MeLiDos project. The MeLiDos project is a European project about *Metrology for wearable light loggers and optical radiation dosimeters* [@spitschan2024]. In the second workpackage of the project, a field study was conducted in seven countries (Ghana, Costa Rica, Turkey, Spain, Germany, the Netherlands, and Sweden), using a harmonized protocol [@guidolin2024].
+For the present analysis, we used the personal light-exposure recordings from participants with concurrent near-corneal, chest-mounted, and wrist-worn measurements, together with the corresponding wear logs and hourly contextual reports. Near-corneal measurements were treated as the reference estimate of ocular light exposure, while chest- and wrist-based measurements were evaluated as alternative sensor positions. Contextual data included the participant’s reported activity and the primary light source in the surrounding environment. The specific inclusion criteria and processing steps used to construct the analytical dataset are described below.
 
--   Measurement device, sensor placement, instructions to participants
+The site-specific datasets are openly available through the MeLiDos Project repositories and associated Zenodo records. Data were programmatically imported and harmonised using the R package melidosData [@melidosData], which provides a common interface for accessing the distributed study datasets and loading the wearable measurements, questionnaires, diaries, and metadata into R.
 
--   How the data were acquired: CC-BY-0 license, Github repositories, melidosData package
+Light exposure was recorded using spectrally sensitive ActLumus devices (Condor Instruments, São Paulo, Brazil) [@ishihara2025; @vanduijnhoven2025]. The devices sampled at 10-s intervals and used eight visible-range spectral channels to derive photopic and α-opic quantities, including melanopic equivalent daylight illuminance (melanopic EDI). Participants wore separate devices mounted centrally on non-prescription spectacle frames near the corneal plane, as a pendant at chest level, and on the wrist. ActLumus devices have been independently evaluated against a criterion spectrometer under indoor electric-lighting and outdoor daylight conditions, showing a broad detection range, low inter-device variability, and comparatively high photopic accuracy [@ishihara2025]. Further details of the devices, calibration, wearing protocol, and field-study procedures are reported in the companion study [@zauner2026b].
 
 ### Software Resources
 
--   R
--   melidosData
--   LightLogR
--   tidyverse
--   mgcv
--   gratia
--   glmmTMB
--   lme4
--   emmeans
--   performance
+All data processing, statistical analyses, and visualisations were performed in R version 4.5.0 [@base]. Data from the individual MeLiDos study sites were accessed and harmonised using melidosData version 1.0.6 [@melidosData]. Personal light-exposure time series were processed, temporally aligned, annotated, and summarised using LightLogR version 0.10.0 [@zauner2025]. General data manipulation and visualisation were performed with packages from the tidyverse version 2.0.0 [@tidyverse].
+
+Generalized additive mixed models were fitted using mgcv version 1.9-4 [@mgcv], and model-derived smooths, differences, and predictions were processed using gratia version 0.11.2 [@gratia]. Linear and generalized linear mixed-effects models were fitted using lme4 version 2.0-1 [@lme4] and glmmTMB version 1.1.14 [@glmmTMB], where applicable. Estimated marginal means and contrasts were calculated using emmeans version 2.0.3 [@emmeans], and model diagnostics and variance-explanation statistics were obtained using performance version 0.16.0 [@performance].
+
+All analyses were conducted using scripted workflows to support reproducibility. The analysis code, computational environment, and package-version information are available alongside the manuscript in a version-controlled repository (https://github.com/tscnlab/WearingPositionError_2026) and an archived release (to be added and referenced).
 
 ### Preprocessing and cleaning of data
 
--   describing how the data has been pre-processed for melidosData
-    -   importing wearable data
-    -   trimming by trial dates
-    -   removing unplausible values for individual participants that indicate device malfunction
-    -   removing irregular data and implicit gaps by creating a continuous, uninterrupted time series. Irregular measurements are either averaged (\>1 measurements within 10 seconds) or rounded to the next 10-second interval (1 measurement).
--   rationale for two preprocessing pipelines
-    -   data for daily metrics can't be trimmed as much.
+The site-specific wearable datasets provided by melidosData [@melidosData] had already undergone several harmonisation steps before entering the present analysis. Raw light-logger files were imported, and each participant's time series was trimmed to the official trial dates recorded in the study metadata. Implausible values attributable to device malfunction were identified and removed on a per-participant basis. Irregular sampling intervals and implicit gaps were then resolved by regularising every time series to a uniform 10-second epoch: when more than one measurement fell within a 10-second window the values were averaged, whereas a single measurement was rounded to the nearest 10-second boundary. The result was a continuous, gap-free time series for each participant and wearing position. [@melidosData]
 
-#### For measurement-based analysis
+Because the measurement-based and metric-based analyses place different demands on the data, two separate preprocessing pipelines were applied downstream. The measurement-based analysis requires strict temporal alignment of concurrent observations but can tolerate incomplete days, whereas the metric-based analysis computes daily and multi-day summary statistics and therefore requires sufficiently complete days. The specific filtering steps for each pipeline are described in the respective subsections below.
+
+Both analyses require log-transformation of light-exposure values. Because light-exposure data frequently contain zero values --- for example, during complete darkness --- a standard logarithmic transformation is undefined at zero. To address this, a zero-inflated log~10~ transformation [@zauner2025a] was applied using the *log_zero_inflated* function of the *LightLogR* package:
+
+$$x' = \log_{10}(x + c)$$ {#eq-logzeroinflated}
+
+where $c = 0.1$ lx m-EDI is a small offset added prior to transformation. This maps a value of 0 lx to $-1$ on the transformed scale while preserving the interpretability of the log~10~ scale for positive values (e.g., 1 lx $\approx$ 0, 10 lx $\approx$ 1, 100 lx $\approx$ 2). The offset lies below the operating range of the dosimeters and therefore has no meaningful impact on the results. The transformation is invertible via $x = 10^{x'} - c$, so that model estimates can be back-transformed to the original measurement scale. The specific metrics and model responses to which this transformation was applied are listed in @supptbl-metric-list.
+
+#### Measurement-based analysis
 
 m-EDI measurements from the three dosimeters were temporally aligned using the *data2reference* function of the *LightLogR* package [@zauner2025]. The resulting combined dataset was then processed through several filtering steps. First, only observations (points in time) with data from all three dosimeters were retained. Second, based on the participants' logbooks, observations during sleep and other periods when one (or more) of the dosimeters was not worn were removed. Third, only observations for which all dosimeters recorded a measurement below their maximum operating range (\<100,000 lx m-EDI, as specified by the manufacturer) were retained. Fourth, days on which all three dosimeters recorded near continuous zero values were removed. Finally, each observation was paired with (hourly) contextual data derived from the participant logbooks, specifically the activity performed and the primary light source in the environment. The different activities and light source categories that participants could choose from are detailed in the study protocol [@guidolin2024]. When these data were not available in the logbooks, the corresponding observations were removed. Additionally, the photoperiod (i.e. day or night based on civil dawn and dusk) was matched to each observation using the *add_photoperiod* function of the *LightLogR* package. The resulting number of observations in terms of unique participants and measurement days after each processing step is shown in Figure X *\[combined figure with metric-based analysis?\]*.
 
-The resulting measurements were log-transformed after adding a very small offset (0.1 lx m-EDI, i.e. -1 on the log~10~ scale) to avoid taking the logarithm of zero [@zauner2025a]. This offset lies below the operating range of the dosimeters and therefore has no meaningful impact on the results. For each observation, the wear position error was calculated as the difference between each body-worn dosimeter's measurement and the eye-level reference. These observation-level errors were then aggregated to an hourly resolution to align with the temporal resolution of the contextual data. This pairwise-difference approach preserves the wear position error, whereas averaging before computing the error would attenuate the error estimates. Accordingly, the (hourly aggregated) wear position error $\bar{D}_x$ is defined as:
+The resulting measurements were log-transformed using the zero-inflated log~10~ transformation (@eq-logzeroinflated). For each observation, the wear position error was calculated as the difference between each body-worn dosimeter's measurement and the eye-level reference. These observation-level errors were then aggregated to an hourly resolution to align with the temporal resolution of the contextual data. This pairwise-difference approach preserves the wear position error, whereas averaging before computing the error would attenuate the error estimates. Accordingly, the (hourly aggregated) wear position error $\bar{D}_x$ is defined as:
 
-$$
-\bar{D}_x = \frac{1}{n}\sum_{i=1}^{n}\left[\log_{10}(E_{x,i} + 0.1) - \log_{10}(E_{glasses,i} + 0.1)\right]
-$$ where $E_{glasses,i}$ denotes the eye-level measurement and $E_{x,i}$ denotes the measurement at wear position $x$, both recorded at timestamp $i$, and $n$ is the number of measurements within the hour. A positive wear position error indicates that the body-worn dosimeter overestimates actual eye-level light exposure.
+$$\bar{D}_x = \frac{1}{n}\sum_{i=1}^{n}\left[\log_{10}(E_{x,i} + 0.1) - \log_{10}(E_{glasses,i} + 0.1)\right]$$
+where $E_{glasses,i}$ denotes the eye-level measurement and $E_{x,i}$ denotes the measurement at wear position $x$, both recorded at timestamp $i$, and $n$ is the number of measurements within the hour. A positive wear position error indicates that the body-worn dosimeter overestimates actual eye-level light exposure.
 
 #### For metric-based analysis
 
--   merging of measurements for melanopic EDI and photopic illuminance of all wearing positions
--   removing instances where not all three measurements are available
--   merging sleep and non-wear information with time series
--   removing non-wear (but retaining sleep) instances
--   removing measurement values \> 10\^5 lx melanopic EDI / photopic illuminance
--   removing hourse with less than 50% data available
--   removing days with less than 80% data available
--   calculate participant-day metrics
--   calculate participant metrics
--   calculate 30-minute averages for melanopic EDI
--   scaling of nighttime metrics to avoid circularity requirement
+Melanopic EDI (m-EDI) and photopic illuminance recordings from the glasses, chest, and wrist positions were prepared as described in the previous section, yielding a single time series with concurrent measurements from all three positions at each time point.
+
+Sleep and non-wear information were then merged onto the light time series. Sleep onset and wake times from the morning sleep diary, as well as the start, end, and type of each device removal from the app-based wear log, were joined to the corresponding time points. Observations recorded during non-wear periods were set to missing, except when the non-wear period coincided with a reported sleep window, which was retained because several daily metrics (e.g., darkest-10-hour midpoint) require nighttime data. In addition, any measurement $\geq$ 10^5^ lx m-EDI or photopic illuminance was set to missing, as this exceeds the manufacturer-specified operating range of the dosimeters. After these removals, the concurrency check was repeated to ensure that all remaining time points still carried valid data from all three positions.
+
+To ensure that the daily metrics were computed from sufficiently complete data, two further completeness filters were applied. First, hours in which more than 50% of the expected 10-second observations were missing were discarded. Second, after this hourly filter, days retaining less than 80% of their expected hourly bins were removed entirely.
+
+From the cleaned dataset, a comprehensive set of daily light-exposure metrics was computed per participant, day, and wearing position using *LightLogR* metric functions. These included duration above threshold (at 10, 250, and 1,000 lx m-EDI), mean period above threshold, pulse analysis, brightest and darkest 10-hour period characteristics, timing of first and last threshold crossing, frequency of threshold crossings, the Barroso lighting metrics, centroid of light exposure, disparity index, midpoint of cumulative exposure, mean log-transformed m-EDI, luminous dose, the melanopic daylight equivalent ratio (MDER), and the non-visual relative dose (nvRD). Interdaily stability and intradaily variability, which require data spanning multiple days, were computed per participant and wearing position across all available days.
+
+Finally, two nighttime timing metrics --- the darkest 10-hour midpoint and the darkest 10-hour onset --- were rescaled to avoid circularity around midnight. Values falling after 12:00 (noon) were shifted by subtracting 24 hours, so that times in the late evening are represented as negative values relative to midnight. This ensures that these metrics can be modelled with standard linear methods without artefacts from the midnight boundary.
 
 ### Statistical analysis
 
--   no power analysis has been performed, as the size of the sample is determined by the dataset used
+No a priori power analysis was performed, as the sample size was determined by the available dataset [@zauner2026a] rather than by a prospective study design. Two complementary modelling approaches were used. The first (measurement-based) operates on individual time-stamped light measurements and examines how the wear position error varies across measurement contexts. The second (metric-based) operates on daily summary metrics and quantifies the effect of wearing position on each metric.
 
-#### For measurement-based analysis
+#### Measurement-based analysis
 
 A statistical analysis was conducted to investigate whether the wear position error is systematically dependent on the measurement context. Previous studies have shown that wear position errors are influenced by both the illumination environment surrounding the participant and the participant’s posture during the measurements [@Yoshimura04052022; @Mohammadian2024; @devries2026; @devries2026a]. As these characteristics were not directly quantified, four sets of contextual classifications (@tbl-context-class) were defined from the available contextual data to serve as proxies for grouping illumination fields and postures. The first set combined the environment, (whether the participant was indoors, i.e. in a building or outdoors) with the photoperiod (day or night). The second set combined the environment with the local time of day. The third set combined activity with photoperiod. Activity categories included being awake at home, working (at home or in an office), travelling in a vehicle, and time outdoors. This last category grouped walking or cycling, outdoor work, and outdoor leisure, as each was too sparsely reported in the logbooks to be examined separately. The fourth set considered the primary light source in the environment during indoor work at home or in an office. The number of participants and participant-days included for each set is shown in Figure X.
 
@@ -175,52 +198,49 @@ All models converged. As wear position errors represent differences between pair
 
 Using the fitted models, two complementary analyses were performed. First, we assessed whether wear position errors differed across the contextual classifications. For each pairwise comparison of contexts, the null hypothesis stated that the difference in wear position error is zero. Estimated marginal means of the wear position error under each context were computed with the *emmeans* package, and contexts were pairwise compared using model-based t-tests (using the *contrast()* function of *emmeans*). The contextual classifications that included the time of day smooth (@tbl-context-class) were excluded from this analysis to limit the number of comparisons. Second, we assessed the mean wear position error for each contextual classification, with the null hypothesis stating that under each context, the mean wear position error equals zero (i.e. no systematic difference between body-worn and eye-level measurements). Each estimated marginal mean was tested against zero using model-based t-tests (the *test()* function of *emmeans*), and for interpretability the estimates (on the log~10~ scale) were back-transformed to percentage errors. In both analyses a significance level of 0.05 was used. P-values and confidence intervals were not adjusted for multiple comparisons, as failing to detect a wear position error (a type II error) was considered more consequential in this context than a false positive.
 
-#### For metric-based analysis
+#### Metric-based analysis
 
--   table describing the metrics and parametrization, scaling, modelling family, engine
--   data were modelled with linear or generalized mixed-effect models.
--   generalized models used the tweedie, or poisson error distribution, all others a gaussian error distribution
--   models were constructed with the following formula in Wilkinson notation, based on theoretical considerations:
+To quantify how wearing position affects daily summary metrics, each of the 54 metrics was modelled separately using linear or generalised linear mixed-effects models. The choice of model engine and distributional family was determined by the nature of each metric's response variable [@zauner2026b]. Most metrics (46 of 54) were modelled with linear mixed-effects models (Gaussian family). Duration metrics whose distributions were continuous but right-skewed and zero-inflated (e.g., total duration above threshold) were modelled with generalised linear mixed-effects models using a Tweedie distribution with a log link (5 metrics). Count metrics (number of pulses above threshold, frequency of threshold crossings; 3 metrics) were modelled using a Poisson family. Several metrics required response transformations prior to modelling: metrics that had been pre-transformed with a zero-inflated log~10~ transformation during preparation were modelled on that scale [@zauner2025a], interdaily stability was logit-transformed to respect its bounded [0, 1] range, and pulse-level metrics (mean level and mean duration of pulses) were modelled on the zero-inflated log~10~ scale [@zauner2025a]. The full specification of response transformations, engines, and families for each metric is provided in @supptbl-metric-list.
+
+All models shared the same fixed- and random-effects structure, expressed in Wilkinson notation as:
 
 $$\text{metric} \sim \text{site} * \text{position} + (\text{position}|\text{participant}) + (1|\text{date})$$ {#eq-metricbase}
 
--   where *metric* is the outcome metric to be modelled. Fixed effects include the measurement *site* (e.g., Dortmund, Germany), in an interaction effect with the wearing *position*. The random effect structure consists of random slopes for wearing *position* per *participant*, as well as random intercepts per *participant* and random intercepts per calendar *date* (participant-day).
--   the glasses *position* is the reference level, with parameter estimates for differences due to the wrist or the chest.
--   *site* was sum-coded, meaning that the average across site is the reference.
--   If models failed to converge with the full model structure, they were refit in a stepwise procedure, where the model complexity was reduced. In the first instance, random intercepts per *date* were removed, followed by random slopes or *position* per *participant*. All models converged an were non-singular with that procedure.
--   Model diagnostics were created with the {performance} package and included plots for normality of residuals and random effects, homogeneity of variance, linearity, and collinearity.
--   Significance of effects were derived with the *Anova* function from the {car} package, using Wald chi-square tests, with a significance level of 0.05. Despite the large number of comparisons, no correction for multiple testing was applied. This is due to the fact that a null-result might tempt readers to assume equality between two positions, where the analysis tests for differences. Thus, each individual effect must be read with an type II error of 5%.
--   *position* and *site* effects and p-values were derived with the *contrast* function from the {emmeans} package, using the *trt.vs.ctrl* method for *position* and the *eff.emmc* method for *site*.
--   Marginal and conditional $R^2$ values were calculated based on @nakagawa2017. Unique contributions of fixed effects to $R^2$ were calculated as differences from a model with and without the effect in question.
--   To derive relative differences (on the modelling scale), effects were transformed with @eq-trans
+Here, the fixed effects consist of the measurement *site* (the geographical location of data collection), the wearing *position*, and their interaction. The interaction term allows the position effect to vary across sites. The random-effects structure includes random intercepts and random slopes for wearing *position* per *participant*, which accounts for between-participant variability in the magnitude of position effects, as well as random intercepts per calendar *date* (participant-day) to capture day-to-day variability. The glasses position was set as the reference level for position, so that the model estimates for chest and wrist represent deviations from eye-level measurements. Site was sum-coded (deviation coding), so that the intercept represents the grand mean across all sites rather than a single reference site.
 
-$$\text{relative effect} = (\frac{\text{effect}} {|\text{Intercept}|} -1) * 100\%$$ {#eq-trans}
+When models failed to converge or produced singular fits with the full random-effects structure, complexity was reduced in a stepwise procedure. First, the random intercept for date was removed. If convergence was still not achieved, the random slope for position was simplified to a random intercept only. All 54 models converged and were non-singular after this procedure. Model diagnostics were assessed using the *performance* R package and included checks for normality of residuals and random effects, homogeneity of variance, linearity, and collinearity.
 
--   where the *Intercept* is the average effect for the glasses *position* and the average *site*.
--   to give contextual information when in the time of day wear position matters, a hierarchical generalized additive model accordiing to formula @eq-hgam
+The significance of fixed effects was assessed using Wald $\chi^2$ tests via the *Anova* function from the *car* R package, with a significance level of $\alpha$ = 0.05. Despite the large number of metrics tested, no correction for multiple comparisons was applied: the purpose of the analysis is to identify metrics for which the wearing position introduces a systematic bias, and failure to detect such a bias (a type II error) is more consequential in this context than a false positive. Each result should therefore be interpreted with a per-comparison type I error rate of 5%.
 
-$$log_{10}(\text{melanopic EDI}) \sim s(\text{time}) + s(\text{time, position}) + s(\text{time, site}) + s(\text{time, participant}) + s(\text{participant-day})$$ {#eq-hgam}
+Position effects and their associated p-values were estimated using the *emmeans* R package. Pairwise contrasts of chest versus glasses and wrist versus glasses were computed using the treatment-versus-control method. Site-level contrasts within each wearing position were computed using the effects method to identify sites that deviated systematically from the grand mean. To express position effects as interpretable relative differences, model estimates were back-transformed from the modelling scale using @eq-trans:
 
--   where the pattern of 30-minute aggregated and logarithmically scaled values of melanopic EDI are decomposed into a smooth (nonlinear effect) of time, deviation-smooths of wearing *position* over time, deviation-smooths of *site* over time, deviation-smooths of *participants* over time, and random intercepts of *participant-days*.
--   The effect of *position* is tested against a reduced model without the effect. Differences in AIC values larger than 2 are considered significant support for a more complex model with lower AIC.
+$$\text{relative effect} = (\frac{\text{effect}} {|\text{Intercept}|} -1) \times 100\%$$ {#eq-trans}
+
+where the intercept is the estimated marginal mean for the glasses position averaged across all sites, and the effect is the estimated difference between a body-worn position (chest or wrist) and glasses.
+
+Marginal and conditional $R^2$ values were calculated following @nakagawa2017. To decompose the variance explained by individual model components, partial $R^2$ contributions were computed as the difference in $R^2$ between the full model and a reduced model from which the component of interest had been removed. This decomposition was performed for the position fixed effect, the site fixed effect, the random slope of position across participants, the random effect of date, the residual participant intercept, and the unexplained residual variance.
 
 ## Results {#sec-results}
 
-#### For measurement-based analysis
+#### Measurement-based analysis
 
 The estimated differences in wear position errors between contextual classifications are shown in @fig-ratio-context. In each cell, the ratio is the wear position error in the second context relative to the first context, indicating how many times larger or smaller the error is between contexts. Significant differences in wear position errors are shown in bold. Considering chest-worn dosimeters, six of the seventeen investigated comparisons were significant, whereas seven of the seventeen comparisons were significant for wrist-worn dosimeters. Among the contextual classifications evaluated separately by photoperiod (@tbl-context-class), all significant differences for chest-worn dosimeters were observed during daytime, whereas significant differences for wrist-worn dosimeters occurred during both daytime and nighttime. For classifications based on the primary light source in indoor work environments, significant differences in wear position error were observed only between electric and display lighting, for both chest- and wrist-worn dosimeters.
 
 ![Ratios of wear position errors (m-EDI) between contexts. Significant differences in wear position errors between contexts (p \<0.05, unadjusted for multiple comparisons) are shown in bold. The ratio in each cell is the wear position error in the second context relative to that in the first context, indicating how many times larger (ratio \> 1) or smaller (ratio \< 1) the error is in the second context.](output/figures/ratio_context_error.pdf){#fig-ratio-context}
 
+
 Estimated wear position errors for each contextual classification are shown in @fig-abs-context. Errors were consistently larger in magnitude for wrist-worn dosimeters than for chest-worn dosimeters, and were generally larger at night than during the day. Across all categorical contextual classifications (environment, activity, and indoor work lighting source) and for nearly all hours of the day, mean errors were negative, indicating that body-worn dosimeters underestimated eye-level light exposure. Almost all errors differed significantly from zero, the only exceptions were chest-worn measurements taken in vehicles during the day and outdoor measurements during the night and morning hours (approximately 02:00-12:00 local time).
 
 ![Wear position errors (% m-EDI) by context. Significant deviations from zero (p \< 0.05, unadjusted for multiple comparisons) are marked by filled circles or bold curve segments. An error of 0% indicates no difference between the body-worn and eye-level measurements, while a negative error indicates that the body-worn dosimeter underpredicts eye-level light exposure.](output/figures/absolute_context_error.pdf){#fig-abs-context}
+
+#### Metric-based analysis
+
 
 ## Discussion {#sec-disc}
 
 ### Summarizing results
 
--   explain conceptual differences between the two approaches in their results (moment-based vs. aggregated)
+- explain conceptual differences between the two approaches in their results (moment-based vs. aggregated)
 
 **For measurement-based analysis**
 
@@ -240,11 +260,11 @@ For contexts classified by environment and activity, no consistent pattern in we
 
 Our results can be compared with previous studies that assessed wear position errors using similar methodologies, i.e. placing a dosimeter near the eyes and on the body, and comparing the body-worn measurements relative to the eye-level reference to quantify the error. We first compare our overall wear position errors against such studies, discussing the wrist and chest in turn, and then consider the error as a function of measurement context.
 
-For the wrist position, we found significant negative errors, indicating that wrist-worn dosimeters underestimate actual eye-level light exposure. This finding is supported by two prior studies. Figueiro et al. [@Figueiro2013], drawing on measurements from twelve older adults over five days each, found large absolute differences (photopic lux) between measurements at the eyes and wrist, resulting in a significant negative wear position error for most hours of the day. Similarly, Bhandari et al. [@Bhandari2011] found that measurements at the wrist of twenty-five young adults, each recorded over at least four days, were systematically lower than at the eyes (mean difference of 126 lx). However, a third study disagrees with our results. Based on measurements from twenty-nine hospital workers over a single day each, Wen et al. [@Wen2025] reported that measurements at the eyes were significantly lower than those at the wrist, indicating a positive wear position error.
+For the wrist position, we found significant negative errors, indicating that wrist-worn dosimeters underestimate actual eye-level light exposure. This finding is supported by two prior studies. Figueiro et al. [@Figueiro2013], drawing on measurements from twelve older adults over five days each, found large absolute differences (photopic lux) between measurements at the eyes and wrist, resulting in a significant negative wear position error for most hours of the day. Similarly, Bhandari et al. [@Bhandari2021] found that measurements at the wrist of twenty-five young adults, each recorded over at least four days, were systematically lower than at the eyes (mean difference of 126 lx). However, a third study disagrees with our results. Based on measurements from twenty-nine hospital workers over a single day each, Wen et al. [@Wen2023] reported that measurements at the eyes were significantly lower than those at the wrist, indicating a positive wear position error.
 
-For the chest position, our results are less consistent with those reported in these studies. We found mostly negative wear position errors of chest-worn dosimeters, though not all were significant. In contrast, Figueiro et al. [@Figueiro2013] reported similar measurements at the eyes and chest (dosimeter worn as a pendant), with no significant differences for any hour of the day. They did note limited daytime fluctuations in these differences, which we also observed in our model of wear position error as a function of time of day. The results of Wen et al. [@Wen2025] again disagree, as they also reported that measurements at the eyes were significantly lower than those at the chest. Additionally, they found no significant differences between measurements taken at the chest and wrist. We did not test that comparison directly, so we cannot evaluate it statistically; our estimates do, however, indicate substantially larger errors at the wrist than at the chest. No comparison is made with the results of Bhandari et al. [@Bhandari2011] because they did not consider the chest position.
+For the chest position, our results are less consistent with those reported in these studies. We found mostly negative wear position errors of chest-worn dosimeters, though not all were significant. In contrast, Figueiro et al. [@Figueiro2013] reported similar measurements at the eyes and chest (dosimeter worn as a pendant), with no significant differences for any hour of the day. They did note limited daytime fluctuations in these differences, which we also observed in our model of wear position error as a function of time of day. The results of Wen et al. [@Wen2023] again disagree, as they also reported that measurements at the eyes were significantly lower than those at the chest. Additionally, they found no significant differences between measurements taken at the chest and wrist. We did not test that comparison directly, so we cannot evaluate it statistically; our estimates do, however, indicate substantially larger errors at the wrist than at the chest. No comparison is made with the results of Bhandari et al. [@Bhandari2021] because they did not consider the chest position.
 
-Our results indicate that the measurement context modulates the wear position error. Studies confined to a single location with few participants may therefore reach different conclusions from ours, which drew on 108 participants across eight geographic locations. This point is illustrated by Wen et al. [@Wen2025]: their sample consisted only of workers at one hospital, and they speculate that the positive wear position error in their data may stem from the participants' downward gaze while working, a posture specific to that setting. A further source of divergence may be instrumentation, as these studies used different types of dosimeters at the eyes and the body, which may have introduced error.
+Our results indicate that the measurement context modulates the wear position error. Studies confined to a single location with few participants may therefore reach different conclusions from ours, which drew on 108 participants across eight geographic locations. This point is illustrated by Wen et al. [@Wen2023]: their sample consisted only of workers at one hospital, and they speculate that the positive wear position error in their data may stem from the participants' downward gaze while working, a posture specific to that setting. A further source of divergence may be instrumentation, as these studies used different types of dosimeters at the eyes and the body, which may have introduced error.
 
 Two prior studies quantified wear position errors as a function of measurement context, allowing a more direct comparison with our results. Aarts et al. [@aarts2017] quantified wear position errors for chest- and wrist-worn dosimeters under indoor and outdoor daytime conditions, though based on a single participant with less than two hours of measurements. In terms of luminous exposure, they reported that chest-worn dosimeters underestimated by 2% indoors and overestimated by 9% outdoors, while wrist-worn dosimeters overestimated by 17% indoors and underestimated by 11% outdoors. These errors are generally smaller in magnitude than ours, and in two conditions they are of opposite sign, since we observed only underestimation under these conditions. Given that their estimates were derived from a single participant, they are likely highly specific to that participant's posture and the illumination fields they experienced.
 
@@ -252,10 +272,10 @@ More recently, de Vries et al. [@devries2026; @devries2026a] quantified wear pos
 
 ### Limitations
 
--   interindividual variance is high - results from individuals will vary strongly and it is unknown, whether and how different populations (here: adult, health, working indoors) differ in their bias
--   glasses-mount is near-eye level but not corneal and certainly not retinal
--   non-wear was removed, but was self-reported (will only cover part)
--   fixed sample size, reduced for UCR and TUM
+- interindividual variance is high - results from individuals will vary strongly and it is unknown, whether and how different populations (here: adult, health, working indoors) differ in their bias
+- glasses-mount is near-eye level but not corneal and certainly not retinal
+- non-wear was removed, but was self-reported (will only cover part)
+- fixed sample size, reduced for UCR and TUM
 
 **For measurement-based analysis**
 
@@ -271,11 +291,11 @@ Lastly, relatively few observations were available at night (a plot of observati
 
 ### Recommendations
 
--   remain with glasses-position (considered gold-standard), if (- momentary measurement values are the main outcome)?
-    -   protocol covers a short amount of time
-    -   occlusion is a likely issue
-    -   individuals or only a small sample are collected
-    -   temporal dynamic metrics are the main outcome
+- remain with glasses-position (considered gold-standard), if (- momentary measurement values are the main outcome)?
+  - protocol covers a short amount of time
+  - occlusion is a likely issue
+  - individuals or only a small sample are collected
+  - temporal dynamic metrics are the main outcome
 
 **For measurement-based analysis**
 
@@ -288,4 +308,89 @@ Generally, our results indicate that chest-worn dosimeters yield smaller wear po
 ## References {.unnumbered}
 
 ::: {#refs}
+:::
+
+## Supplementary materials
+
+### Figures
+
+### Tables
+
+:::{#supptbl-wearing-position}
+| Study | Sample and duration | Measure and outcome | Positions | Position-dependent result | Notes |
+|------------|------------|------------|------------|------------|------------|
+| Diffey et al. (1977) [@diffey1977] | One manikin; 2 h on 19 days | Solar UVR; dose relative to vertex | Vertex; lower sternum | Sternum received 58–73% of vertex exposure, depending on cloud condition. | Rotating unclothed manikin; no behaviour or clothing. No wrist measurement. |
+| Holman et al. (1983), occupational study [@holman1983] | 5 participants; 6 h/day for 11–15 days | Solar UVR; proportion of ambient dose | Vertex; lower sternum; dorsum of hand | Vertex generally received the highest and sternum the lowest exposure. Hand exposure varied strongly by occupation, from 0.07 of ambient exposure in a classroom teacher to 0.78 in a bricklayer. | One participant per occupation; hand used as the closest approximation to wrist. Sensors were attached to skin, hair, or clothing. |
+| Okudaira et al. (1983) [@Okudaira1983] | 10 participants; 24 h | Photopic illuminance; time-resolved and accumulated exposure | Eye or head level; wrist | Wrist measurements reproduced the broad daily pattern but differed from eye-level exposure during particular activities and orientations. | Limited reporting of device equivalence and agreement statistics. |
+| Cole et al. (1990) [@Cole1990] | Sample size not reported in abstract; 24 h | Illuminance; minute-level correlation and daily mean | Forehead; wrist | Mean correlation of log illuminance was 0.93. Mean daily illuminance was similar at the forehead and wrist: 1,061 versus 1,058 lx. | Abstract only. Devices were randomly interchanged between positions. Wrist under bedcovers caused discrepancies. |
+| Thieden et al. (2000), beach study [@thieden2000] | 11 adults; 5 h | Erythemal UVR; accumulated SED | Top of head; chest; wrist | Mean exposure was 19.7 SED at the head, 9.8 SED at the wrist, and 6.6 SED at the chest. Wrist and chest received 50% and 34% of head exposure, respectively. | Same dosimeter type at all positions. Short outdoor study; head exposure was not ocular exposure. |
+| Thieden et al. (2000), holiday study [@thieden2000] | 9 adults; mean 14 days | Erythemal UVR; accumulated SED | Top of head; wrist | Wrist exposure averaged 51% of head exposure; head and wrist doses correlated at r = 0.89. | Longer aggregation reduced short-term positional variability. No chest measurement. |
+| Figueiro et al. (2013) [@Figueiro2013] | 8 older adults; 5 days | Photopic and circadian light metrics; daily exposure | Near eye; lapel or chest; wrist | Wrist measurements differed substantially from near-eye measurements in absolute exposure, although broad temporal patterns were more similar. | Position and device were partly confounded; devices differed in spectral and directional response. |
+| Aarts et al. (2017) [@aarts2017] | 1 participant; 30 min indoors and 30 min outdoors | Photopic illuminance; deviation from eye-level reference | Between eyes; chest; wrist | Wrist deviation from the between-eyes reference was approximately 27% indoors and 11% outdoors. Chest deviation also depended on environment and activity. | Identical simultaneous sensors, but only one participant and one hour of prescribed activity. |
+| Bhandari et al. (2021) [@Bhandari2021] | 25 adults; 7 days | Illuminance; daily mean and time above thresholds | Spectacle-mounted; wrist | Wrist and spectacle-mounted devices showed similar broad temporal patterns but differed systematically in absolute exposure and threshold-based outcomes. | Position and device were fully confounded: Clouclip at the temple versus Actiwatch at the wrist. |
+| Wen et al. (2023) [@Wen2023] | 20 participants; controlled activity sessions | Photopic illuminance; agreement with eye-level reference | Eye level; chest; wrist | Chest and wrist measurements deviated from eye-level exposure, with larger and more variable differences at the wrist, particularly during movement and orientation changes. | Simultaneous measurements, but prescribed short-term activities rather than unrestricted daily monitoring. |
+| Gibaldi et al. (2024) [@gibaldi2024] | Small pilot sample; short activity recordings | Spectral light exposure; device validation | Helmet-mounted near eye level | Demonstrated the feasibility of measuring close to the visual axis, but did not quantify chest- or wrist-related bias. | Device-development study rather than a direct position comparison. |
+
+: Comparison of position-dependent differences in personal light and ultraviolet-radiation measurements, focusing on eye- or head-level, chest, and wrist measurements.
+:::
+
+:::{#supptbl-metric-list}
+| Metric | Family | Type | Scale | Distribution | LightLogR function |
+|--------|--------|------|-------|-------------|-------------------|
+| Bright cluster | Barroso | duration | log~10~ (zero-inflated) | Gaussian | [barroso_lighting_metrics()](https://tscnlab.github.io/LightLogR/reference/barroso_lighting_metrics.html) |
+| Dark cluster | Barroso | duration | log~10~ (zero-inflated) | Gaussian | [barroso_lighting_metrics()](https://tscnlab.github.io/LightLogR/reference/barroso_lighting_metrics.html) |
+| Duration above 10 | Duration crossing threshold | duration | log (Tweedie) | Tweedie | [duration_above_threshold()](https://tscnlab.github.io/LightLogR/reference/duration_above_threshold.html) |
+| Duration above 1000 | Duration crossing threshold | duration | log (Tweedie) | Tweedie | [duration_above_threshold()](https://tscnlab.github.io/LightLogR/reference/duration_above_threshold.html) |
+| Duration above 250 | Duration crossing threshold | duration | log (Tweedie) | Tweedie | [duration_above_threshold()](https://tscnlab.github.io/LightLogR/reference/duration_above_threshold.html) |
+| Period above 10 | Duration crossing threshold | duration | log~10~ (zero-inflated) | Gaussian | [period_above_threshold()](https://tscnlab.github.io/LightLogR/reference/period_above_threshold.html) |
+| Period above 1000 | Duration crossing threshold | duration | log~10~ (zero-inflated) | Gaussian | [period_above_threshold()](https://tscnlab.github.io/LightLogR/reference/period_above_threshold.html) |
+| Period above 250 | Duration crossing threshold | duration | log~10~ (zero-inflated) | Gaussian | [period_above_threshold()](https://tscnlab.github.io/LightLogR/reference/period_above_threshold.html) |
+| Mean duration pulses above 1000 | Pulses crossing threshold | duration | log~10~ (zero-inflated) | Gaussian | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| Mean duration pulses above 250 | Pulses crossing threshold | duration | log~10~ (zero-inflated) | Gaussian | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| Total duration pulses above 1000 | Pulses crossing threshold | duration | log (Tweedie) | Tweedie | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| Total duration pulses above 250 | Pulses crossing threshold | duration | log (Tweedie) | Tweedie | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| nvRD | Mean nvRD | exposure history | untransformed | Gaussian | [nvRD()](https://tscnlab.github.io/LightLogR/reference/nvRD.html) |
+| Dose | Melanopic Dose | exposure history | log~10~ (zero-inflated) | Gaussian | [dose()](https://tscnlab.github.io/LightLogR/reference/dose.html) |
+| Bright mean level | Barroso | level | log~10~ (zero-inflated) | Gaussian | [barroso_lighting_metrics()](https://tscnlab.github.io/LightLogR/reference/barroso_lighting_metrics.html) |
+| Bright threshold | Barroso | level | log~10~ (zero-inflated) | Gaussian | [barroso_lighting_metrics()](https://tscnlab.github.io/LightLogR/reference/barroso_lighting_metrics.html) |
+| Dark mean level | Barroso | level | log~10~ (zero-inflated) | Gaussian | [barroso_lighting_metrics()](https://tscnlab.github.io/LightLogR/reference/barroso_lighting_metrics.html) |
+| Dark threshold | Barroso | level | log~10~ (zero-inflated) | Gaussian | [barroso_lighting_metrics()](https://tscnlab.github.io/LightLogR/reference/barroso_lighting_metrics.html) |
+| Brightest 10h mean | Brightest / Darkest period | level | log~10~ (zero-inflated) | Gaussian | [bright_dark_period()](https://tscnlab.github.io/LightLogR/reference/bright_dark_period.html) |
+| Darkest 10h mean | Brightest / Darkest period | level | log~10~ (zero-inflated) | Gaussian | [bright_dark_period()](https://tscnlab.github.io/LightLogR/reference/bright_dark_period.html) |
+| Mean level pulses above 1000 | Pulses crossing threshold | level | log~10~ (zero-inflated) | Gaussian | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| Mean level pulses above 250 | Pulses crossing threshold | level | log~10~ (zero-inflated) | Gaussian | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| Mean mel EDI | mean | level | log~10~ (zero-inflated) | Gaussian | --- |
+| MDER | MDER | spectrum | untransformed | Gaussian | --- |
+| Circadian variation | Barroso | temporal dynamics | untransformed | Gaussian | [barroso_lighting_metrics()](https://tscnlab.github.io/LightLogR/reference/barroso_lighting_metrics.html) |
+| Disparity index | Disparity index | temporal dynamics | untransformed | Gaussian | [disparity_index()](https://tscnlab.github.io/LightLogR/reference/disparity_index.html) |
+| Frequency crossing 250 | Frequency crossing threshold | temporal dynamics | log (count) | Poisson | [frequency_crossing_threshold()](https://tscnlab.github.io/LightLogR/reference/frequency_crossing_threshold.html) |
+| Interdaily stability | Interdaily stability | temporal dynamics | logit | Gaussian | [interdaily_stability()](https://tscnlab.github.io/LightLogR/reference/interdaily_stability.html) |
+| Intradaily variability | Intradaily variability | temporal dynamics | untransformed | Gaussian | [intradaily_variability()](https://tscnlab.github.io/LightLogR/reference/intradaily_variability.html) |
+| N pulses above 1000 | Pulses crossing threshold | temporal dynamics | log (count) | Poisson | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| N pulses above 250 | Pulses crossing threshold | temporal dynamics | log (count) | Poisson | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| Brightest 10h midpoint | Brightest / Darkest period | timing | untransformed | Gaussian | [bright_dark_period()](https://tscnlab.github.io/LightLogR/reference/bright_dark_period.html) |
+| Brightest 10h offset | Brightest / Darkest period | timing | untransformed | Gaussian | [bright_dark_period()](https://tscnlab.github.io/LightLogR/reference/bright_dark_period.html) |
+| Brightest 10h onset | Brightest / Darkest period | timing | untransformed | Gaussian | [bright_dark_period()](https://tscnlab.github.io/LightLogR/reference/bright_dark_period.html) |
+| Darkest 10h midpoint | Brightest / Darkest period | timing | untransformed | Gaussian | [bright_dark_period()](https://tscnlab.github.io/LightLogR/reference/bright_dark_period.html) |
+| Darkest 10h offset | Brightest / Darkest period | timing | untransformed | Gaussian | [bright_dark_period()](https://tscnlab.github.io/LightLogR/reference/bright_dark_period.html) |
+| Darkest 10h onset | Brightest / Darkest period | timing | untransformed | Gaussian | [bright_dark_period()](https://tscnlab.github.io/LightLogR/reference/bright_dark_period.html) |
+| Centroid LE | Centroid of light exposure | timing | untransformed | Gaussian | [centroidLE()](https://tscnlab.github.io/LightLogR/reference/centroidLE.html) |
+| Midpoint CE | Midpoint cumulative exposure | timing | untransformed | Gaussian | [midpointCE()](https://tscnlab.github.io/LightLogR/reference/midpointCE.html) |
+| Mean midpoint pulses above 1000 | Pulses crossing threshold | timing | untransformed | Gaussian | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| Mean midpoint pulses above 250 | Pulses crossing threshold | timing | untransformed | Gaussian | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| Mean offset pulses above 1000 | Pulses crossing threshold | timing | untransformed | Gaussian | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| Mean offset pulses above 250 | Pulses crossing threshold | timing | untransformed | Gaussian | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| Mean onset pulses above 1000 | Pulses crossing threshold | timing | untransformed | Gaussian | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| Mean onset pulses above 250 | Pulses crossing threshold | timing | untransformed | Gaussian | [pulses_above_threshold()](https://tscnlab.github.io/LightLogR/reference/pulses_above_threshold.html) |
+| First timing above 10 | Timing crossing threshold | timing | untransformed | Gaussian | [timing_above_threshold()](https://tscnlab.github.io/LightLogR/reference/timing_above_threshold.html) |
+| First timing above 1000 | Timing crossing threshold | timing | untransformed | Gaussian | [timing_above_threshold()](https://tscnlab.github.io/LightLogR/reference/timing_above_threshold.html) |
+| First timing above 250 | Timing crossing threshold | timing | untransformed | Gaussian | [timing_above_threshold()](https://tscnlab.github.io/LightLogR/reference/timing_above_threshold.html) |
+| Last timing above 10 | Timing crossing threshold | timing | untransformed | Gaussian | [timing_above_threshold()](https://tscnlab.github.io/LightLogR/reference/timing_above_threshold.html) |
+| Last timing above 1000 | Timing crossing threshold | timing | untransformed | Gaussian | [timing_above_threshold()](https://tscnlab.github.io/LightLogR/reference/timing_above_threshold.html) |
+| Last timing above 250 | Timing crossing threshold | timing | untransformed | Gaussian | [timing_above_threshold()](https://tscnlab.github.io/LightLogR/reference/timing_above_threshold.html) |
+| Mean timing above 10 | Timing crossing threshold | timing | untransformed | Gaussian | [timing_above_threshold()](https://tscnlab.github.io/LightLogR/reference/timing_above_threshold.html) |
+| Mean timing above 1000 | Timing crossing threshold | timing | untransformed | Gaussian | [timing_above_threshold()](https://tscnlab.github.io/LightLogR/reference/timing_above_threshold.html) |
+| Mean timing above 250 | Timing crossing threshold | timing | untransformed | Gaussian | [timing_above_threshold()](https://tscnlab.github.io/LightLogR/reference/timing_above_threshold.html) |
+
+: Modelling specification for all 54 daily light-exposure metrics. Scale indicates the transformation applied to the response variable before or during modelling. Distribution denotes the distributional family used in the mixed-effects model. All models used the same fixed-effects structure (site × position); see @eq-metricbase for the full formula. The LightLogR function column links to the *LightLogR* R package [@zauner2025] function used to compute each metric; --- indicates metrics not computed by a dedicated package function.
 :::

@@ -3,7 +3,7 @@ title: "Comparison of metrics"
 format: html
 author: Johannes Zauner
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ## Preface
@@ -14,7 +14,10 @@ This document contains the analysis steps from the pre-calculated metrics (see @
 
 ## Setup
 
+The following packages are loaded for data wrangling (`tidyverse`), mixed-effects modelling (`lme4`, `lmerTest`, `glmmTMB`), post-hoc contrasts (`emmeans`), model diagnostics (`performance`, `car`), light-logger data utilities (`LightLogR`, `melidosData`), and table/plot formatting (`gt`, `gtsummary`, `ggplot2`, `cowplot`, `gghighlight`, `see`, `fontawesome`, `katex`, `ggplot2`).
+
 ```{r}
+#| label: setup
 #| warning: false
 #| message: false
 library(tidyverse)
@@ -40,18 +43,24 @@ library(stringr)
 library(knitr)
 library(rmarkdown)
 library(fontawesome)
-performance::r2_nakagawa()
+library(patchwork)
 ```
 
 ## Import
 
+The pre-processed metrics are loaded from a single `.RData` file produced by the preparation notebook. This object (`metrics`) is a long-format data frame with one row per participant, date, wearing position, and metric.
+
 ```{r}
+#| label: import-metrics
 load(here("data/prepared_metrics.RData"))
 ```
 
 ## Visualizing metrics
 
+A few shared plotting helpers are defined here: a log-scale break sequence, a named color vector (one color per wearing position), and a number formatter for axis labels.
+
 ```{r}
+#| label: plot-helpers
 #| filename: helpers
 breaks <- c(0, 10^(0:5))
 colors <- ggsci::pal_jco()(3) |> set_names(c("glasses", "chest", "wrist"))
@@ -61,7 +70,10 @@ label <- function(x) format(x,
 
 ## Preparing metric table
 
+The raw metrics data frame is restructured for per-metric modelling. Factor levels are set for `position`, `Id`, `site`, and `Date` (missing dates are replaced with a sentinel value so they don't drop). The data are then nested so that each row in `metrics_nested` holds all observations for a single metric.
+
 ```{r}
+#| label: nest-metrics
 #| filename: nest data
 metrics_nested <-
   metrics |> 
@@ -73,7 +85,10 @@ metrics_nested <-
   nest(data = -c(metric))
 ```
 
+Metadata for each metric (model engine, response transformation, metric type, etc.) is read from an Excel file. The `engine` column determines which modelling function to use (`lm`, `lmer`, `glmer`, `glmmTMB`), and the corresponding distributional family is constructed here. The metadata is then joined onto the nested data frame so every metric row knows how it should be modelled.
+
 ```{r}
+#| label: load-metric-info
 #| filename: Load metric information
 metric_info <- read_xlsx(here("data/metric_types.xlsx"))
 metric_info <- 
@@ -91,6 +106,7 @@ metric_info |>
 ```
 
 ```{r}
+#| label: join-metric-metadata
 #| filename: Combine metric data and metadata
 metrics_nested <- 
 metrics_nested |> 
@@ -102,6 +118,7 @@ metrics_nested |>
 Metrics that capture timing and might cross midnight need to be rescaled in order to work with linear models. The next plot shows the distribution of timing metrics.
 
 ```{r}
+#| label: fig-timing-distribution
 #| fig-width: 15
 #| fig-height: 15
 #| filename: show distribution of timing metrics
@@ -143,6 +160,7 @@ Affected metrics are:
 Both show a clear split of the data around midnight. To resolve this, we will shift the datas so that data after 12:00 midday are negative values (i.e., indicate time before midnight).
 
 ```{r}
+#| label: rescale-nighttime-metrics
 #| fig-width: 15
 #| fig-height: 15
 #| filename: Transform nighttime timing metrics
@@ -163,7 +181,10 @@ metrics_nested |>
 
 ## Visualize metric distribution
 
+To get an overview of how metrics behave across wearing positions, all metrics are scaled and centered within participant–metric groups and displayed as raincloud plots (jittered points + boxplot + half-violin). Lines connecting the same participant–date across positions reveal within-person consistency. The figure is saved as a PDF for publication.
+
 ```{r}
+#| label: fig-metric-distribution
 #| fig-width: 15
 #| fig-height: 20
 #| warning: false
@@ -198,7 +219,12 @@ ggsave(here("output/figures/Figure_metric_distribution.pdf"), width = 15, height
 
 ## Prepare modelling
 
+The primary hypothesis (H1) is that wearing position affects a metric, potentially differently across measurement sites (i.e., a `site × position` interaction). The right-hand side of the formula is assembled here by appending the pre-specified random-effects structure (stored in the `random` column of `metric_info`) to the fixed-effects template `~ site*position`. A helper then collects all formula column names (H0 and H1 variants) for programmatic iteration.
+
+The table below summarises the modelling specification for every metric: the response variable, any pre-transformation applied, the modelling engine, the distributional family, and the full H1 formula. Confirmatory analyses deliberately omit p-value correction, because a *non-significant* position effect is the more scientifically desirable outcome.
+
 ```{r}
+#| label: add-formulas
 #| filename: Add formulas
 metrics_nested <- 
   metrics_nested |> 
@@ -206,11 +232,13 @@ metrics_nested <-
 ```
 
 ```{r}
+#| label: collect-formula-names
 #| filename: Collect models
 Formulas <-  names(metrics_nested) |> subset(grepl("H1|H0_", names(metrics_nested)))
 ```
 
 ```{r}
+#| label: tbl-model-specs
 #| echo: false
 metrics_nested |> 
   select(-data, -random) |>
@@ -235,6 +263,7 @@ metrics_nested |>
 ```
 
 ```{r}
+#| label: create-formulas
 #| filename: Formula creation
 make_formula <- function(response, rhs) {
   if(is.na(rhs) | is.na(response)) return()
@@ -252,7 +281,12 @@ metrics_nested <-
 
 ## Fit models
 
+Models are fitted for each metric using the engine and family specified in the metadata. The `fit_model()` helper wraps `lm`, `lmer`, `glmer`, and `glmmTMB` and applies a three-step fallback strategy if a model fails to converge or is singular: first the `Date` random effect is dropped, then the random slope for `position` is simplified to a random intercept, and finally the interaction term is removed. This ensures a valid model is returned for every metric while preserving as much complexity as the data will support.
+
+In addition to the main H1 model, several reduced models are fitted for each metric to support partial $$R^2$$ decomposition later: models without the `Date` random effect, without the random slope for position, and without the position fixed effect altogether.
+
 ```{r}
+#| label: fit-model-helpers
 #| filename: Helper functions
 main_formula <- value ~ site*position + site + position + (position|Id) + (1|Date) 
 red_formula <- value ~ site*position + site + position + (position|Id)
@@ -297,6 +331,7 @@ did_converge <-
 ```
 
 ```{r}
+#| label: fit-all-models
 #| filename: Model fit
 #| message: false
 #| warning: false
@@ -323,9 +358,10 @@ metrics_nested <-
     )
 ```
 
-After model fitting, all models converged and aren't singular. This was achieved through a stepwise reduction of model complexity. 
+After model fitting, all models converged and aren't singular. This was achieved through a stepwise reduction of model complexity. The two checks below confirm this: all H1 models must have converged (`TRUE`) and none should be singular (`FALSE`).
 
 ```{r}
+#| label: check-convergence
 #| filename: Checks for singularity and convergence
 metrics_nested |> pull(converged) |> all() #did all converge
 metrics_nested |> pull(singular) |> any() #any are singular?
@@ -333,7 +369,17 @@ metrics_nested |> pull(singular) |> any() #any are singular?
 
 ## Extract model results
 
+Several quantities are extracted from every fitted H1 model:
+
+- **p-values** via `car::Anova()` (Type II/III Wald tests) for the fixed effects `position`, `site`, and their interaction.
+- **Model diagnostics** via `performance::check_model()` for visual inspection.
+- **Random-effect standard deviations** to quantify between-participant and between-date variability.
+- **Estimated marginal means** for the glasses reference level and pairwise contrasts of chest/wrist versus glasses (the two comparisons of primary interest).
+- **Site-level contrasts** within each wearing position to flag sites that deviate systematically.
+- **Partial $$R^2$$ values** (Nakagawa–Schielzeth method) decomposed into contributions from the position fixed effect, the site fixed effect, the random slope for position across participants, the random effect of date, the residual participant intercept, and unexplained residual variance.
+
 ```{r}
+#| label: extract-model-results
 #| filename: Extract model results
 #| message: false
 sig.level <- 0.05
@@ -388,7 +434,12 @@ metrics_nested <-
 
 ## Result table
 
+The full result table is assembled in two stages. First, all relevant columns are collected and reshaped into a wide format suitable for display: p-values, position effect estimates (expressed as percentage deviations from the glasses reference), random-effect standard deviations, and partial $$R^2$$ components. Wearing-position effect estimates and standard deviations are normalised by the absolute reference value (glasses mean) so that all metrics are comparable on a relative scale regardless of their original unit.
+
+The `gt` table is then formatted with colour-coded cell backgrounds (red for significant negative deviations, blue for significant positive deviations), bold text for significant p-values, colored SVG arrows summarising site-level effects, and column spanners that group related columns. The table is saved as a high-resolution PNG for use in the manuscript.
+
 ```{r}
+#| label: collect-result-table
 #| filename: Collect result table info
 metric_table <-
   metrics_nested |> 
@@ -437,11 +488,13 @@ metric_table <-
 
 
 ```{r}
+#| label: tbl-unformatted-reference
 #| filename: unformatted table for reference
 metric_table |> group_by(metric_type) |> gt() |> opt_stylize() |> fmt_number()
 ```
 
 ```{r}
+#| label: tbl-main-results
 #| filename: Table construction
 
 format_metric <- function(x) {
@@ -525,7 +578,8 @@ df |>
   cols_move(arrow_chest,                after = `estimate_chest - glasses`) |>
   cols_move(`estimate_wrist - glasses`, after = arrow_chest) |>
   cols_move(arrow_wrist,                after = `estimate_wrist - glasses`) |>
-  cols_move(c(p_position, r2_position, SD_chest, SD_wrist, r2_slope, SD_Id, r2_id, SD_Date, r2_date, SD_Residual, r2_residual),
+  cols_move(c(p_position, r2_position, SD_chest, SD_wrist, r2_slope, SD_Id, 
+              r2_id, SD_Date, r2_date, SD_Residual, r2_residual),
             after = arrow_wrist) |>
   fmt_scientific(main_effect) |>
   fmt_percent(
@@ -601,7 +655,8 @@ df |>
                           `estimate_wrist - glasses`,
                           arrow_wrist,  p_position, r2_position),
               "Wearing position effect (estimated error)") |> 
-  tab_spanner(columns = c(SD_chest, SD_wrist, r2_slope, SD_Id, r2_id, SD_Date, r2_date, SD_Residual, r2_residual), 
+  tab_spanner(columns = c(SD_chest, SD_wrist, r2_slope, SD_Id, r2_id, SD_Date, 
+                          r2_date, SD_Residual, r2_residual), 
               "Standard deviation (random effect)") |> 
   tab_spanner(columns = contains("_site"), "Site effect") |> 
     # Bold if position effect is significant
@@ -658,21 +713,30 @@ df |>
 ```
 
 ```{r}
+#| label: display-main-table
 #| filename: Plot and save the table
 table
 gtsave(table, here("output/tables/Table_metrics.png"), vwidth = 2000)
 ```
 
+A reduced data frame is extracted for computing summary statistics — keeping only the metric identifier, type, family, modelling scale, and the p-values and effect estimates for chest and wrist relative to glasses.
+
 ```{r}
+#| label: reduce-for-summary
 #| filename: Make a reduced dataframe for summaries
 reduced_df <- 
 df |> 
   select(metric, metric_type, metric_family, scaling, 
-         p_chest = `p_chest - glasses`, p_wrist = `p_wrist - glasses`, error_chest = `estimate_chest - glasses`,
+         p_chest = `p_chest - glasses`, 
+         p_wrist = `p_wrist - glasses`, 
+         error_chest = `estimate_chest - glasses`,
          error_wrist = `estimate_wrist - glasses`) 
 ```
 
+Three summary data frames are computed and combined: one broken down by metric type (e.g., illuminance, timing, spectral), one aggregating all metrics regardless of significance, and one restricted to metrics with a statistically significant position effect. For each group the summary reports the median, minimum, and maximum absolute error (as a proportion of the glasses reference), the number of positive vs. negative deviations, and the count of significant effects for chest and wrist. These are combined into a single concise summary table that provides an at-a-glance overview of the overall magnitude of wearing-position errors.
+
 ```{r}
+#| label: summary-by-metric-type
 #| filename: Summaries by metric type
 df_summary <- 
 reduced_df |> 
@@ -699,6 +763,7 @@ reduced_df |>
 ```
 
 ```{r}
+#| label: summary-significant-only
 #| filename: Summary overall
 df_summary2 <- 
 reduced_df |> 
@@ -729,6 +794,7 @@ reduced_df |>
 ```
 
 ```{r}
+#| label: summary-overall
 #| filename: Summary overall 2
 df_summary3 <- 
 reduced_df |> 
@@ -758,6 +824,7 @@ df_summary <- rbind(df_summary, df_summary3, df_summary2)
 ```
 
 ```{r}
+#| label: tbl-summary-construction
 #| filename: Summary-table by metric type
 table_summary <- 
 df_summary |> 
@@ -806,6 +873,7 @@ df_summary |>
 ```
 
 ```{r}
+#| label: display-summary-table
 #| filename: Plot and save the summary table
 table_summary
 gtsave(table_summary, here("output/tables/Table_metrics_summary.png"), vwidth = 2000)
@@ -813,8 +881,15 @@ gtsave(table_summary, here("output/tables/Table_metrics_summary.png"), vwidth = 
 
 ## Visualize results
 
+Two complementary histograms summarise the distribution of wearing-position errors across all metrics. The first shows **absolute** errors (ignoring direction), giving a sense of overall magnitude. The second shows **signed** errors, revealing whether chest and wrist positions tend to over- or underestimate relative to glasses. In both plots, bins corresponding to statistically significant errors are highlighted in the wearing-position color and labelled with the metric name; non-significant errors are shown in grey. Both figures are saved as vector PDFs.
+
 ```{r}
+#| label: fig-absolute-errors
 #| filename: Visualize absolute metric errors
+#| fig-height: 4
+#| fig-width: 8
+
+fig_abs_error <- 
 reduced_df |> 
   select(metric, p_chest:error_wrist) |> 
   pivot_longer(-metric, names_sep = "_", names_to = c("type", "position")) |> 
@@ -829,19 +904,25 @@ reduced_df |>
   theme_cowplot() +
   coord_cartesian(xlim = c(0,1)) +
   # guides(fill = "none") +
-  labs(caption = "Binwidth: 5%", 
-       title = "Histograms of (absolute) metric errors due to wearing position",
-       subtitle = "Significant errors in the histogram are highlighted in the position color",
-       y = "Count (n)", x = "absolute Error (%)") + 
+  labs(#caption = "Binwidth: 5%", 
+       # title = "Histograms of (absolute) metric errors due to wearing position",
+       # subtitle = "Significant errors in the histogram are highlighted in the position color",
+       y = "Count (n)", x = "Absolute outcome-level bias (%)") + 
   theme(panel.spacing = unit(2, "lines")) +
   gghighlight(p, use_group_by = FALSE,
               label_key = metric, calculate_per_facet = TRUE)
 
-ggsave(here("output/figures/Fig_metric_abs_error.pdf"), device = cairo_pdf)
+fig_abs_error
+
 ```
 
 ```{r}
+#| label: fig-signed-errors
 #| filename: Visualize metric errors
+#| fig-height: 4
+#| fig-width: 8
+
+fig_sign_error <- 
 reduced_df |> 
   select(metric, p_chest:error_wrist) |> 
   pivot_longer(-metric, names_sep = "_", names_to = c("type", "position")) |> 
@@ -856,21 +937,37 @@ reduced_df |>
   theme_cowplot() +
   coord_cartesian(xlim = c(-0.8,0.5)) +
   # guides(fill = "none") +
-  labs(caption = "Binwidth: 5%", 
-       title = "Histograms of metric errors due to wearing position",
-       subtitle = "Significant errors in the histogram are highlighted in the position color",
-       y = "Count (n)", x = "Error (%)") + 
+  labs(#caption = "Binwidth: 5%", 
+       # title = "Histograms of metric errors due to wearing position",
+       # subtitle = "Significant errors in the histogram are highlighted in the position color",
+       y = "Count (n)", x = "Outcome-level bias (%)") + 
   theme(panel.spacing = unit(2, "lines")) +
   gghighlight(p, use_group_by = FALSE,
               label_key = metric, calculate_per_facet = TRUE)
 
-ggsave(here("output/figures/Fig_metric_error.pdf"), device = cairo_pdf)
+fig_sign_error
+```
+
+```{r}
+#| label: fig-errors
+#| filename: Visualize metric errors combined
+#| fig-height: 8
+#| fig-width: 8
+
+fig_sign_error / fig_abs_error + 
+  plot_annotation(tag_levels = "A",
+                  caption = "Bindwidth = 5%\nSignificant errors in the histogram are highlighted in the position color",
+                  )
+
+ggsave(here("output/figures/Fig_metric_error.pdf"), device = cairo_pdf,
+       width = 8, height = 8)
 ```
 
 
 ## Session info
 
 ```{r}
+#| label: session-info
 sessionInfo()
 ```
 

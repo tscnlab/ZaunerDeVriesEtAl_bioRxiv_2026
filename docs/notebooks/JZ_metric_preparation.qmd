@@ -21,6 +21,7 @@ With the cleaned dataset, metrics per participant and day are calculated (with e
 ## Setup
 
 ```{r}
+#| label: setup
 #| filename: Setup
 library(tidyverse)
 library(LightLogR)
@@ -39,6 +40,7 @@ source("../scripts/site_names.R")
 In the first step, we import the unaggregated light eposure data for the glasses, chest, and wrist. These will be loaded from the [GitHub project page](https://github.com/MeLiDosProject). These data have been imported already, trimmed by trial dates, checked for irregular data and gaps. All of them run on a `10 second` interval.
 
 ```{r}
+#| label: import-light-data
 #| message: false
 #| filename: Import light data
 light_glasses <- load_data("light_glasses")
@@ -47,6 +49,7 @@ light_wrist <- load_data("light_wrist")
 ```
 
 ```{r}
+#| label: count-participants
 #| filename: Count participants and participant-days
 light_glasses |> flatten_data() |> group_by(Id) |> n_groups()
 light_chest |> flatten_data() |> group_by(Id) |> n_groups()
@@ -62,6 +65,7 @@ light_wrist |> flatten_data() |> group_by(Id) |> add_Date_col(group.by = TRUE) |
 The sleep data comes from a morning sleep diary. They contain both sleep and wake times.
 
 ```{r}
+#| label: import-sleep-data
 #| message: false
 #| filename: Import sleep data
 sleepdiary <- load_data("sleepdiaries")
@@ -72,6 +76,7 @@ sleepdiary <- load_data("sleepdiaries")
 The non-wear data comes from an app-based wear log that participants filled in whenever they removed or put on the device(s). 
 
 ```{r}
+#| label: import-wearlog-data
 #| message: false
 #| filename: Import wearlog data
 wearlog <- load_data("wearlog")
@@ -92,11 +97,13 @@ wearlog <- load_data("wearlog")
 [^1]: Wrist data were collected but with a different device (`ActTrust` instead of `ActLumus`). Thus, it will not be considered here.
 
 ```{r}
+#| label: remove-mpi-site
 #| filename: Remove MPI site
 light_glasses$MPI <- NULL
 ```
 
 ```{r}
+#| label: align-combine-positions
 #| filename: Select relevant columns, combine positions, add photoperiod
 light <-
   imap(
@@ -121,6 +128,7 @@ light <-
 ### Remove instances with less than all wearing positions
 
 ```{r}
+#| label: enforce-concurrency
 #| filename: Remove instances with less than all wearing positions
 light <- 
   light |> 
@@ -146,6 +154,7 @@ For the wearlog, the start and end times of a removal, as well as the type (`sta
 #### Preparation
 
 ```{r}
+#| label: prepare-sleep-wearlog
 #| filename: Prepare sleepdiaries and wearlog for merging
 #| message: false
 sleepdiary_adj <-
@@ -169,6 +178,7 @@ wearlog_adj <-
 #### Combination
 
 ```{r}
+#| label: merge-sleep-wearlog
 #| filename: Add sleepdiaries and wearlog to light
 light <- 
 light |> 
@@ -179,6 +189,7 @@ light |>
 ```
 
 ```{r}
+#| label: tbl-data-overview-before-step1
 #| filename: Overview of data non-wear and out-of-range removal
 light |> 
   structure(class = "melidos_data") |> 
@@ -204,6 +215,7 @@ light |>
 In this step, we will remove non-wear instances that are neither marked as sleep, nor fall into a sleep window (sleepdiary). We will also remove instances ≥ 1.0*10^5 lx melanopic EDI.
 
 ```{r}
+#| label: preprocessing-step1
 #| filename: remove non-wear and out-of-range measurements
 light <- 
 light |> 
@@ -225,12 +237,14 @@ light |>
 
 
 ```{r}
+#| label: flatten-to-dataframe
 #| filename: Flatten structure from list to data.frame
 light_flat <- 
   structure(light, class = "melidos_data") |> flatten_data() |> group_by(site, Id)
 ```
 
 ```{r}
+#| label: tbl-data-overview-after-step1
 #| filename: Overview of data non-wear and out-of-range removal
 light_flat |> 
   drop_na(MEDI_glasses) |> 
@@ -257,6 +271,7 @@ Here we further process the data:
   - days with less than 80% data availability (after the previous step) are removed
 
 ```{r}
+#| label: preprocessing-step2
 #| filename: remove hours and days with too few data
 light_fin <- 
   light_flat |> 
@@ -271,6 +286,7 @@ light_fin <-
 ```
 
 ```{r}
+#| label: tbl-data-overview-after-step2
 #| filename: Overview of data after preprocessing
 light_fin |> 
   distinct(Date) |>
@@ -290,6 +306,7 @@ light_fin |>
 ## Calculate metrics
 
 ```{r}
+#| label: datetime-conversion-helper
 #| filename: Create convenience function for converting datetime to time to double
 datetime_2_numeric <- function(x) {
   x |> 
@@ -303,6 +320,7 @@ datetime_2_numeric <- function(x) {
 ```
 
 ```{r}
+#| label: prepare-metrics-data
 #| filename: Prepare metrics data
 metrics_data <-
   light_fin |> 
@@ -315,6 +333,7 @@ metrics_data <-
 
 
 ```{r}
+#| label: calculate-daily-metrics
 #| filename: Calculate by-day metrics
 #| warning: false
 metrics <- 
@@ -381,6 +400,7 @@ metrics <-
 ```
 
 ```{r}
+#| label: calculate-multiday-metrics
 #| filename: Calculate by-day metrics
 #| warning: false
 metrics2 <- 
@@ -396,6 +416,7 @@ metrics2 <-
 ```
 
 ```{r}
+#| label: combine-all-metrics
 #| filename: combine metrics
 metrics <- 
         bind_rows(
@@ -405,16 +426,17 @@ metrics <-
 rm(metrics2)
 ```
 
-## 30-minute values
+## 1-hour-minute values
 
-For the nonlinear analysis, we require 30-minute-values.
+For the nonlinear explorative analysis, we require 1-hour-values.
 
 ```{r}
+#| label: aggregate-hourly
 time_data <- 
 metrics_data |> 
   group_by(site, Id, Date, position) |> 
   aggregate_Datetime(
-    "30 mins",
+    "1 hour",
     type = "floor",
     numeric.handler = \(x) x |> mean(na.rm = TRUE),
     geo.MEDI = MEDI |> log_zero_inflated() |> mean(na.rm = TRUE) |> exp_zero_inflated()
@@ -425,7 +447,7 @@ metrics_data |>
   select(-static) |> 
   add_Time_col() |> 
   ungroup() |> 
-  mutate(Time = as.numeric(Time)/3600 + 0.25,
+  mutate(Time = as.numeric(Time)/3600 + 0.5,
          across(c(site, Id, sleep, State.Brown, wear, photoperiod.state),
                 fct),
          Date = factor(Date),
@@ -442,6 +464,7 @@ metrics_data |>
 ## Export metrics
 
 ```{r}
+#| label: export-data
 #| filename: Export metric data
 save(metrics, file = here("data/prepared_metrics.RData"))
 save(time_data, file = here("data/prepared_time_data.RData"))
@@ -450,5 +473,6 @@ save(time_data, file = here("data/prepared_time_data.RData"))
 ## Session info
 
 ```{r}
+#| label: session-info
 sessionInfo()
 ```
