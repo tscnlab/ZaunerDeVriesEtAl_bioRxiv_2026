@@ -121,6 +121,7 @@ library(itsadug)    # used to compute rho
 library(ggh4x)      # used to color plots
 library(ggsci)      # used for color palette (pal_jco)
 library(ggtext)     # used to format footnotes
+library(grid)       # used to generate legends
 
 # Define colors
 pos_colors <- setNames(pal_jco()(3), c("head", "chest", "wrist"))
@@ -134,6 +135,20 @@ label_term <- function(x) {
     outdoor = "Outdoors",
     home = "Awake at home",
     working_indoor = "Working in the office/home",
+    road_vehicle = "In a vehicle",
+    outdoor_act = "Time outdoors\u00b2", # Superscript for footnotes in figures
+    electric = "Electric",
+    daylight = "Daylight",
+    display = "Display"  
+    )
+}
+
+label_term2 <- function(x) {
+  recode(x,
+    indoor = "Indoors",
+    outdoor = "Outdoors",
+    home = "Awake at home",
+    working_indoor = "Working in the\noffice/home",
     road_vehicle = "In a vehicle",
     outdoor_act = "Time outdoors\u00b2", # Superscript for footnotes in figures
     electric = "Electric",
@@ -1548,7 +1563,6 @@ build_pct_table(emm_logdif_c_m4, emm_logdif_w_m4) |>
 backtrans_pct <- function(x) (10^x - 1) * 100
 
 # Prepare data
-# m1m3: color by photoperiod
 prep_df <- function(emm_obj, group_var, position_label) {
   df <- get_emm_table(emm_obj)
   df$category <- df[[group_var]]
@@ -1561,13 +1575,12 @@ prep_df <- function(emm_obj, group_var, position_label) {
       pct_upper = backtrans_pct(upper.CL),
       is_sig = p.value < 0.05,
       period = factor(photoperiod.state, levels = c("day", "night"),
-                         labels = c("Day", "Night")),
+                      labels = c("Day", "Night")),
       line_color = photoperiod_colors[as.character(photoperiod.state)],
       point_fill = ifelse(is_sig, line_color, "white")
     )
 }
 
-# m4: no photoperiod; color by position via pos_colors
 prep_df_m4 <- function(emm_obj, position_label) {
   df <- get_emm_table(emm_obj)
   df$category <- df$work_light_context
@@ -1584,16 +1597,15 @@ prep_df_m4 <- function(emm_obj, position_label) {
     )
 }
 
-# Per-model category ordering (reversed so first listed sits at top)
 m1_cats <- c("indoor", "outdoor")
 m3_cats <- c("home", "working_indoor", "road_vehicle", "outdoor_act")
 m4_cats <- c("electric", "daylight", "display")
 
 mk_cat <- function(df, cats) {
   df |>
-    mutate(category = factor(category, 
+    mutate(category = factor(category,
                              levels = rev(cats),
-                             labels = rev(label_term(cats))),
+                             labels = rev(label_term2(cats))),
            position = factor(position, levels = c("Chest", "Wrist")))
 }
 
@@ -1607,78 +1619,139 @@ df_m4 <- bind_rows(prep_df_m4(emm_logdif_c_m4, "Chest"),
                    prep_df_m4(emm_logdif_w_m4, "Wrist")) |>
   mk_cat(m4_cats)
 
-
-# Shared x-scale for all models
-all_x <- c(df_m1$pct_lower, df_m1$pct_upper, df_m3$pct_lower, df_m3$pct_upper, df_m4$pct_lower, df_m4$pct_upper)
-x_pad <- diff(range(all_x, na.rm = TRUE)) * 0.05
+# Shared x-axis scale
+all_x <- c(df_m1$pct_lower, df_m1$pct_upper, df_m3$pct_lower, df_m3$pct_upper,
+           df_m4$pct_lower, df_m4$pct_upper)
+x_pad <- diff(range(all_x, na.rm = TRUE)) * 0.03
 x_lims <- c(min(all_x, na.rm = TRUE) - x_pad, max(all_x, na.rm = TRUE) + x_pad)
 x_breaks <- seq(floor(x_lims[1] / 10) * 10, ceiling(x_lims[2] / 10) * 10, by = 10)
 pd <- position_dodge(width = 0.55)
 
+# Shared plot pieces
+gridlines <- list(
+  map(x_breaks[x_breaks != 0],
+      \(xv) geom_vline(xintercept = xv, linewidth = 0.5,
+                       color = "grey70", linetype = "dotted")),
+  geom_vline(xintercept = 0, linewidth = 0.7,
+             linetype = "dashed", color = "grey30")
+)
+x_scale <- scale_x_continuous(
+  labels = function(x) paste0(ifelse(x > 0, "+", ""), x, "%"))
 
-make_model_plot <- function(df, ylab, use_color, show_strip = FALSE, show_x = FALSE) {
-  base <- ggplot(df, aes(x = pct_est, y = category)) +
-    map(x_breaks[x_breaks != 0],
-        \(xv) geom_vline(xintercept = xv, linewidth = 0.5,
-                         color = "grey70", linetype = "dotted")) +
-    geom_vline(xintercept = 0, linewidth = 0.7,
-               linetype = "dashed", color = "grey30")
+hidden_x <- theme(
+  axis.text.x  = element_text(color = NA),
+  axis.ticks.x = element_line(color = NA),
+  axis.title.x = element_text(color = NA),
+  axis.line.x  = element_line(color = NA)
+)
 
-  if (use_color == "period") {
-    p <- base +
-      geom_linerange(aes(xmin = pct_lower, xmax = pct_upper,
-                         color = period, group = period),
-                     position = pd, linewidth = 0.6) +
-      geom_point(aes(color = period, fill = point_fill, group = period),
-                 shape = 21, position = pd, size = 3, stroke = 1) +
-      scale_color_manual(
-        values = c(Day = unname(photoperiod_colors["day"]),
-                   Night = unname(photoperiod_colors["night"])),
-        name = NULL, drop = FALSE)
-  } else {  # m4
-    p <- base +
-      geom_linerange(aes(xmin = pct_lower, xmax = pct_upper,
-                         color = line_color),
-                     linewidth = 0.6) +
-      geom_point(aes(color = line_color, fill = point_fill),
-                 shape = 21, size = 3, stroke = 1) +
-      scale_color_identity()
-  }
+strip_pos <- strip_themed(
+  background_x = elem_list_rect(fill = unname(pos_colors[c("chest", "wrist")]))
+)
 
-  p +
-    scale_fill_identity() +
-    facet_wrap2(~ position) +
-    scale_x_continuous(
-      labels = function(x) paste0(ifelse(x > 0, "+", ""), x, "%")) +
-    coord_cartesian(xlim = x_lims) +
-    labs(x = if (show_x) "Error (%)" else NULL, y = ylab) +
-    theme_cowplot() +
-    theme(
-      panel.spacing = unit(2, "lines"),
-      strip.text = if (show_strip) element_text() else
-                                         element_text(color = NA),
-      strip.background = if (show_strip) element_rect() else element_blank(),
-      axis.text.x = if (show_x) element_text() else
-                                     element_text(color = NA),
-      axis.ticks.x = if (show_x) element_line() else
-                                     element_line(color = NA),
-      axis.title.x = if (show_x) element_text() else
-                                     element_text(color = NA),
-      axis.line.x = if (show_x) element_line() else
-                                     element_line(color = NA),
-      plot.margin = margin(t = 0, r = 5, b = 0, l = 5)
-    )
+# Legend for combined top 3 plots
+# Key glyph: horizontal line + circle
+draw_key_cpoint <- function(data, params, size) {
+  grobTree(
+    draw_key_path(data, params, size),
+    draw_key_point(data, params, size)
+  )
 }
 
-# Plot m1, m3, m4
-p_m1 <- make_model_plot(df_m1, "Environment\u00b9", "period", show_strip = TRUE)
-p_m3 <- make_model_plot(df_m3, "Activity", "period")
-p_m4 <- make_model_plot(df_m4, "Indoor work lighting\u00b3", "identity", show_x = TRUE)
+# Dummy data to build the legend
+legend_df <- data.frame(
+  x = 0,
+  y = levels(df_m1$category)[1],
+  key = factor(c("Day", "Night", " ", "Significant", "Non-signif."),
+               levels = c("Day", "Night", " ", "Significant", "Non-signif."))
+)
 
+# p_m1: colored strips (chest/wrist), x hidden, supplies the shared legend
+p_m1 <- ggplot(df_m1, aes(x = pct_est, y = category)) +
+  gridlines +
+  geom_linerange(aes(xmin = pct_lower, xmax = pct_upper,
+                     color = period, group = period),
+                 position = pd, linewidth = 0.6, show.legend = FALSE) +
+  geom_point(aes(color = period, fill = point_fill, group = period),
+             shape = 21, position = pd, size = 3, stroke = 1,
+             show.legend = FALSE) +
+  # invisible layer that only exists to build the legend
+  geom_point(data = legend_df, aes(x = x, y = y, color = key),
+             shape = NA, na.rm = TRUE, inherit.aes = FALSE,
+             key_glyph = draw_key_cpoint) +
+  scale_color_manual(
+  values = c(Day = unname(photoperiod_colors["day"]),
+             Night = unname(photoperiod_colors["night"]),
+             " " = NA,                     # invisible spacer key
+             "Significant" = "black",
+             "Non-signif." = "black"),
+  limits = c("Day", "Night", " ", "Significant", "Non-signif."),
+  labels = c("Day", "Night", "", "Significant", "Non-signif."),  # blank label for spacer
+  name = NULL) +
+  scale_fill_identity() +
+  guides(color = guide_legend(override.aes = list(
+  shape = 21, size = 3, stroke = 1,
+  linewidth = 0.6, linetype = "solid",
+  fill = c(unname(photoperiod_colors["day"]),
+           unname(photoperiod_colors["night"]),
+           NA, "black", "white")))) +   # NA for the spacer
+  facet_wrap2(~ position, strip = strip_pos) +
+  x_scale +
+  coord_cartesian(xlim = x_lims) +
+  labs(x = NULL, y = "Environ.\u00b9", tag = "A") +
+  theme_cowplot() +
+  theme(panel.spacing = unit(2, "lines"),
+        plot.margin = margin(t = 0, r = 5, b = 0, l = 5)) +
+  hidden_x
 
-# Plot m2 time-of-day curves
+# p_m3: strips (chest/wrist) hidden, x hidden, no legend
+p_m3 <- ggplot(df_m3, aes(x = pct_est, y = category)) +
+  gridlines +
+  geom_linerange(aes(xmin = pct_lower, xmax = pct_upper,
+                     color = period, group = period),
+                 position = pd, linewidth = 0.6) +
+  geom_point(aes(color = period, fill = point_fill, group = period),
+             shape = 21, position = pd, size = 3, stroke = 1) +
+  scale_color_manual(
+    values = c(Day = unname(photoperiod_colors["day"]),
+               Night = unname(photoperiod_colors["night"])),
+    name = NULL, drop = FALSE) +
+  scale_fill_identity() +
+  facet_wrap2(~ position) +
+  x_scale +
+  coord_cartesian(xlim = x_lims) +
+  labs(x = NULL, y = "Activity") +
+  theme_cowplot() +
+  theme(panel.spacing = unit(2, "lines"),
+        strip.text = element_text(color = NA),
+        strip.background = element_blank(),
+        legend.position = "none",
+        plot.margin = margin(t = 0, r = 5, b = 0, l = 5)) +
+  hidden_x
+
+# p_m4: strips (chest/wrist) hidden, x shown, no legend
+p_m4 <- ggplot(df_m4, aes(x = pct_est, y = category)) +
+  gridlines +
+  geom_linerange(aes(xmin = pct_lower, xmax = pct_upper, color = line_color),
+                 linewidth = 0.6) +
+  geom_point(aes(color = line_color, fill = point_fill),
+             shape = 21, size = 3, stroke = 1) +
+  scale_color_identity() +
+  scale_fill_identity() +
+  facet_wrap2(~ position) +
+  x_scale +
+  coord_cartesian(xlim = x_lims) +
+  labs(x = "Error (%)", y = "Indoor work lighting\u00b3") +
+  theme_cowplot() +
+  theme(panel.spacing = unit(2, "lines"),
+        strip.text = element_text(color = NA),
+        strip.background = element_blank(),
+        plot.margin = margin(t = 0, r = 5, b = 0, l = 5))
+
+# p_m2: time of day curves, colored strips (chest/wrist), x shown, legend
 get_emm_curve <- function(model, position_label) {
-  emm <- emmeans(model, ~ environment | timeofday, at = list(timeofday = seq(0, 24, by = 0.25))) # data point for each 15 minutes
+  emm <- emmeans(model, ~ environment | timeofday,
+                 at = list(timeofday = seq(0, 24, by = 0.25)))
   emm_test <- as.data.frame(test(emm, null = 0, adjust = "none"))
   emm_ci   <- as.data.frame(confint(emm, level = 0.95, adjust = "none"))
   emm_test |>
@@ -1700,45 +1773,56 @@ curves <- bind_rows(get_emm_curve(m2_logdif_c, "Chest"),
          .by = c(position, environment))
 
 y_data_range  <- range(c(curves$pct_error_low, curves$pct_error_high), na.rm = TRUE)
-y_grid_breaks <- seq(floor(y_data_range[1] / 10) * 10, ceiling(y_data_range[2] / 10) * 10, by = 10)
+y_grid_breaks <- seq(floor(y_data_range[1] / 10) * 10,
+                     ceiling(y_data_range[2] / 10) * 10, by = 10)
 y_grid_breaks <- y_grid_breaks[y_grid_breaks != 0]
 
 p_m2 <- ggplot(curves, aes(x = timeofday, y = pct_error, color = environment)) +
-  geom_ribbon(aes(ymin = pct_error_low, ymax = pct_error_high, fill = environment), alpha = 0.20, color = NA) +
+  geom_ribbon(aes(ymin = pct_error_low, ymax = pct_error_high, fill = environment),
+              alpha = 0.20, color = NA) +
   map(y_grid_breaks,
-      \(yv) geom_hline(yintercept = yv, linewidth = 0.5, color = "grey70", linetype = "dotted")) +
+      \(yv) geom_hline(yintercept = yv, linewidth = 0.5,
+                       color = "grey70", linetype = "dotted")) +
   geom_hline(yintercept = 0, linewidth = 0.7, linetype = "dashed", color = "grey30") +
-  geom_line(linewidth = 0.5) +
+  geom_line(aes(linewidth = "Non-signif.")) +
   geom_line(data = curves |> filter(significant),
-            aes(group = interaction(environment, signif_id)),
-            linewidth = 1.4, show.legend = FALSE) +
-  facet_wrap2(~ position) +
+            aes(group = interaction(environment, signif_id),
+                linewidth = "Significant")) +
+  facet_wrap2(~ position, strip = strip_pos) +
   scale_color_manual(values = env_colors,
                      labels = c(indoor = "Indoors", outdoor = "Outdoors"),
                      name = NULL) +
   scale_fill_manual(values = env_colors, guide = "none") +
+  scale_linewidth_manual(
+    values = c("Significant" = 1.4, "Non-signif." = 0.5),
+    limits = c("Significant", "Non-signif."),
+    name = NULL,
+    guide = guide_legend(order = 2,
+                         override.aes = list(colour = "black", fill = NA))) +
   scale_x_continuous(breaks = seq(0, 24, by = 6), expand = c(0, 0)) +
-  scale_y_continuous(
-    labels = function(y) paste0(ifelse(y > 0, "+", ""), y, "%")) +
+  scale_y_continuous(labels = function(y) paste0(ifelse(y > 0, "+", ""), y, "%")) +
   coord_cartesian(xlim = c(0, 24)) +
+  guides(color = guide_legend(order = 1,
+                              override.aes = list(linewidth = 1.4))) +
   theme_cowplot() +
-  labs(x = "Local time (hrs)", y = "Error (%)") +
+  labs(x = "Local time (hrs)", y = "Error (%)", tag = "B") +
   theme(panel.spacing = unit(2, "lines"))
 
-
 # Combine plots
-final_plot <- (p_m1 / plot_spacer() / p_m3 / plot_spacer() / p_m4 / plot_spacer() / p_m2) +
-  plot_layout(guides = "collect", heights = c(2, -1.3, 4, -1.3, 3, 0, 5)) +
+top <- (p_m1 / plot_spacer() / p_m3 / plot_spacer() / p_m4) +
+  plot_layout(guides = "collect", heights = c(2, -1.3, 4, -1.3, 3))
+
+final_plot <- wrap_plots(top, plot_spacer(), p_m2,
+                         ncol = 1, heights = c(7.8, 0, 3.8)) +
   plot_annotation(
     title = "Wear position error (% m-EDI) by context",
     subtitle = "Mean wear position errors (m-EDI) and 95% confidence intervals (horizontal lines or shaded bands).\nEstimates significantly different from zero (p < 0.05) are shown as filled circles or bold curves.",
     caption = paste(
-      "\u00b9 Inside (indoors) or outside (outdoors) a building",
+      "\u00b9 Environment: Inside (indoors) or outside (outdoors) a building",
       "\u00b2 Cycling/walking, working, or leisure outdoors",
       "\u00b3 Primary light source when working in the office/home",
       sep = "<br>"),
     theme = theme(plot.caption = element_markdown(hjust = 0, size = 8)))
-
 
 final_plot
 
