@@ -1436,6 +1436,12 @@ ggsave(here("output/figures/ratio_context_error.pdf"),
        width  = 7,
        height = 8,
        units  = "in")
+
+ggsave(here("output/figures/ratio_context_error.jpeg"),
+       plot   = final_plot,
+       width  = 7,
+       height = 8,
+       units  = "in")
 ```
 
 ## Wear position error per context (absolute)
@@ -1827,6 +1833,12 @@ final_plot <- wrap_plots(top, plot_spacer(), p_m2,
 final_plot
 
 ggsave(here("output/figures/absolute_context_error.pdf"),
+       plot   = final_plot,
+       width  = 8,
+       height = 9,
+       units  = "in")
+
+ggsave(here("output/figures/absolute_context_error.jpeg"),
        plot   = final_plot,
        width  = 8,
        height = 9,
