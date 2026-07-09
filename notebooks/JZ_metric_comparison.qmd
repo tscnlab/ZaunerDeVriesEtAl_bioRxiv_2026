@@ -998,7 +998,7 @@ reduced_df |>
   mutate(p = p< 0.05) |> 
   ggplot(aes(x = abs(error))) +
   geom_histogram(binwidth = 0.05, aes(fill = position)) +
-  facet_wrap(~position) +
+  facet_wrap(~position, labeller = labeller(position = str_to_title)) +
   scale_fill_manual(values = colors) +
   scale_x_continuous(labels = scales::label_percent(accuracy = 1),
                      breaks = seq(0, 1, by = 0.2)) +
@@ -1031,7 +1031,7 @@ reduced_df |>
   mutate(p = p< 0.05) |> 
   ggplot(aes(x = (error))) +
   geom_histogram(binwidth = 0.05, aes(fill = position)) +
-  facet_wrap(~position) +
+  facet_wrap(~position, labeller = labeller(position = str_to_title)) +
   scale_fill_manual(values = colors) +
   scale_x_continuous(labels = scales::label_percent(accuracy = 1),
                      breaks = seq(-1, 1, by = 0.2)) +

@@ -276,7 +276,8 @@ More recently, de Vries et al. [@devries2026; @devries2026a] quantified wear pos
 - interindividual variance is high - results from individuals will vary strongly and it is unknown, whether and how different populations (here: adult, health, working indoors) differ in their bias
 - glasses-mount is near-eye level but not corneal and certainly not retinal
 - non-wear was removed, but was self-reported (will only cover part)
-- fixed sample size, reduced for UCR and TUM
+- for summary metrics, sleep times were retained but did not constitute wear times for eye- and chest-level.
+- fixed sample size, reduced for UCR (6 participants) and TUM (10 participants)
 
 **For measurement-based analysis**
 
