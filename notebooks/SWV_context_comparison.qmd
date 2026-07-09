@@ -58,7 +58,7 @@ The following modeling decisions were made.
 
 1.  The dataset includes four contextual classifications describing the measurement context: activity context (`act_context`), light context when working indoors (`work_light_context`), photoperiod (`photoperiod.state`), and environment (`environment`). As measurement deviations between dosimeter positions are primarily driven by the lighting conditions and participant posture under which the measurements were performed [@devries2026; @devries2026a], considerable overlap exists between these categories. For example, being outdoors typically makes daylight the most prevalent light source. Whether a participant was outdoors can be inferred from activity context, light context, and environment. Hence, to avoid multicollinearity, these contextual factors were not implemented in a single model, but a separate model was made for each factor. Each model and their rationale are described below.
 
-2.  The wear position error (log‑transformed differences between eye‑level and body‑worn dosimeter measurements) for chest-worn (`logdif_c`) and wrist-worn (`logdif_w`) dosimeters was defined as the outcome variable for each model. The distributions of these errors show a sharp central peak and long tails, indicating leptokurtosis (kurtosis test substantially exceeded 3 for both distributions). Initial tests using a standard linear mixed-effects model (LMM), which assumes Gaussian residuals, revealed violations of the model assumptions, as evidenced by a clear S-shaped pattern in QQ plots and heteroscedasticity in residual diagnostics. Therefore, it was decided to adopt a Student-t residual distribution, as it better accommodates heavy-tailed residuals. Model diagnostics of the developed models are discussed in section @sec-model-diagnostics.
+2.  The wear position error (log‑transformed differences between eye‑level and body‑worn dosimeter measurements) for chest-worn (`logdif_c`) and wrist-worn (`logdif_w`) dosimeters was defined as the outcome variable for each model. The distributions of these errors show a sharp central peak and long tails, indicating leptokurtosis (kurtosis test substantially exceeded 3 for both distributions). Initial tests using a standard linear mixed-effects model (LMM), which assumes Gaussian residuals, revealed violations of the model assumptions, as evidenced by a clear S-shaped pattern in QQ plots and heteroscedasticity in residual diagnostics. Therefore, it was decided to adopt a Student-t residual distribution, as it better accommodates heavy-tailed residuals. Model diagnostics of the developed models are discussed in @sec-model-diagnostics.
 
     As the measurements were recorded simultaneously at the eyes, chest, and wrist, the wear position errors for the chest and wrist share the same eye-level term by construction. As they are hence not fully independent, modeling both jointly was explored, but resulted in convergence errors due to the additional model complexity. Moreover, as the dependence between both errors (outcomes) is deemed outside the current scope, a separate model was fitted for each.
 
@@ -1356,7 +1356,10 @@ make_m13_plot <- function(df, ylab, show_strip_text) {
                   fontface = ifelse(is_sig, "bold", "plain")),
               size = 11 / .pt) +
     shared_fill +
-    facet_wrap(~ position) +
+    ggh4x::facet_wrap2(~ position, strip = if (show_strip_text)
+      ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(
+        fill = pos_colors[c("chest", "wrist")]))
+      else ggh4x::strip_vanilla()) +
     scale_x_discrete(expand = c(0, 0), position = "top") +
     scale_y_discrete(expand = c(0, 0)) +
     labs(x = NULL, y = ylab) +

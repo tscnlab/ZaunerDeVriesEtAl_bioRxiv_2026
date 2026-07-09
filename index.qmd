@@ -219,7 +219,7 @@ Estimated wear position errors for each contextual classification are shown in @
 
 ![Wear position errors (% m-EDI) by context. Significant deviations from zero (p \< 0.05, unadjusted for multiple comparisons) are marked by filled circles or bold curve segments. An error of 0% indicates no difference between the body-worn and eye-level measurements, while a negative error indicates that the body-worn dosimeter underpredicts eye-level light exposure.](output/figures/absolute_context_error.jpeg){#fig-abs-context}
 
-The estimated differences in wear position errors between contextual classifications are shown in @fig-ratio-context. In each cell, the ratio is the wear position error in the second context relative to the first context, indicating how many times larger or smaller the error is between contexts. Significant differences in wear position errors are shown in bold. Considering chest-worn dosimeters, six of the seventeen investigated comparisons were significant, whereas seven of the seventeen comparisons were significant for wrist-worn dosimeters. Among the contextual classifications evaluated separately by photoperiod (@supptbl-context-class), all significant differences for chest-worn dosimeters were observed during daytime, whereas significant differences for wrist-worn dosimeters occurred during both daytime and nighttime. For classifications based on the primary light source in indoor work environments, significant differences in wear position error were observed between electric and display lighting, for both chest- and wrist-worn dosimeters, and between daylight and display lighting for wrist-worn dosimeters.
+The estimated differences in wear position errors between contextual classifications are shown in @fig-ratio-context. In each cell, the ratio is the wear position error in the second context relative to the first context, indicating how many times larger or smaller the error is between contexts. Significant differences in wear position errors are shown in bold. Considering chest-worn dosimeters, six of the seventeen investigated comparisons were significant, whereas seven of the seventeen comparisons were significant for wrist-worn dosimeters. Among the contextual classifications evaluated separately by photoperiod (@supptbl-context-class), all significant differences for chest-worn dosimeters were observed during daytime, whereas significant differences for wrist-worn dosimeters occurred during both daytime and nighttime. For classifications based on the primary light source in indoor work environments, significant differences in wear position error were observed between electric and display lighting, for both chest- and wrist-worn dosimeters.
 
 ![Ratios of wear position errors (m-EDI) between contexts. Significant differences in wear position errors between contexts (p \<0.05, unadjusted for multiple comparisons) are shown in bold. The ratio in each cell is the wear position error in the second context relative to that in the first context, indicating how many times larger (ratio \> 1) or smaller (ratio \< 1) the error is in the second context.](output/figures/ratio_context_error.jpeg){#fig-ratio-context width="80%"}
 
@@ -258,8 +258,6 @@ The magnitude of wear position errors varied with measurement context, though th
 For chest- and wrist-worn dosimeters, estimated mean wear position errors were consistently larger at night than during the day. A plausible explanation is that in the absence of daylighting, illumination primarily comes from electric sources that are typically more directional and unevenly distributed than daylight, resulting in spatially heterogeneous illumination fields, which have been associated with larger wear position errors [@devries2026; @devries2026a]. Similarly, among the primary light sources in indoor work environments, the largest errors were present under display lighting. As displays are fairly directional light sources, they are expected to produce more heterogeneous illumination fields than electric lighting or daylighting.
 
 For contexts classified by environment and activity, no consistent pattern in wear position error was observed across both wear positions. For chest-worn dosimeters, the estimated mean wear position errors for indoor and outdoor conditions differed significantly (pairwise comparisons, @fig-ratio-context) during the day (-16.4% indoors, -7.3% outdoors) but not at night (-19.6% indoors, -16.4% outdoors). In contrast, for wrist-worn dosimeters the opposite pattern was observed: no significant difference in estimated mean wear position error was present during the day (-33.8% indoors, -33.4% outdoors), whereas a significant difference was present at night (-40.0% indoors, -47.2% outdoors). Considering the contextual classifications based on activity, wear position errors broadly followed the environmental (indoors or outdoors) pattern, with indoor activities (awake at home, working in the office/home) resembling the indoor error and outdoor activities (in a vehicle and time outdoors) resembling the outdoor error.
-
-*\[Note on inter-individual variability? Though this analysis focused on means\]*
 
 The outcome-level analysis showed that the substantial time-resolved errors observed in the measurement-based analysis did not translate uniformly into equally large biases in daily exposure metrics. Across all 54 metrics, 19 chest-level contrasts and 27 wrist-level contrasts differed significantly from the eye-level reference. Among the significant contrasts, the median absolute bias was 5% at the chest and 8% at the wrist, although individual estimates ranged from 1% to 50% and from 1% to 84%, respectively. Body-worn measurements therefore produced systematic differences in a considerable proportion of derived outcomes, particularly at the wrist, but the magnitude of bias depended strongly on the metric being calculated.
 
@@ -343,7 +341,7 @@ Formal analysis: JZ, SDV
 
 Investigation: JZ, AD, MS
 
-Resources:  AD, JVD, MS
+Resources: AD, JVD, MS
 
 Validation: JZ, SDV, AD, JVD, MS
 
@@ -358,7 +356,6 @@ Funding acquisition: AD, JVD, MS
 Project administration: AD, JVD, MS
 
 Supervision: JVD, MS
-
 
 All authors reviewed and approved the final manuscript.
 
@@ -397,7 +394,6 @@ J.Z. declares the following potential conflicts of interest in the past five yea
 A.D. declares the following potential conflicts of interest in the past five years. Academic roles: Member of Joint Technical Committee 20 (JTC20) of the International Commission on Illumination (CIE); Division reporter (DR6-50) of the International Commission on Illumination (CIE) to report outcomes of the "4th Manchester Workshop on Light Metrics for Biology – Light Pollution". A.D. declares no influence of the disclosed roles or relationships on the work presented herein.
 
 All other authors declare no potential conflicts of interest
-
 
 ## References {.unnumbered}
 
