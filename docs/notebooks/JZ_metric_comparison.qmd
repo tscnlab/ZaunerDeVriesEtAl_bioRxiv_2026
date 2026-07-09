@@ -980,6 +980,16 @@ Two complementary histograms summarise the distribution of wearing-position erro
 #| fig-height: 4
 #| fig-width: 8
 
+# Helper: recolor strip backgrounds by position after plot build
+color_strips <- function(p, fills) {
+  g <- ggplotGrob(p)
+  strip_idx <- grep("strip-t", g$layout$name)
+  for (i in seq_along(strip_idx)) {
+    g$grobs[[strip_idx[i]]]$grobs[[1]]$children[[1]]$gp$fill <- fills[i]
+  }
+  g
+}
+
 fig_abs_error <- 
 reduced_df |> 
   select(metric, p_chest:error_wrist) |> 
@@ -1045,7 +1055,10 @@ fig_sign_error
 #| fig-height: 8
 #| fig-width: 8
 
-fig_sign_error / fig_abs_error + 
+strip_fills <- unname(colors[c("chest", "wrist")])
+
+wrap_elements(color_strips(fig_sign_error, strip_fills)) /
+  wrap_elements(color_strips(fig_abs_error, strip_fills)) +
   plot_annotation(tag_levels = "A",
                   caption = "Bindwidth = 5%\nSignificant errors in the histogram are highlighted in the position color",
                   )
