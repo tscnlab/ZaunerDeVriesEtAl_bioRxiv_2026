@@ -317,6 +317,88 @@ Measurement context modified placement error, but these contextual effects were 
 
 We do not recommend applying a universal correction factor to chest- or wrist-derived measurements. Although average placement effects were predominantly negative, their magnitude varied across metrics, contexts, days, sites, and participants, and individual effects can differ in direction from the population average. A single multiplicative correction could therefore improve agreement for some observations while increasing error for others. Investigators should instead select the measurement position prospectively according to the intended outcome, report the anatomical location and sensor orientation precisely, and interpret findings in relation to the metric-specific and context-specific sensitivity demonstrated here. Where possible, validation subsamples using simultaneous eye-level and body-worn measurements would provide a more defensible basis for quantifying placement error within a particular population and study setting.
 
+## Statements
+
+### Acknowledgements
+
+The authors would like to express gratitude to the participants who volunteered in this study, whether they completed the experiment or not.
+
+### Funding statement
+
+The project MeLiDos (22NRM05 MeLiDos) has received funding from the European Partnership on Metrology, co-financed from the European Union’s Horizon Europe Research and Innovation Programme and by the Participating States. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or EURAMET. Neither the European Union nor the granting authority can be held responsible for them.
+
+A.D. was also supported by TÜBİTAK - Scientific and Technological Research Council of Türkiye (Project No. 224S740).
+
+### Statement of Author contributions
+
+Conceptualization: JZ, SDV, AD, JVD, MS
+
+Methodology: JZ, SDV, AD, JVD, MS
+
+Software: JZ, SDV
+
+Data curation: JZ
+
+Formal analysis: JZ, SDV
+
+Investigation: JZ, AD, MS
+
+Resources:  AD, JVD, MS
+
+Validation: JZ, SDV, AD, JVD, MS
+
+Visualization: JZ, SDV
+
+Writing – original draft: JZ, SDV
+
+Writing – review and editing: All authors
+
+Funding acquisition: AD, JVD, MS
+
+Project administration: AD, JVD, MS
+
+Supervision: JVD, MS
+
+
+All authors reviewed and approved the final manuscript.
+
+## Statement of data availability
+
+All data used in this study are available at https://github.com/MeLiDosProject and are archived on Zenodo (https://zenodo.org/communities/22nrm05_melidos/), accessed through the melidosData R package (https://melidosproject.github.io/melidosData/).
+
+All analyses are available on GitHub (xyz), hosted on GitHub pages (xyz), and archived on Zenodo (xyz).
+
+The individuals site data are available from:
+
+| Institution (site Abbr.) | City | Country | Repository | DOI |
+|---------------|---------------|---------------|---------------|---------------|
+| KNUST | Kumasi | Ghana | [AkuffoEtAl_Dataset_2025](https://github.com/MeLiDosProject/AkuffoEtAl_Dataset_2025) | 10.5281/zenodo.15576731 |
+| UCR | San José | Costa Rica | [Sancho-SalasEtAl_Dataset_2025](https://github.com/MeLiDosProject/Sancho-SalasEtAl_Dataset_2025) | 10.5281/zenodo.17289456 |
+| IZTECH | Izmir | Turkey | [DidikogluEtAl_Dataset_2025](https://github.com/MeLiDosProject/DidikogluEtAl_Dataset_2025) | 10.5281/zenodo.16568109 |
+| FUSPCEU | Madrid | Spain | [BaezaEtAl_Dataset_2025](https://github.com/MeLiDosProject/BaezaEtAl_Dataset_2025) | 10.5281/zenodo.16834951 |
+| TUM | Munich | Germany | [HildenEtAl_Dataset_2025](https://github.com/MeLiDosProject/HildenEtAl_Dataset_2025) | 10.5281/zenodo.16893901 |
+| MPI | Tübingen | Germany | [GuidolinEtAl_Dataset_2025](https://github.com/MeLiDosProject/GuidolinEtAl_Dataset_2025) | 10.5281/zenodo.16895188 |
+| BAUA | Dortmund | Germany | [BroszioEtAl_Dataset_2025](https://github.com/MeLiDosProject/BroszioEtAl_Dataset_2025) | 10.5281/zenodo.18111232 |
+| THUAS | Delft | The Netherlands | [AertsEtAl_Dataset_2025](https://github.com/MeLiDosProject/AertsEtAl_Dataset_2025) | 10.5281/zenodo.17979893 |
+| RISE | Borås | Sweden | [NilssonTengelinEtAl_Dataset_2026](https://github.com/MeLiDosProject/NilssonTengelinEtAl_Dataset_2026) | 10.5281/zenodo.18925834 |
+
+## Statement of AI use
+
+During manuscript preparation, generative artificial intelligence tools (ChatGPT 5.5) were used to support language editing, structural refinement, and condensation of text. AI assistance was used to improve clarity, coherence, concision, and journal fit, but **not** to generate, analyse, or interpret primary data. All AI-assisted text was critically reviewed, edited, and approved by the authors, who take full responsibility for the content, accuracy, integrity, and conclusions of the manuscript.
+
+During data analysis, AI assistance was used to bugfix code sections, support figure and table styling, and resolve modelling convergence and singularity issues. AI assistance was **not** used to develop the analysis strategy, write analysis scripts, or interpret results.
+
+## Statement of competing interests
+
+M.S. declares the following potential conflicts of interest in the past five years (2021–2025): academic roles as Member of the Board of Directors of the Society of Light, Rhythms, and Circadian Health (SLRCH), Chair of Joint Technical Committee 20 (JTC20) of the International Commission on Illumination (CIE), Member of the Daylight Academy, and Chair of the Research Data Alliance Working Group Optical Radiation and Visual Experience Data; remunerated roles as Speaker of the Steering Committee of the Daylight Academy, ad-hoc reviewer for the Health and Digital Executive Agency of the European Commission, ad-hoc reviewer for the Swedish Research Council, Associate Editor for LEUKOS, examiner for the University of Manchester, Flinders University, and the University of Southern Norway, and consultant for LyS Technologies and RoX Health; research funding and support from the Max Planck Society, Max Planck Foundation, Max Planck Innovation, Technical University of Munich, Wellcome Trust, National Research Foundation Singapore, European Partnership on Metrology, VELUX Foundation, Bayerisch-Tschechische Hochschulagentur (BTHA), BayFrance/Bayerisch-Französisches Hochschulzentrum, BayFOR/Bayerische Forschungsallianz, and Reality Labs Research; honoraria for talks from ISGlobal, the Research Foundation of the City University of New York, and the Stadt Ebersberg, Museum Wald und Umwelt; travel reimbursements from the Daimler und Benz Stiftung; and being named on European Patent Application EP23159999.4A, “System and method for corneal-plane physiologically-relevant light logging with an application to personalized light interventions related to health and well-being.” M.S. declares that the disclosed roles and relationships had no influence on the work presented herein. The funders had no role in study design, data collection and analysis, the decision to publish, or preparation of the manuscript.
+
+J.Z. declares the following potential conflicts of interest in the past five years (2021–2025): academic roles as Member of Joint Technical Committee 20 (JTC20) of the International Commission on Illumination (CIE), Member of the Research Data Alliance Working Group Optical Radiation and Visual Experience Data, and Speaker of group 2, melanopic effects of light, of the Technical Scientific Committee (TWA) of the German Society of Lighting Technology and Design (LiTG); remunerated roles as examiner for the Swiss Lighting Society; teacher for LiTG, the University of Applied Sciences Munich, and the Technical University of Applied Sciences Rosenheim; associated partner at 3lpi lighting design + engineering, Munich; tool and 3D-model designer for Zumtobel Lighting GmbH; and course designer for the University of Applied Sciences Munich and Virtual University Bavaria; honoraria for talks from LiTG, Lamilux/Heinrich Strunz GmbH, Robert-Bosch Hospital Stuttgart, Ergotopia GmbH, the German statutory accident insurance institution for the administrative sector (VBG), BRIXEN CULTUR, KITEO GmbH & Co. KG, and the University of Applied Sciences Augsburg; travel reimbursements from the Daimler und Benz Stiftung; and, together with 3lpi, holding a design patent for a non-visually optimized luminaire, No. 008194021–0001 through -0006, at the European Union Intellectual Property Office.
+
+A.D. declares the following potential conflicts of interest in the past five years. Academic roles: Member of Joint Technical Committee 20 (JTC20) of the International Commission on Illumination (CIE); Division reporter (DR6-50) of the International Commission on Illumination (CIE) to report outcomes of the "4th Manchester Workshop on Light Metrics for Biology – Light Pollution". A.D. declares no influence of the disclosed roles or relationships on the work presented herein.
+
+All other authors declare no potential conflicts of interest
+
+
 ## References {.unnumbered}
 
 ::: {#refs}
