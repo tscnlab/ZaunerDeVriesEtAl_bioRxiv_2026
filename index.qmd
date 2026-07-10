@@ -329,33 +329,33 @@ A.D. was also supported by TÜBİTAK - Scientific and Technological Research Cou
 
 ### Statement of Author contributions
 
-Conceptualization: JZ, SDV, AD, JVD, MS
+Conceptualization: JZ, SWV, AD, JD, MS
 
-Methodology: JZ, SDV, AD, JVD, MS
+Methodology: JZ, SWV, AD, JD, MS
 
-Software: JZ, SDV
+Software: JZ, SWV
 
 Data curation: JZ
 
-Formal analysis: JZ, SDV
+Formal analysis: JZ, SWV
 
 Investigation: JZ, AD, MS
 
-Resources: AD, JVD, MS
+Resources: AD, JD, MS
 
-Validation: JZ, SDV, AD, JVD, MS
+Validation: JZ, SWV, AD, JD, MS
 
-Visualization: JZ, SDV
+Visualization: JZ, SWV
 
-Writing – original draft: JZ, SDV
+Writing – original draft: JZ, SWV
 
 Writing – review and editing: All authors
 
-Funding acquisition: AD, JVD, MS
+Funding acquisition: AD, JD, MS
 
-Project administration: AD, JVD, MS
+Project administration: AD, JD, MS
 
-Supervision: JVD, MS
+Supervision: JD, MS
 
 All authors reviewed and approved the final manuscript.
 
@@ -381,7 +381,7 @@ The individuals site data are available from:
 
 ## Statement of AI use
 
-During manuscript preparation, generative artificial intelligence tools (ChatGPT 5.5) were used to support language editing, structural refinement, and condensation of text. AI assistance was used to improve clarity, coherence, concision, and journal fit, but **not** to generate, analyse, or interpret primary data. All AI-assisted text was critically reviewed, edited, and approved by the authors, who take full responsibility for the content, accuracy, integrity, and conclusions of the manuscript.
+During manuscript preparation, generative artificial intelligence tools (ChatGPT 5.5 and Anthropic Claude Opus 4.8) were used to support language editing, structural refinement, and condensation of text. AI assistance was used to improve clarity, coherence, concision, and journal fit, but **not** to generate, analyse, or interpret primary data. All AI-assisted text was critically reviewed, edited, and approved by the authors, who take full responsibility for the content, accuracy, integrity, and conclusions of the manuscript.
 
 During data analysis, AI assistance was used to bugfix code sections, support figure and table styling, and resolve modelling convergence and singularity issues. AI assistance was **not** used to develop the analysis strategy, write analysis scripts, or interpret results.
 
@@ -392,6 +392,8 @@ M.S. declares the following potential conflicts of interest in the past five yea
 J.Z. declares the following potential conflicts of interest in the past five years (2021–2025): academic roles as Member of Joint Technical Committee 20 (JTC20) of the International Commission on Illumination (CIE), Member of the Research Data Alliance Working Group Optical Radiation and Visual Experience Data, and Speaker of group 2, melanopic effects of light, of the Technical Scientific Committee (TWA) of the German Society of Lighting Technology and Design (LiTG); remunerated roles as examiner for the Swiss Lighting Society; teacher for LiTG, the University of Applied Sciences Munich, and the Technical University of Applied Sciences Rosenheim; associated partner at 3lpi lighting design + engineering, Munich; tool and 3D-model designer for Zumtobel Lighting GmbH; and course designer for the University of Applied Sciences Munich and Virtual University Bavaria; honoraria for talks from LiTG, Lamilux/Heinrich Strunz GmbH, Robert-Bosch Hospital Stuttgart, Ergotopia GmbH, the German statutory accident insurance institution for the administrative sector (VBG), BRIXEN CULTUR, KITEO GmbH & Co. KG, and the University of Applied Sciences Augsburg; travel reimbursements from the Daimler und Benz Stiftung; and, together with 3lpi, holding a design patent for a non-visually optimized luminaire, No. 008194021–0001 through -0006, at the European Union Intellectual Property Office.
 
 A.D. declares the following potential conflicts of interest in the past five years. Academic roles: Member of Joint Technical Committee 20 (JTC20) of the International Commission on Illumination (CIE); Division reporter (DR6-50) of the International Commission on Illumination (CIE) to report outcomes of the "4th Manchester Workshop on Light Metrics for Biology – Light Pollution". A.D. declares no influence of the disclosed roles or relationships on the work presented herein.
+
+J.D. declares the following potential conflicts of interest in the past five years. Academic role: Member of Joint Technical Committee 20 (JTC20) of the International Commission on Illumination (CIE). J.D. declares no influence of the disclosed role on the work presented herein.
 
 All other authors declare no potential conflicts of interest
 
