@@ -57,6 +57,9 @@ light_wrist |> flatten_data() |> group_by(Id) |> n_groups()
 light_glasses |> flatten_data() |> group_by(Id) |> add_Date_col(group.by = TRUE) |> n_groups()
 light_chest |> flatten_data() |> group_by(Id) |> add_Date_col(group.by = TRUE) |> n_groups()
 light_wrist |> flatten_data() |> group_by(Id) |> add_Date_col(group.by = TRUE) |> n_groups()
+
+
+
 ```
 
 
@@ -195,7 +198,9 @@ light |>
   structure(class = "melidos_data") |> 
   flatten_data() |> 
   group_by(site, Id) |> 
-  add_Date_col() |> 
+  add_Date_col(group.by = TRUE) |>
+  filter_out(any(all(is.na(MEDI_glasses)), all(is.na(MEDI_chest)), all(is.na(MEDI_wrist)))) |> 
+  ungroup(Date) |> 
   distinct(Date) |>
   group_by(site) |> 
   count() |> 

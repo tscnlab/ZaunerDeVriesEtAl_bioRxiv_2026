@@ -133,8 +133,6 @@ For the present analysis, we used the personal light exposure recordings from pa
 
 Light exposure was recorded using spectrally sensitive ActLumus devices (Condor Instruments, São Paulo, Brazil) [@ishihara2025; @vanduijnhoven2025]. The devices sampled at 10-s intervals and used eight visible-range spectral channels to derive photopic and α-opic quantities, including melanopic equivalent daylight illuminance (m-EDI)[@cie0262018]. Participants wore separate devices mounted centrally on non-prescription spectacle frames near the corneal plane, as a pendant at chest level, and on the wrist. ActLumus devices have been independently evaluated against a criterion spectrometer under indoor electric-lighting and outdoor daylight conditions, showing a broad detection range, low inter-device variability, and comparatively high photopic accuracy [@ishihara2025]. Further details of the devices, calibration, wearing protocol, and field-study procedures are reported in the companion study [@zauner2026b].
 
-*Figure on sensor placement, wearing position, color coding, and data types?*
-
 ### Software Resources
 
 All data processing, statistical analyses, and visualisations were performed in R version 4.5.0 [@base]. Harmonised data from the individual MeLiDos study sites[@zauner2026a] were accessed using *melidosData* version 1.0.6 [@melidosData]. Personal light-exposure time series were processed, temporally aligned, annotated, and summarised using *LightLogR* version 0.10.0 [@zauner2025]. General data manipulation and visualisation were performed with packages from the *tidyverse* version 2.0.0 [@tidyverse].
@@ -157,7 +155,7 @@ $$x' = \log_{10}(x + c)$$ {#eq-logzeroinflated}
 
 where $c = 0.1$ lx m-EDI is a small offset added prior to transformation. This maps a value of 0 lx to $x'=-1$ on the transformed scale while preserving the interpretability of the log~10~ scale for positive values. The offset lies below the operating range of the dosimeters and therefore has no meaningful impact on the results. The transformation is invertible via $x = 10^{x'} - c$, so that model estimates can be back-transformed to the original measurement scale. The specific metrics and model responses to which this transformation was applied are listed in @supptbl-metric-list.
 
-![Data processing pipelines for measurement-level and outcome-level analyses.](output/figures/method_flowchart.png){#fig-met-flowchart}
+![Data processing pipelines for measurement-level and outcome-level analyses.](output/figures/method_flowchart.jpg){#fig-met-flowchart}
 
 #### Measurement-level analysis
 

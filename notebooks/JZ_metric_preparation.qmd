@@ -128,29 +128,6 @@ light <-
 
 > Note: the displayed warnings refer to the fact that participant `FUSPCEU_S014` had a measurement interval of 60 seconds on the glasses, compared to the 10 seconds of everyone else (and both the other wearing positions). Thus, six measurement values from the chest and wrist positions map to one from the glasses. This is not deemed problematic, as it is only one participant in one site. The last of the six respective chest and wrist measurements will be used for comparison.
 
-```{r}
-#| label: tbl-data-overview-before-step1
-#| filename: Overview of data non-wear and out-of-range removal
-light |> 
-  structure(class = "melidos_data") |> 
-  flatten_data() |> 
-  group_by(site, Id) |> 
-  add_Date_col() |>
-  distinct(Date) |>
-  group_by(site) |> 
-  count() |> 
-  ungroup() |> 
-  site_conv_mutate() |> 
-  gt() |> 
-  cols_label(site = "Site",
-             n = "Participant-days") |> 
-  grand_summary_rows(
-    n, fns = sum ~ sum(.)
-  ) |> 
-  tab_header("Summary of participant_days")
-```
-
-
 ### Remove instances with less than all wearing positions
 
 ```{r}
