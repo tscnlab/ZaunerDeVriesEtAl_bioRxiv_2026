@@ -1,0 +1,151 @@
+```{mermaid}
+%%| fig-width: 9
+%%| fig-cap: "Processing steps flowchart"
+%%| label: fig-method-flowchart
+%%| echo: true
+%%| code-fold: true
+%%{init: {"flowchart": {"padding": 8, "nodeSpacing": 30, "rankSpacing": 40, "diagramPadding": 4}} }%%
+flowchart TD
+
+    A["Study sample<br/>191 participants<br/>× 8 protocol days<br/><b>1528 participant-days</b>"]
+
+    B1["Eye-level position<br/>143 participants<br/><b>1136 participant-days</b>"]
+
+    B2["Chest position<br/>157 participants<br/><b>1249 participant-days</b>"]
+
+    B3["Wrist position<br/>153 participants<br/><b>1223 participant-days</b>"]
+
+    C["Concurrent coverage across all wear positions<br/>110 participants<br/><b>849 participant-days</b>"]
+
+    D["Non-wear and out-of-range observations excluded<br/>110 participants<br/><b>845 participant-days</b>"]
+
+    E1["Observations missing contextual data and days with continuous zero readings excluded<br/>108 participants<br/><b>787 participant-days</b>"]
+
+    E2["Partial days excluded:<br/>- Hours with &lt; 50% data<br/>- Days with &lt; 80% data<br/>106 participants<br/><b>604 participant-days</b>"]
+    
+    F1["Contextual classification: Environment<br/>108 participants<br/><b>782 participant-days</b>"]
+    
+    F2["Contextual classification: Activity<br/>108 participants<br/><b>778 participant-days</b>"]
+    
+    F3["Contextual classification: Indoor work lighting<br/>105 participants<br/><b>545 participant-days</b>"]
+    
+    F4["Participant-day level metrics<br/>52 metrics per participant-day<br/><b>n = 31,408</b>"]
+
+    F5["Participant-level metrics<br/>2 metrics per participant<br/><b>n = 212</b>"]
+
+    A --> B1 & B2 & B3
+    B1 & B2 & B3 --> C
+    C --> D
+    D -->| <b> measurement-level </b> | E1    
+    D -->| <b> outcome-level </b> | E2
+    E1 --> F1 & F2 & F3
+    E2 --> F4 & F5
+    E2 ~~~ Z
+
+    Z["&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"]
+    style Z fill:none,stroke:none,color:transparent
+    
+    classDef head  fill:#0073C2,color:#FFFFFF
+    classDef chest fill:#EFC000,color:#FFFFFF
+    classDef wrist fill:#868686,color:#FFFFFF
+
+    class B1 head
+    class B2 chest
+    class B3 wrist
+
+```
+
+```{r}
+#| label: export-flowchart-png
+#| eval: false
+#| echo: true
+#| code-fold: true
+#| code-summary: "Export flowchart to PNG"
+
+# Renders the Mermaid diagram above to output/figures/method_flowchart.png
+# via a temporary HTML file and webshot2 (headless Chrome).
+# Run manually when the diagram changes.
+
+library(webshot2)
+
+mermaid_code <- '%%{init: {"flowchart": {"padding": 8, "nodeSpacing": 30, "rankSpacing": 40, "diagramPadding": 4}} }%%
+flowchart TD
+
+    A["Study sample<br/>191 participants<br/>× 8 protocol days<br/><b>1528 participant-days</b>"]
+
+    B1["Eye-level position<br/>143 participants<br/><b>1136 participant-days</b>"]
+
+    B2["Chest position<br/>157 participants<br/><b>1249 participant-days</b>"]
+
+    B3["Wrist position<br/>153 participants<br/><b>1223 participant-days</b>"]
+
+    C["Concurrent coverage across all wear positions<br/>110 participants<br/><b>849 participant-days</b>"]
+
+    D["Non-wear and out-of-range observations excluded<br/>110 participants<br/><b>845 participant-days</b>"]
+
+    E1["Observations missing contextual data and days with continuous zero readings excluded<br/>108 participants<br/><b>787 participant-days</b>"]
+
+    E2["Partial days excluded:<br/>- Hours with < 50% data<br/>- Days with < 80% data<br/>106 participants<br/><b>604 participant-days</b>"]
+    
+    F1["Contextual classification: Environment<br/>108 participants<br/><b>782 participant-days</b>"]
+    
+    F2["Contextual classification: Activity<br/>108 participants<br/><b>778 participant-days</b>"]
+    
+    F3["Contextual classification: Indoor work lighting<br/>105 participants<br/><b>545 participant-days</b>"]
+    
+    F4["Participant-day level metrics<br/>52 metrics per participant-day<br/><b>n = 31,408</b>"]
+
+    F5["Participant-level metrics<br/>2 metrics per participant<br/><b>n = 212</b>"]
+
+    A --> B1 & B2 & B3
+    B1 & B2 & B3 --> C
+    C --> D
+    D -->| <b> measurement-level </b> | E1    
+    D -->| <b> outcome-level </b> | E2
+    E1 --> F1 & F2 & F3
+    E2 --> F4 & F5
+    E2 ~~~ Z
+
+    Z["&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;"]
+    style Z fill:none,stroke:none,color:transparent
+    
+    classDef head  fill:#0073C2,color:#FFFFFF
+    classDef chest fill:#EFC000,color:#FFFFFF
+    classDef wrist fill:#868686,color:#FFFFFF
+
+    class B1 head
+    class B2 chest
+    class B3 wrist'
+
+html_content <- sprintf('<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { margin: 0; padding: 20px; background: white; display: flex; justify-content: center; }
+    .mermaid { font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <div class="mermaid">
+%s
+  </div>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "default" });
+  </script>
+</body>
+</html>', mermaid_code)
+
+tmp_html <- tempfile(fileext = ".html")
+writeLines(html_content, tmp_html)
+
+webshot(
+  tmp_html,
+  file     = here::here("output/figures/method_flowchart.png"),
+  delay    = 3,
+  zoom     = 16,
+  vwidth   = 4800,
+  selector = ".mermaid"
+)
+```

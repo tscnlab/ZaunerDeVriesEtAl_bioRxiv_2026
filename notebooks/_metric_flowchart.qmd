@@ -16,9 +16,7 @@ flowchart TD
 
     B3["wrist position<br/>153 participants<br/><b>n = 1223 participant-days</b>"]
 
-    C["Complete cases only<br/>All wearing positions available<br/><b>n = 928 participant-days</b>"]
-
-    D["Exclude non-wear and<br/>out-of-range cases<br/><b>n = 850 participant-days</b>"]
+    D["Complete cases only<br/>Exclude non-wear and<br/>out-of-range cases<br/><b>n = 849 participant-days</b>"]
 
     E["Exclude partial days<br/>- Remove hours with &lt; 50% data<br/>- Remove days with &lt; 80% data<br/>106 participants<br/><b>n = 604 participant-days</b>"]
 
