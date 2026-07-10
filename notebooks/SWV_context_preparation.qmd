@@ -106,7 +106,6 @@ count_participants <- function(processing_step, data) {
 # Load data from each site. These have been previously trimmed to only include measurements during the trial periods.
 load_position <- function(dosimeter, site, position_label) {
   load_data(dosimeter, site = site) |>
-    filter(!is.na(MEDI)) |>
     select(Id, Datetime, MEDI) |>
     mutate(position = position_label)
 }
