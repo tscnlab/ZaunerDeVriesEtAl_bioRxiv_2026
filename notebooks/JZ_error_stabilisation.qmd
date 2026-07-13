@@ -382,7 +382,7 @@ glasses level. `never` means the SD stays above 5% throughout the tested range.
 ```{r}
 #| label: tbl-crossing
 #| filename: Sample size to reach 5% SD
-crossing_table(stability, tol = 5) |>
+crossing_gt <- crossing_table(stability, tol = 5) |>
   mutate(metric = recode(metric, !!!metric_labels),
          n_within = as.character(n_within)) |>
   replace_na(list(n_within = "never")) |>
@@ -392,6 +392,14 @@ crossing_table(stability, tol = 5) |>
   tab_header("Sample size for bias SD ≤ 5%") |>
   tab_spanner_delim(delim = " / ") |>
   sub_missing(missing_text = "never")
+
+crossing_gt
+```
+
+```{r}
+#| label: save-crossing-table
+#| filename: Save the crossing table as PNG
+gtsave(crossing_gt, here("output/tables/Table_crossing.png"), vwidth = 2020)
 ```
 
 ## Interpretation

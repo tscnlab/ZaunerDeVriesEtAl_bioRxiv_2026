@@ -509,6 +509,4 @@ All other authors declare no potential conflicts of interest
 
 ![](output/tables/Table_metrics_summary_nonwear.png){#supptbl-metric-nonwear}
 
-:::{#supptbl-bias_stability}
-{{< embed notebooks/JZ_error_stabilisation.qmd#tbl-crossing >}}
-:::
+![Required sample size to reach a bias SD ≤ 5% on 1000 bootstrap samples for 1-200 participants and 1-7 participant-days.](output/tables/Table_crossing.png){#supptbl-bias_stability}
