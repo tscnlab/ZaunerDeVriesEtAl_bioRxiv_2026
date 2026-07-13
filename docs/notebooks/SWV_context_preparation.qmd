@@ -1,5 +1,5 @@
 ---
-title: "Preparation of light exposure data for contextual analysis of wear position errors"
+title: "Preparation of light exposure data for contextual analysis of placement errors"
 format:
   html:
     toc: true
@@ -11,7 +11,7 @@ bibliography: ../references.bib
 
 ## Summary
 
-This document describes the preparation of eye-level and body-worn dosimeter measurements for a statistical analysis which investigates whether contextual factors significantly affect the differences between light measurements at eye-level and on the body (chest and wrist), referred to as the wear position error.
+This document describes the preparation of eye-level and body-worn dosimeter measurements for a statistical analysis which investigates whether contextual factors significantly affect the differences between light measurements at eye-level and on the body (chest and wrist), referred to as the placement error.
 
 The dosimeter measurements were collected at multiple sites as part of the MeLiDos project, following the protocol of Guidolin et al. [@guidolin2024]. The dataset of each site is available on [GitHub](https://github.com/MeLiDosProject):
 
@@ -39,7 +39,7 @@ Each dataset contains dosimeter measurements from three body positions (eye leve
 
 All datasets were imported in R using the `MelidosData` library. Measurements at the three body positions were temporally aligned using LightLogR's `data2reference()` function [@zauner2025], and only observations (time points) with simultaneous data from all three dosimeters were retained. Measurements during sleep (derived from `Sleepdiaries.RData` ("sleepprep" and "out_ofbed")) or non-wear (derived from `Wearlog.RData` ("Start" and "end")) were removed. Additionally, measurements above 100,000 lx melanopic EDI were removed, as these are outside of the dosimeter's operating range.
 
-Wear position errors were calculated as log-transformed differences (`logdif_x = log10(MEDI_x + 0.1) - log10(MEDI_h + 0.1)`), where x refers to either the chest (c) or wrist (w) dosimeter. The offset of 0.1 is to avoid taking the logarithm of zero. As this offset lies below the dosimeter's operating range, it has no meaningful impact on the results. Since the contextual data were gathered at an hourly resolution, the wear position errors were aggregated to hourly means.
+Placement errors were calculated as log-transformed differences (`logdif_x = log10(MEDI_x + 0.1) - log10(MEDI_h + 0.1)`), where x refers to either the chest (c) or wrist (w) dosimeter. The offset of 0.1 is to avoid taking the logarithm of zero. As this offset lies below the dosimeter's operating range, it has no meaningful impact on the results. Since the contextual data were gathered at an hourly resolution, the placement errors were aggregated to hourly means.
 
 Three participants had one of the dosimeters recording at a non-standard sampling interval: FUSPCEU_S014 (head dosimeter at a 60-second interval), IZTECH_S016 (wrist dosimeter at a 120-second interval), and RISE_S011 (head dosimeter at a 1-second interval). These were still included, as enough data remained for calculating hourly means. Days with flat (zero) signals across all three dosimeters were removed for participants FUSPCEU_S010 (03-11-2024), FUSPCEU_S017 (09-12-2024), IZTECH_S009 (18-03-2025 and 19-03-2025), and THUAS_S007 (11-04-2025).
 
@@ -709,15 +709,15 @@ add_work_light_context <- function(data) {
 datasets <- map(datasets, add_work_light_context)
 ```
 
-## Calculate wear position errors
+## Calculate placement errors
 
-The wear position errors (mean hourly log-transformed differences between eye-level and body-worn dosimeter measurements, in melanopic EDI) were computed using a paired-differences approach. As the eye-level and body-worn measurements were at (approximately) the same time stamp, they were conducted under the same illumination field. Computing the log-difference within each pair before averaging preserves this paired structure and allows investigation of the measurement error. The alternative of taking the log of each position's hourly mean melanopic EDI discards the pairing and hence is thus only valid for an outcome focused analysis.
+The placement errors (mean hourly log-transformed differences between eye-level and body-worn dosimeter measurements, in melanopic EDI) were computed using a paired-differences approach. As the eye-level and body-worn measurements were at (approximately) the same time stamp, they were conducted under the same illumination field. Computing the log-difference within each pair before averaging preserves this paired structure and allows investigation of the measurement error. The alternative of taking the log of each position's hourly mean melanopic EDI discards the pairing and hence is thus only valid for an outcome focused analysis.
 
-For wear position x, where x refers to either the chest- or wrist-worn dosimeter, the (hourly aggregated) wear position error (relative to a dosimeter worn on a pair of glasses) is defined as
+For placement position x, where x refers to either the chest- or wrist-worn dosimeter, the (hourly aggregated) placement error (relative to a dosimeter worn on a pair of glasses) is defined as
 
 $$
 \bar{D}_x = \frac{1}{n}\sum_{i=1}^{n}\left[\log_{10}(E_{x,i} + 0.1) - \log_{10}(E_{glasses,i} + 0.1)\right]
-$$where $E_{glasses,i}$ denotes the eye-level measurement and $E_{x,i}$ denotes the measurement at wear position $x$, both recorded at timestamp $i$, and $n$ is the number of measurements within the hour.
+$$where $E_{glasses,i}$ denotes the eye-level measurement and $E_{x,i}$ denotes the measurement at position $x$, both recorded at timestamp $i$, and $n$ is the number of measurements within the hour.
 
 ```{r}
 #| label: calculate-logdif-average

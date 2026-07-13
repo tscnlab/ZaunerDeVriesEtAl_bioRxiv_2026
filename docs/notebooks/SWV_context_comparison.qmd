@@ -1,5 +1,5 @@
 ---
-title: "Comparison of wear position error based on context"
+title: "Comparison of placement error based on context"
 format:
   html:
     toc: true
@@ -10,7 +10,7 @@ bibliography: ../references.bib
 
 ## Summary
 
-This document describes a statistical analysis to investigate whether contextual factors significantly affect the differences between light measurements at the reference eye-level and on the body (chest and wrist), referred to as the wear position error.
+This document describes a statistical analysis to investigate whether contextual factors significantly affect the differences between light measurements at the reference eye-level and on the body (chest and wrist), referred to as the placement error.
 
 The dosimeter measurements were collected at multiple sites as part of the MeLiDos project, following the protocol of Guidolin et al. [@guidolin2024]. The dataset of each site is available on [GitHub](https://github.com/MeLiDosProject):
 
@@ -34,7 +34,7 @@ The dosimeter measurements were collected at multiple sites as part of the MeLiD
 
 [^1]: Data from this site were not included in the analysis as no chest-worn dosimeter measurements were collected and the wrist-worn measurements were made using a different type of dosimeter.
 
-The datasets were previously prepared (see [context_preparation](SWV_context_preparation.qmd)). The resulting dataset consists of wear position errors (log‑transformed differences between eye‑level and body‑worn dosimeter measurements (`logdif_x = log10(MEDI_x + 0.1) − log10(MEDI_h + 0.1)`, where x refers to either the chest (c) or wrist (w) dosimeter)). For each observation, the participant id (`Id`), time of day (`timeofday`), measurement day (`day`), and measurement site (`site`), and contextual classifications are available: environment (`environment`), activity context (`act_context`), light context (`work_light_context`), and photoperiod (`photoperiod.state`).
+The datasets were previously prepared (see [context_preparation](SWV_context_preparation.qmd)). The resulting dataset consists of placement errors (log‑transformed differences between eye‑level and body‑worn dosimeter measurements (`logdif_x = log10(MEDI_x + 0.1) − log10(MEDI_h + 0.1)`, where x refers to either the chest (c) or wrist (w) dosimeter)). For each observation, the participant id (`Id`), time of day (`timeofday`), measurement day (`day`), and measurement site (`site`), and contextual classifications are available: environment (`environment`), activity context (`act_context`), light context (`work_light_context`), and photoperiod (`photoperiod.state`).
 
 ## Research questions
 
@@ -58,15 +58,15 @@ The following modeling decisions were made.
 
 1.  The dataset includes four contextual classifications describing the measurement context: activity context (`act_context`), light context when working indoors (`work_light_context`), photoperiod (`photoperiod.state`), and environment (`environment`). As measurement deviations between dosimeter positions are primarily driven by the lighting conditions and participant posture under which the measurements were performed [@devries2026; @devries2026a], considerable overlap exists between these categories. For example, being outdoors typically makes daylight the most prevalent light source. Whether a participant was outdoors can be inferred from activity context, light context, and environment. Hence, to avoid multicollinearity, these contextual factors were not implemented in a single model, but a separate model was made for each factor. Each model and their rationale are described below.
 
-2.  The wear position error (log‑transformed differences between eye‑level and body‑worn dosimeter measurements) for chest-worn (`logdif_c`) and wrist-worn (`logdif_w`) dosimeters was defined as the outcome variable for each model. The distributions of these errors show a sharp central peak and long tails, indicating leptokurtosis (kurtosis test substantially exceeded 3 for both distributions). Initial tests using a standard linear mixed-effects model (LMM), which assumes Gaussian residuals, revealed violations of the model assumptions, as evidenced by a clear S-shaped pattern in QQ plots and heteroscedasticity in residual diagnostics. Therefore, it was decided to adopt a Student-t residual distribution, as it better accommodates heavy-tailed residuals. Model diagnostics of the developed models are discussed in @sec-model-diagnostics.
+2.  The placement error (log‑transformed differences between eye‑level and body‑worn dosimeter measurements) for chest-worn (`logdif_c`) and wrist-worn (`logdif_w`) dosimeters was defined as the outcome variable for each model. The distributions of these errors show a sharp central peak and long tails, indicating leptokurtosis (kurtosis test substantially exceeded 3 for both distributions). Initial tests using a standard linear mixed-effects model (LMM), which assumes Gaussian residuals, revealed violations of the model assumptions, as evidenced by a clear S-shaped pattern in QQ plots and heteroscedasticity in residual diagnostics. Therefore, it was decided to adopt a Student-t residual distribution, as it better accommodates heavy-tailed residuals. Model diagnostics of the developed models are discussed in @sec-model-diagnostics.
 
-    As the measurements were recorded simultaneously at the eyes, chest, and wrist, the wear position errors for the chest and wrist share the same eye-level term by construction. As they are hence not fully independent, modeling both jointly was explored, but resulted in convergence errors due to the additional model complexity. Moreover, as the dependence between both errors (outcomes) is deemed outside the current scope, a separate model was fitted for each.
+    As the measurements were recorded simultaneously at the eyes, chest, and wrist, the placement errors for the chest and wrist share the same eye-level term by construction. As they are hence not fully independent, modeling both jointly was explored, but resulted in convergence errors due to the additional model complexity. Moreover, as the dependence between both errors (outcomes) is deemed outside the current scope, a separate model was fitted for each.
 
 3.  The dataset has a nested structure, as hourly (i.e. averaged to hourly) measurements were collected over multiple days for each participant, and each participant participated at only one site. Consequently, observations are not independent, and measurements taken on the same day, by the same participant, or at the same site were expected to be correlated. To account for these correlations, a hierarchical mixed-effects modeling framework with random effects was specified. Random intercepts were included for site, participant within site, and day within participant. Random slopes were not included, as the primary aim was to estimate population‑level context effects rather than individual‑specific differences in context responses. Although some of these nested effects explained little variance in some of the models, all were retained because their inclusion is justified on theoretical grounds based on the measurement protocol's design.
 
     Additionally, hourly measurements within a participant may not be independent, as an observation is expected to be correlated with the observation of the preceding hour (temporal autocorrelation). Thus, each model was checked for residual temporal autocorrelation by inspecting the autocorrelation function (ACF) of the residuals against lag. As substantial lag 1 autocorrelation was observed for all models, an AR(1) correlation structure was implemented for each participant. After implementing this structure, near-zero residual autocorrelation was observed.
 
-4.  Four models were developed to investigate how different contextual classifications impact wear position errors. The contextual classifications were defined as fixed effects or smooths, as the aim was to estimate and compare wear position errors under these specific, predefined contexts rather than to generalize to a broader population of contexts. The models (and their rationale) are:
+4.  Four models were developed to investigate how different contextual classifications impact placement errors. The contextual classifications were defined as fixed effects or smooths, as the aim was to estimate and compare placement errors under these specific, predefined contexts rather than to generalize to a broader population of contexts. The models (and their rationale) are:
 
     1.  **Environment \* photoperiod model (m1)**
 
@@ -550,7 +550,7 @@ ggplot(curves_all, aes(x = timeofday, y = pct_error,
 
 ```
 
-The cyclic models outperformed the non-cyclic ones on AIC and R^2^. A cyclic specification is also more appropriate on theoretical grounds, since wear position errors just before and after midnight should roughly align. On visual inspection, the predictions for the cyclic models (D, E, and F) were approximately identical. Models D and E were identical in AIC and R^2^, and outperformed model F. Because model D applies the m=1 fix, which is not valid for the cyclic (cc) basis (but was kept in for consistency with the non-cyclic models), it behaves identically to model E (which uses the standard m=2 penalty). Since E outperforms F and the wide confidence interval problem that the m=1 fix is meant to address does not appear present for the m=2 specification, the time-of-day smooth was implemented as in model E.
+The cyclic models outperformed the non-cyclic ones on AIC and R^2^. A cyclic specification is also more appropriate on theoretical grounds, since placement errors just before and after midnight should roughly align. On visual inspection, the predictions for the cyclic models (D, E, and F) were approximately identical. Models D and E were identical in AIC and R^2^, and outperformed model F. Because model D applies the m=1 fix, which is not valid for the cyclic (cc) basis (but was kept in for consistency with the non-cyclic models), it behaves identically to model E (which uses the standard m=2 penalty). Since E outperforms F and the wide confidence interval problem that the m=1 fix is meant to address does not appear present for the m=2 specification, the time-of-day smooth was implemented as in model E.
 
 #### **Model fit**
 
@@ -961,7 +961,7 @@ Across all eight models, the central body of the residual distribution closely f
 
 These diagnostics are not optimal. However, the outcome variable has already been transformed to improve model fit and cannot reasonably be transformed further. This is an inherent difficulty of modeling errors of this kind. Model fit is therefore taken into account when interpreting the results, by focusing on the mean values and remaining conservative in the interpretation.
 
-## Wear position errors between contexts (comparative)
+## Placement errors between contexts (comparative)
 
 Subquestion 1 was formulated as: "Do mean log-transformed differences between eye-level and body-worn dosimeter measurements differ across contexts?"
 
@@ -1196,7 +1196,7 @@ gt_tbl <- wide_tbl_m1m3 |>
   cols_label(.list = c(list(contrast = "Contrast"), as.list(metric_labels_m1m3))) |>
   cols_hide(columns = all_of(pval_num_cols_m1m3)) |>
   make_spanners_m1m3() |>
-  tab_header(title = "Differences in wear position errors between contexts") |>
+  tab_header(title = "Differences in placement errors between contexts") |>
   cols_align(align = "center", columns = -contrast) |>
   cols_align(align = "left", columns = contrast) |>
 
@@ -1271,7 +1271,7 @@ gt_m4 <- wide_tbl_m4 |>
   cols_label(.list = c(list(contrast = "Contrast"), as.list(metric_labels_m4))) |>
   cols_hide(columns = all_of(pval_num_cols_m4)) |>
   make_spanners_m4() |>
-  tab_header(title = "Differences in wear position errors between indoor work light contexts") |>
+  tab_header(title = "Differences in placement errors between indoor work light contexts") |>
   cols_align(align = "center", columns = -contrast) |>
   cols_align(align = "left", columns = contrast) |>
   tab_style(
@@ -1302,7 +1302,7 @@ gt_group(gt_tbl, gt_m4)
 #| label: fig-contrasts
 #| fig-width: 7
 #| fig-height: 8
-#| fig-cap: "Ratios between wear position errors under each context. A negative ratio indicates that the wear position error decreases when changing from the first to the second context. Significant contrasts are in bold (unadjusted for multiple comparisons)."
+#| fig-cap: "Ratios between placement errors under each context. A negative ratio indicates that the placement error decreases when changing from the first to the second context. Significant contrasts are in bold (unadjusted for multiple comparisons)."
 
 
 m1_levels <- "indoor - outdoor"
@@ -1423,7 +1423,7 @@ final_plot <- (p_m1 / plot_spacer() / p_m3 / plot_spacer() / p_m4) +
   plot_layout(guides = "collect",
               heights = c(1, -0.7, 6, -0.7, 3)) +
   plot_annotation(
-    title    = "Ratios of wear position errors (m-EDI) between contexts",
+    title    = "Ratios of placement errors (m-EDI) between contexts",
     subtitle = paste("Comparisons with significant differences (p < 0.05) are bold."),
     caption  = paste(
       "\u00b9 Inside (indoors) or outside (outdoors) a building",
@@ -1447,7 +1447,7 @@ ggsave(here("output/figures/ratio_context_error.jpeg"),
        units  = "in")
 ```
 
-## Wear position error per context (absolute)
+## Placement error per context (absolute)
 
 Subquestion 2 was formulated as: "Under which contexts do the mean log-transformed differences between eye-level and body-worn dosimeter measurements differ significantly from zero?"
 
@@ -1517,7 +1517,7 @@ build_pct_table(emm_logdif_c_m1, emm_logdif_w_m1) |>
     label_map = c(list(environment       = "Environment",
                        photoperiod.state = "Photoperiod"),
                   pct_labels),
-    title = "Wear position errors per environment"
+    title = "Placement errors per environment"
   )
 
 # m2
@@ -1530,7 +1530,7 @@ build_pct_table(emm_logdif_c_m2, emm_logdif_w_m2) |>
     label_map = c(list(environment = "Environment",
                        time_label  = "Time of day"),
                   pct_labels),
-    title = "Wear position errors per time of day"
+    title = "Placement errors per time of day"
   )
 
 # m3
@@ -1546,7 +1546,7 @@ build_pct_table(emm_logdif_c_m3, emm_logdif_w_m3) |>
     label_map = c(list(act_context       = "Activity",
                        photoperiod.state = "Photoperiod"),
                   pct_labels),
-    title = "Wear position errors per activity context"
+    title = "Placement errors per activity context"
   )
 
 # m4
@@ -1557,7 +1557,7 @@ build_pct_table(emm_logdif_c_m4, emm_logdif_w_m4) |>
   style_pct_gt(
     label_map = c(list(work_light_context = "Light context"),
                   pct_labels),
-    title = "Wear position errors per primary light source (indoor work lighting)"
+    title = "Placement errors per primary light source (indoor work lighting)"
   )
 ```
 
@@ -1565,7 +1565,7 @@ build_pct_table(emm_logdif_c_m4, emm_logdif_w_m4) |>
 
 ```{r}
 #| label: fig-contex-error
-#| fig-cap: "Wear position errors under each context. A negative percentage indicates that the body-worn dosimeter underestimates eye-level light exposure. Confidence intervals are asymmetric on the percentage scale because back-transformation from log space is nonlinear. Confidence intervals and p-values were not adjusted for multiple comparisons."
+#| fig-cap: "Placement errors under each context. A negative percentage indicates that the body-worn dosimeter underestimates eye-level light exposure. Confidence intervals are asymmetric on the percentage scale because back-transformation from log space is nonlinear. Confidence intervals and p-values were not adjusted for multiple comparisons."
 #| fig-width: 8
 #| fig-height: 9
 
@@ -1824,8 +1824,8 @@ top <- (p_m1 / plot_spacer() / p_m3 / plot_spacer() / p_m4) +
 final_plot <- wrap_plots(top, plot_spacer(), p_m2,
                          ncol = 1, heights = c(7.8, 0, 3.8)) +
   plot_annotation(
-    title = "Wear position error (% m-EDI) by context",
-    subtitle = "Mean wear position errors (m-EDI) and 95% confidence intervals (horizontal lines or shaded bands).\nEstimates significantly different from zero (p < 0.05) are shown as filled circles or bold curves.",
+    title = "Placement error (% m-EDI) by context",
+    subtitle = "Mean placement errors (m-EDI) and 95% confidence intervals (horizontal lines or shaded bands).\nEstimates significantly different from zero (p < 0.05) are shown as filled circles or bold curves.",
     caption = paste(
       "\u00b9 Environment: Inside (indoors) or outside (outdoors) a building",
       "\u00b2 Cycling/walking, working, or leisure outdoors",
@@ -1848,7 +1848,7 @@ ggsave(here("output/figures/absolute_context_error.jpeg"),
        units  = "in")
 
 
-# Extract minimum and maximum wear position error for time of day
+# Extract minimum and maximum placement error for time of day
 curves |>
   group_by(position, environment) |>
   summarise(

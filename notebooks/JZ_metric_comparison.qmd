@@ -658,7 +658,7 @@ df |>
   tab_spanner(columns = c(`estimate_chest - glasses`, arrow_chest,
                           `estimate_wrist - glasses`,
                           arrow_wrist,  p_position, r2_position),
-              "Wearing position effect (estimated bias)") |> 
+              "Placement (Pos.) effect (estimated bias)") |> 
   tab_spanner(columns = c(SD_chest, SD_wrist, r2_slope, SD_Id, r2_id, SD_Date, 
                           r2_date, SD_Residual, r2_residual), 
               "Standard deviation (random effect)") |> 
@@ -688,14 +688,14 @@ df |>
     )
   ) |> 
   tab_footnote(
-    "Scale on which the reference and subsequent deviations from it (wearing position effect, site, random effects) are analyzed", 
+    "Scale on which the reference and subsequent deviations from it (placement effect, site, random effects) are analyzed", 
     locations = cells_column_labels(scaling)
   ) |> 
   tab_footnote(
     md("Partial $R^2$ values of the effect compared to a model without the effect. All values within a row does not sum to 1, as they are from different models and variables are partially correlated."), 
     locations = cells_column_labels(contains("r2_"))
   )  |> tab_footnote(
-    "No overall p-value correction has been performed, so as not to potentially underestimate individual deviations.", 
+    "No overall p-value correction has been performed, so as not to potentially underestimate individual metric deviations.", 
     locations = cells_column_labels(contains("p_"))
   )  |> tab_footnote(
     "Missing entries refer to models that had to be reduced in complexity to avoid convergence/singularity issues.", 
@@ -720,7 +720,7 @@ df |>
       cells_column_labels(`estimate_wrist - glasses`)
     )
   ) |>
-  tab_header("Summary of outcome-level wearing position bias") |> 
+  tab_header("Summary of outcome-level dosimeter placement bias") |> 
   tab_style(
     cell_text(color = colors[1]),
     cells_column_labels(main_effect)
@@ -920,14 +920,14 @@ df_summary |>
              general = "General") |>
   tab_footnote("median bias (min - max), significant bias / all metrics, positive / negative deviations") |>
   tab_footnote(
-    html("R\u00b2<sub>Pos.</sub>: partial R\u00b2 for position effect (median min\u2013max), significant metrics only. R\u00b2<sub>Id</sub> and SD<sub>Id</sub>: individual ID random effect, all metrics."),
+    html("R\u00b2<sub>Pos.</sub>: partial R\u00b2 for placement effect (median min\u2013max), significant metrics only. R\u00b2<sub>Id</sub> and SD<sub>Id</sub>: individual ID random effect, all metrics."),
     locations = cells_column_labels(general)
   ) |>
   cols_hide(c(n, r2_pos_median, r2_pos_min, r2_pos_max,
               r2_id_median, r2_id_min, r2_id_max,
               sd_id_median, sd_id_min, sd_id_max)) |> 
   tab_style(cell_text(weight = "bold"), list(cells_stub(), cells_column_labels())) |> 
-  tab_header("Summary overview of outcome-level bias due to wearing position, compared to glasses",
+  tab_header("Summary overview of outcome-level bias due to dosimeter placement, compared to glasses",
              subtitle = "Biases are all based on their modelling scale") |> 
   tab_style(
     cell_text(color = colors[2]),
