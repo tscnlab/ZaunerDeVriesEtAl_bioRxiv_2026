@@ -1,5 +1,6 @@
 ---
 title: "Comparison of metrics"
+subtitle: "Primary analysis: documented non-wear removed; diary-defined sleep retained"
 format: html
 author: Johannes Zauner
 editor_options: 
@@ -8,7 +9,7 @@ editor_options:
 
 ## Preface
 
-This document contains the analysis steps from the pre-calculated metrics (see @fig-fc_sample), through inference and the summary of results.
+This document contains the analysis steps from the pre-calculated metrics (see @fig-fc_sample), through inference and the summary of results. This primary analysis removes documented non-wear outside diary-defined sleep while retaining sleep-time measurements.
 
 {{< include _metric_flowchart.qmd >}}
 
@@ -55,6 +56,103 @@ The pre-processed metrics are loaded from a single `.RData` file produced by the
 load(here("data/prepared_metrics.RData"))
 ```
 
+### Derive wake and sleep duration denominators
+
+Timing differences are expressed relative to the behavioural interval in which the underlying metric is defined. The sleep interval follows the preparation workflow and extends from diary-recorded `sleepprep` (when the devices were positioned for the night) to `wake`. A mean sleep duration is calculated for each participant before averaging across participants, so participants with more completed diary nights do not receive greater weight. Mean wake duration is the complement of mean sleep duration to 24 hours. The three darkest-10-hour timing outcomes are classified as darkness-based; all other timing outcomes are classified as brightness-based.
+
+```{r}
+#| label: derive-state-duration-denominators
+#| filename: Derive participant-weighted wake and sleep durations
+#| message: false
+#| warning: false
+analysis_ids <- unique(as.character(metrics$Id))
+
+sleep_intervals <-
+  load_data("sleepdiaries") |>
+  list_rbind(names_to = "diary_site") |>
+  filter(
+    Id %in% analysis_ids,
+    !is.na(sleepprep),
+    !is.na(wake)
+  ) |>
+  mutate(
+    sleep_duration_seconds = as.numeric(
+      difftime(wake, sleepprep, units = "secs")
+    )
+  )
+
+invalid_sleep_intervals <-
+  sleep_intervals |>
+  filter(
+    !is.finite(sleep_duration_seconds) |
+      sleep_duration_seconds <= 0 |
+      sleep_duration_seconds >= 24 * 60 * 60
+  )
+
+if (nrow(invalid_sleep_intervals) > 0L) {
+  stop(
+    "At least one diary-defined sleep interval is outside (0, 24) hours.",
+    call. = FALSE
+  )
+}
+
+participant_state_durations <-
+  sleep_intervals |>
+  group_by(Id) |>
+  summarize(
+    mean_sleep_duration_seconds = mean(sleep_duration_seconds),
+    diary_nights = n(),
+    .groups = "drop"
+  )
+
+missing_sleep_ids <- setdiff(analysis_ids, participant_state_durations$Id)
+if (length(missing_sleep_ids) > 0L) {
+  stop(
+    "At least one analysed participant has no valid diary-defined sleep interval.",
+    call. = FALSE
+  )
+}
+
+mean_sleep_duration_seconds <-
+  mean(participant_state_durations$mean_sleep_duration_seconds)
+mean_wake_duration_seconds <- 24 * 60 * 60 - mean_sleep_duration_seconds
+
+format_duration <- function(seconds) {
+  total_minutes <- round(seconds / 60)
+  sprintf(
+    "%d h %02d min",
+    total_minutes %/% 60,
+    total_minutes %% 60
+  )
+}
+
+mean_sleep_duration_label <- format_duration(mean_sleep_duration_seconds)
+mean_wake_duration_label <- format_duration(mean_wake_duration_seconds)
+mean_sleep_one_percent_label <-
+  sprintf("%.1f min", mean_sleep_duration_seconds / 100 / 60)
+mean_wake_one_percent_label <-
+  sprintf("%.1f min", mean_wake_duration_seconds / 100 / 60)
+
+darkness_timing_metrics <- c(
+  "darkest_10h_midpoint",
+  "darkest_10h_onset",
+  "darkest_10h_offset"
+)
+
+timing_normalization_footnote <- paste0(
+  "Timing effects and timing-model SDs use the participant-weighted mean ",
+  "diary-defined wake duration (", mean_wake_duration_label,
+  "; 1% = ", mean_wake_one_percent_label,
+  ") for brightness-based timing metrics and the participant-weighted mean ",
+  "diary-defined sleep duration (", mean_sleep_duration_label,
+  "; 1% = ", mean_sleep_one_percent_label,
+  ") for darkness-based timing metrics. All other metrics use the absolute ",
+  "glasses reference on the modelling scale."
+)
+```
+
+The resulting participant-weighted averages are `r mean_wake_duration_label` of wake and `r mean_sleep_duration_label` of sleep. Consequently, 1% represents `r mean_wake_one_percent_label` for brightness-based timing metrics and `r mean_sleep_one_percent_label` for darkness-based timing metrics.
+
 ## Visualizing metrics
 
 A few shared plotting helpers are defined here: a log-scale break sequence, a named color vector (one color per wearing position), and a number formatter for axis labels.
@@ -64,6 +162,7 @@ A few shared plotting helpers are defined here: a log-scale break sequence, a na
 #| filename: helpers
 breaks <- c(0, 10^(0:5))
 colors <- ggsci::pal_jco()(3) |> set_names(c("glasses", "chest", "wrist"))
+scenario_label <- "Primary analysis: documented non-wear removed; diary-defined sleep retained"
 label <- function(x) format(x, 
       scientific = FALSE, big.mark = " ")
 ```
@@ -146,7 +245,8 @@ metrics_nested |>
   guides(col = "none", fill = "none") +
   labs(y = "Scaled and centered metric values",
        x = "Wearing position",
-       title = "Raincloud plots of scaled and centered metric results") +
+       title = "Raincloud plots of scaled and centered metric results",
+       subtitle = scenario_label) +
   theme_cowplot() +
   scale_y_time()
 
@@ -189,7 +289,7 @@ To get an overview of how metrics behave across wearing positions, all metrics a
 #| fig-height: 20
 #| warning: false
 #| filename: Show distribution of all metrics
-metrics |> 
+fig_metric_distribution <- metrics |>
   group_by(Id, metric) |> 
   mutate(
     position = fct_relevel(position, c("chest", "glasses", "wrist")),
@@ -211,11 +311,30 @@ metrics |>
   guides(col = "none", fill = "none") +
   labs(y = "Scaled and centered metric values",
        x = "Wearing position",
-       title = "Raincloud plots of scaled and centered metric results") +
+       title = "Raincloud plots of scaled and centered metric results",
+       subtitle = scenario_label) +
   theme_cowplot()
 
-ggsave(here("output/figures/Figure_metric_distribution.pdf"), width = 15, height = 20, device = cairo_pdf)
-ggsave(here("output/figures/Figure_metric_distribution.jpeg"), width = 15, height = 20)
+fig_metric_distribution
+
+distribution_pdf <- here("output/figures/Figure_metric_distribution.pdf")
+distribution_pdf_tmp <- paste0(distribution_pdf, ".tmp")
+ggsave(
+  distribution_pdf_tmp,
+  plot = fig_metric_distribution,
+  width = 15,
+  height = 20,
+  device = cairo_pdf
+)
+if (!file.rename(distribution_pdf_tmp, distribution_pdf)) {
+  stop("Could not atomically replace the primary metric-distribution PDF.")
+}
+ggsave(
+  here("output/figures/Figure_metric_distribution.jpeg"),
+  plot = fig_metric_distribution,
+  width = 15,
+  height = 20
+)
 ```
 
 ## Prepare modelling
@@ -254,7 +373,10 @@ metrics_nested |>
   fmt(c(metric, pre.transformed, response), fns = \(x) x |> str_to_title() |>  str_replace_all("_", " ")) |> 
   sub_values(values = "MDER", replacement = "MDER") |> 
   tab_header("Metric model specifications",
-             subtitle = "Hypothesis: wearing position affects metric result within sites") |> 
+             subtitle = paste(
+               "Hypothesis: wearing position affects metric result within sites.",
+               scenario_label
+             )) |>
   tab_footnote("Confirmatory analysis will use no p-value correction, as a non-significant difference result is the more desired result") |> 
   tab_footnote("These are the models used for the analysis per metric. H1 is tested with car::Anova to inspect the significant portions", locations = cells_column_labels(Formulas)) |> 
   cols_width(
@@ -435,7 +557,7 @@ metrics_nested <-
 
 ## Result table
 
-The full result table is assembled in two stages. First, all relevant columns are collected and reshaped into a wide format suitable for display: p-values, position effect estimates (expressed as percentage deviations from the glasses reference), random-effect standard deviations, and partial $$R^2$$ components. Wearing-position effect estimates and standard deviations are normalised by the absolute reference value (glasses mean) so that all metrics are comparable on a relative scale regardless of their original unit.
+The full result table is assembled in two stages. First, all relevant columns are collected and reshaped into a wide format suitable for display: p-values, position effect estimates, random-effect standard deviations, and partial $$R^2$$ components. For non-timing metrics, placement effects and standard deviations are normalised by the absolute reference value (glasses mean) on the modelling scale. Clock time has an arbitrary zero point, so an intercept-relative percentage such as a percentage of 16:00 is not meaningful. Brightness-based timing metrics are therefore normalised by the participant-weighted mean diary-defined wake duration, whereas darkness-based timing metrics are normalised by the participant-weighted mean diary-defined sleep duration. This expresses timing differences relative to the behavioural interval represented by each metric.
 
 The `gt` table is then formatted with colour-coded cell backgrounds (red for significant negative deviations, blue for significant positive deviations), bold text for significant p-values, colored SVG arrows summarising site-level effects, and column spanners that group related columns. The table is saved as a high-resolution PNG for use in the manuscript.
 
@@ -480,7 +602,7 @@ metric_table <-
           select(name, estimate, p = p.value) |> 
           pivot_wider(names_from = name, values_from = c(estimate, p)) 
     )
-  ) |> 
+  ) |>
   select(metric, metric_family, metric_type, scaling, pvalues,
          random_effects, main_effect, position_effect, site_effect,
          r2_position, r2_site, r2_id, r2_date, r2_slope, r2_residual) |> 
@@ -526,8 +648,35 @@ make_arrows_html <- function(estimates, pvals, colors, sig_level) {
   )
 }
 
+if (!all(darkness_timing_metrics %in% metric_table$metric)) {
+  stop(
+    "The primary analysis is missing a darkness-based timing metric.",
+    call. = FALSE
+  )
+}
+
 df <- metric_table |>
-  mutate(across(c(metric, metric_family, metric_type), format_metric)) |>
+  mutate(
+    is_timing_metric = metric_type == "timing",
+    is_darkness_timing = metric %in% darkness_timing_metrics,
+    normalization_denominator = case_when(
+      is_darkness_timing ~ mean_sleep_duration_seconds,
+      is_timing_metric ~ mean_wake_duration_seconds,
+      .default = abs(main_effect)
+    ),
+    normalization_basis = case_when(
+      is_darkness_timing ~ paste0(
+        "Mean sleep duration (", mean_sleep_duration_label, ")"
+      ),
+      is_timing_metric ~ paste0(
+        "Mean wake duration (", mean_wake_duration_label, ")"
+      ),
+      .default = "Absolute glasses reference"
+    ),
+    raw_estimate_chest = `estimate_chest - glasses`,
+    raw_estimate_wrist = `estimate_wrist - glasses`,
+    across(c(metric, metric_family, metric_type), format_metric)
+  ) |>
   arrange(metric_type, metric, metric_family) |>
   rowwise() |>
   mutate(
@@ -551,10 +700,36 @@ df <- metric_table |>
       ) else "",
     across(c(`estimate_chest - glasses`, `estimate_wrist - glasses`,
              starts_with("SD_")),
-           \(x) x/abs(main_effect)),
+           \(x) x / normalization_denominator),
     across(starts_with("r2_"), \(x) replace_values(x, 0 ~ NA))
   ) |>
   ungroup()
+
+expected_normalization_denominator <- case_when(
+  df$is_darkness_timing ~ mean_sleep_duration_seconds,
+  df$is_timing_metric ~ mean_wake_duration_seconds,
+  .default = abs(df$main_effect)
+)
+
+if (!isTRUE(all.equal(
+  df$normalization_denominator,
+  expected_normalization_denominator,
+  check.attributes = FALSE
+))) {
+  stop("Primary-analysis normalization denominators are incorrect.", call. = FALSE)
+}
+
+if (!isTRUE(all.equal(
+  df$`estimate_chest - glasses`,
+  df$raw_estimate_chest / df$normalization_denominator,
+  check.attributes = FALSE
+)) || !isTRUE(all.equal(
+  df$`estimate_wrist - glasses`,
+  df$raw_estimate_wrist / df$normalization_denominator,
+  check.attributes = FALSE
+))) {
+  stop("Primary-analysis bias normalization failed its numerical check.", call. = FALSE)
+}
 
 table <-
 df |>
@@ -652,13 +827,16 @@ df |>
     columns = c(arrow_main, arrow_chest, arrow_wrist),
     fns = function(x) lapply(x, gt::html)
   ) |>
-  cols_hide(c(matches("(BAUA|FUSPCEU|IZTECH|KNUST|RISE|THUAS|TUM|UCR)"),
+  cols_hide(c(is_timing_metric, is_darkness_timing,
+              normalization_denominator, normalization_basis,
+              raw_estimate_chest, raw_estimate_wrist,
+              matches("(BAUA|FUSPCEU|IZTECH|KNUST|RISE|THUAS|TUM|UCR)"),
               `p_chest - glasses`, `p_wrist - glasses`)) |> 
   sub_missing() |> 
   tab_spanner(columns = c(`estimate_chest - glasses`, arrow_chest,
                           `estimate_wrist - glasses`,
                           arrow_wrist,  p_position, r2_position),
-              "Placement (Pos.) effect (estimated bias)") |> 
+              "Chest/wrist versus glasses (estimated bias)") |> 
   tab_spanner(columns = c(SD_chest, SD_wrist, r2_slope, SD_Id, r2_id, SD_Date, 
                           r2_date, SD_Residual, r2_residual), 
               "Standard deviation (random effect)") |> 
@@ -686,13 +864,21 @@ df |>
       cells_column_spanners(),
       cells_stub(columns =  "metric_family"), cells_group()
     )
-  ) |> 
+  ) |>
   tab_footnote(
-    "Scale on which the reference and subsequent deviations from it (placement effect, site, random effects) are analyzed", 
+    "Scale on which the glasses reference and subsequent deviations (chest/wrist contrasts, site, random effects) are analyzed", 
     locations = cells_column_labels(scaling)
-  ) |> 
+  ) |>
   tab_footnote(
-    md("Partial $R^2$ values of the effect compared to a model without the effect. All values within a row does not sum to 1, as they are from different models and variables are partially correlated."), 
+    timing_normalization_footnote,
+    locations = list(
+      cells_column_labels(`estimate_chest - glasses`),
+      cells_column_labels(`estimate_wrist - glasses`),
+      cells_column_labels(starts_with("SD_"))
+    )
+  ) |>
+  tab_footnote(
+    html("Partial R<sup>2</sup> values compare the effect model with a model without that effect. Values within a row do not sum to one because they come from different models and partially correlated components."),
     locations = cells_column_labels(contains("r2_"))
   )  |> tab_footnote(
     "No overall p-value correction has been performed, so as not to potentially underestimate individual metric deviations.", 
@@ -720,7 +906,10 @@ df |>
       cells_column_labels(`estimate_wrist - glasses`)
     )
   ) |>
-  tab_header("Summary of outcome-level dosimeter placement bias") |> 
+  tab_header(
+    html("Summary of outcome-level bias:<br>body-worn versus eye-level measurement"),
+    subtitle = scenario_label
+  ) |>
   tab_style(
     cell_text(color = colors[1]),
     cells_column_labels(main_effect)
@@ -779,7 +968,7 @@ make_general_html <- function(r2_pos_med, r2_pos_mn, r2_pos_mx,
 }
 ```
 
-Three summary data frames are computed and combined: one broken down by metric type (e.g., illuminance, timing, spectral), one aggregating all metrics regardless of significance, and one restricted to metrics with a statistically significant position effect. For each group the summary reports the median, minimum, and maximum absolute error (as a proportion of the glasses reference), the number of positive vs. negative deviations, and the count of significant effects for chest and wrist. These are combined into a single concise summary table that provides an at-a-glance overview of the overall magnitude of wearing-position errors.
+Three summary data frames are computed and combined: one broken down by metric type (e.g., illuminance, timing, spectral), one aggregating all metrics regardless of significance, and one restricted to metrics with a statistically significant placement effect. For each group the summary reports the median, minimum, and maximum absolute normalized error, the number of positive vs. negative deviations, and the count of significant effects for chest and wrist. Brightness-based timing errors use the mean wake duration, darkness-based timing errors use the mean sleep duration, and other errors use the absolute glasses reference. These are combined into a single concise summary table that provides an at-a-glance overview of the overall magnitude of placement errors.
 
 ```{r}
 #| label: summary-by-metric-type
@@ -920,15 +1109,35 @@ df_summary |>
              general = "General") |>
   tab_footnote("median bias (min - max), significant bias / all metrics, positive / negative deviations") |>
   tab_footnote(
-    html("R\u00b2<sub>Pos.</sub>: partial R\u00b2 for placement effect (median min\u2013max), significant metrics only. R\u00b2<sub>Id</sub> and SD<sub>Id</sub>: individual ID random effect, all metrics."),
+    paste0(
+      timing_normalization_footnote,
+      " Overall rows combine these normalization bases."
+    ),
+    locations = list(
+      cells_column_labels(error_chest_median),
+      cells_column_labels(error_wrist_median),
+      cells_column_labels(general)
+    )
+  ) |>
+  tab_footnote(
+    html("R\u00b2<sub>Pos.</sub>: partial R\u00b2 for the specific position effect (glasses, chest, or wrist; median min\u2013max), significant metrics only. R\u00b2<sub>Id</sub> and SD<sub>Id</sub>: individual ID random effect, all metrics."),
     locations = cells_column_labels(general)
   ) |>
   cols_hide(c(n, r2_pos_median, r2_pos_min, r2_pos_max,
               r2_id_median, r2_id_min, r2_id_max,
-              sd_id_median, sd_id_min, sd_id_max)) |> 
+              sd_id_median, sd_id_min, sd_id_max)) |>
   tab_style(cell_text(weight = "bold"), list(cells_stub(), cells_column_labels())) |> 
-  tab_header("Summary overview of outcome-level bias due to dosimeter placement, compared to glasses",
-             subtitle = "Biases are all based on their modelling scale") |> 
+  tab_header(
+    title = html(
+      "Summary overview of outcome-level bias<br>for body-worn versus eye-level measurement"
+    ),
+    subtitle = html(paste0(
+      scenario_label,
+      "<br>Timing metrics use mean wake/sleep durations;<br>",
+      "other metrics to the absolute glasses reference."
+    ))
+  ) |>
+  tab_options(table.width = px(900)) |>
   tab_style(
     cell_text(color = colors[2]),
     cells_column_labels(error_chest_median)
@@ -990,6 +1199,24 @@ color_strips <- function(p, fills) {
   g
 }
 
+normalization_caption <- paste(
+  paste0(
+    "Brightness-based timing metrics: mean wake duration ",
+    mean_wake_duration_label, " (1% = ", mean_wake_one_percent_label, ")."
+  ),
+  paste0(
+    "Darkness-based timing metrics: mean sleep duration ",
+    mean_sleep_duration_label, " (1% = ", mean_sleep_one_percent_label, ")."
+  ),
+  "All other metrics: absolute glasses reference.",
+  sep = "\n"
+)
+combined_bias_caption <- paste(
+  "Bin width = 5%; significant errors are highlighted in the position color.",
+  normalization_caption,
+  sep = "\n"
+)
+
 fig_abs_error <- 
 reduced_df |> 
   select(metric, p_chest:error_wrist) |> 
@@ -1005,15 +1232,14 @@ reduced_df |>
   theme_cowplot() +
   coord_cartesian(xlim = c(0,1)) +
   # guides(fill = "none") +
-  labs(#caption = "Binwidth: 5%", 
-       # title = "Histograms of (absolute) metric errors due to wearing position",
-       # subtitle = "Significant errors in the histogram are highlighted in the position color",
-       y = "Count (n)", x = "Absolute outcome-level bias (%)") + 
+  labs(y = "Count (n)", x = "Absolute normalized outcome-level bias (%)") +
   theme(panel.spacing = unit(2, "lines")) +
   gghighlight(p, use_group_by = FALSE,
               label_key = metric, calculate_per_facet = TRUE)
 
-fig_abs_error
+fig_abs_error +
+  labs(subtitle = scenario_label, caption = normalization_caption) +
+  theme(plot.caption = element_text(hjust = 0, size = 9))
 
 ```
 
@@ -1038,15 +1264,14 @@ reduced_df |>
   theme_cowplot() +
   coord_cartesian(xlim = c(-0.8,0.5)) +
   # guides(fill = "none") +
-  labs(#caption = "Binwidth: 5%", 
-       # title = "Histograms of metric errors due to wearing position",
-       # subtitle = "Significant errors in the histogram are highlighted in the position color",
-       y = "Count (n)", x = "Outcome-level bias (%)") + 
+  labs(y = "Count (n)", x = "Normalized outcome-level bias (%)") +
   theme(panel.spacing = unit(2, "lines")) +
   gghighlight(p, use_group_by = FALSE,
               label_key = metric, calculate_per_facet = TRUE)
 
-fig_sign_error
+fig_sign_error +
+  labs(subtitle = scenario_label, caption = normalization_caption) +
+  theme(plot.caption = element_text(hjust = 0, size = 9))
 ```
 
 ```{r}
@@ -1057,15 +1282,26 @@ fig_sign_error
 
 strip_fills <- unname(colors[c("chest", "wrist")])
 
-wrap_elements(color_strips(fig_sign_error, strip_fills)) /
+combined_error_figure <-
+  wrap_elements(color_strips(fig_sign_error, strip_fills)) /
   wrap_elements(color_strips(fig_abs_error, strip_fills)) +
-  plot_annotation(tag_levels = "A",
-                  caption = "Bindwidth = 5%\nSignificant errors in the histogram are highlighted in the position color",
-                  )
+  plot_annotation(
+    tag_levels = "A",
+    title = scenario_label,
+    caption = combined_bias_caption,
+    theme = theme(
+      plot.title = element_text(hjust = 0, size = 14),
+      plot.caption = element_text(hjust = 0, size = 9),
+      plot.margin = margin(8, 12, 8, 12)
+    )
+  )
+
+combined_error_figure
 
 ggsave(here("output/figures/Fig_metric_error.pdf"), device = cairo_pdf,
-       width = 8, height = 8)
-ggsave(here("output/figures/Fig_metric_error.jpeg"), width = 8, height = 8)
+       plot = combined_error_figure, width = 8, height = 8)
+ggsave(here("output/figures/Fig_metric_error.jpeg"),
+       plot = combined_error_figure, width = 8, height = 8)
 ```
 
 
@@ -1075,4 +1311,3 @@ ggsave(here("output/figures/Fig_metric_error.jpeg"), width = 8, height = 8)
 #| label: session-info
 sessionInfo()
 ```
-

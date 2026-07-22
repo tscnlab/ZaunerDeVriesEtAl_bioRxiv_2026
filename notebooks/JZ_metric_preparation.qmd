@@ -1,12 +1,13 @@
 ---
 title: "Preparation of metrics for participant-day analyses"
+subtitle: "Primary analysis: documented non-wear removed; diary-defined sleep retained"
 format: html
 author: Johannes Zauner
 ---
 
 ## Preface
 
-This document collects the raw light exposure data for all three wearing positions through the `melidosData` package, preprocesses it to 
+This document collects the raw light exposure data for all three wearing positions through the `melidosData` package. This primary scenario removes documented non-wear outside diary-defined sleep while retaining sleep-time measurements. The data are preprocessed to
 
 1. An unaggregated set of light exposure data, both for the eye-level and chest-level wearing position where
   - Values > 100 000 lx are removed (set to `NA`)

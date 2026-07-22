@@ -1423,7 +1423,7 @@ final_plot <- (p_m1 / plot_spacer() / p_m3 / plot_spacer() / p_m4) +
   plot_layout(guides = "collect",
               heights = c(1, -0.7, 6, -0.7, 3)) +
   plot_annotation(
-    title    = "Ratios of placement errors (m-EDI) between contexts",
+    title    = "Ratios of placement errors (melEDI) between contexts",
     subtitle = paste("Comparisons with significant differences (p < 0.05) are bold."),
     caption  = paste(
       "\u00b9 Inside (indoors) or outside (outdoors) a building",
@@ -1824,8 +1824,8 @@ top <- (p_m1 / plot_spacer() / p_m3 / plot_spacer() / p_m4) +
 final_plot <- wrap_plots(top, plot_spacer(), p_m2,
                          ncol = 1, heights = c(7.8, 0, 3.8)) +
   plot_annotation(
-    title = "Placement error (% m-EDI) by context",
-    subtitle = "Mean placement errors (m-EDI) and 95% confidence intervals (horizontal lines or shaded bands).\nEstimates significantly different from zero (p < 0.05) are shown as filled circles or bold curves.",
+    title = "Placement error (% melEDI) by context",
+    subtitle = "Mean placement errors (melEDI) and 95% confidence intervals (horizontal lines or shaded bands).\nEstimates significantly different from zero (p < 0.05) are shown as filled circles or bold curves.",
     caption = paste(
       "\u00b9 Environment: Inside (indoors) or outside (outdoors) a building",
       "\u00b2 Cycling/walking, working, or leisure outdoors",

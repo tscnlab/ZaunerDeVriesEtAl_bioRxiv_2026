@@ -156,7 +156,8 @@ crossing_table <- function(stability, tol = 5) {
 metric_palette <- c("#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7")
 
 plot_stability <- function(results, position_colors, metric_labels,
-                           tol = 5, ylim = c(0, 20), days_n_participants = 50) {
+                           tol = 5, ylim = c(0, 20), days_n_participants = 50,
+                           draws) {
   p <- results |>
     dplyr::mutate(
       metric = factor(metric, levels = names(metric_labels), labels = metric_labels),
@@ -178,7 +179,8 @@ plot_stability <- function(results, position_colors, metric_labels,
       x = "Sample size",
       y = "SD of bias (% of glasses level)",
       caption = paste0("Participant-days panels are based on N = ",
-                       days_n_participants, " participants (resampled).")
+                       days_n_participants, " participants (resampled).",
+                       "Bootstrap with N=", draws ," draws")
     ) +
     cowplot::theme_cowplot() +
     ggplot2::theme(strip.background = ggplot2::element_rect(fill = "grey90"))

@@ -1,0 +1,1873 @@
+---
+title: "Comparison of placement error based on context"
+format:
+  html:
+    toc: true
+    embed-resources: true
+authors: "Sietse de Vries"
+bibliography: ../references.bib
+---
+
+## Summary
+
+This document describes a statistical analysis to investigate whether contextual factors significantly affect the differences between light measurements at the reference eye-level and on the body (chest and wrist), referred to as the placement error.
+
+The dosimeter measurements were collected at multiple sites as part of the MeLiDos project, following the protocol of Guidolin et al. [@guidolin2024]. The dataset of each site is available on [GitHub](https://github.com/MeLiDosProject):
+
+-   BAUA, Dortmund, Germany [@broszio2025]
+
+-   FUSPCEU, Madrid, Spain [@baezamoyano2025]
+
+-   IZTECH, Izmir, Turkey [@didikoglu2025]
+
+-   KNUST, Kumasi, Ghana [@akuffo2025]
+
+-   MPI, Tübingen, Germany [@guidolin2025][^1]
+
+-   RISE, Borås, Sweden [@nilssontengelin2026]
+
+-   THUAS, the Hague, the Netherlands [@aerts2025a]
+
+-   TUM, Munich, Germany [@hilden2025a]
+
+-   UCR, San Pedro, San José, Costa Rica [@sancho-salas2026a]
+
+[^1]: Data from this site were not included in the analysis as no chest-worn dosimeter measurements were collected and the wrist-worn measurements were made using a different type of dosimeter.
+
+The datasets were previously prepared (see [context_preparation](SWV_context_preparation.qmd)). The resulting dataset consists of placement errors (log‑transformed differences between eye‑level and body‑worn dosimeter measurements (`logdif_x = log10(MEDI_x + 0.1) − log10(MEDI_h + 0.1)`, where x refers to either the chest (c) or wrist (w) dosimeter)). For each observation, the participant id (`Id`), time of day (`timeofday`), measurement day (`day`), and measurement site (`site`), and contextual classifications are available: environment (`environment`), activity context (`act_context`), light context (`work_light_context`), and photoperiod (`photoperiod.state`).
+
+## Research questions
+
+**Main research question:** *Are mean log-transformed differences between eye-level and body-worn (chest or wrist) dosimeter measurements systematically dependent on the measurement context?*
+
+**Subquestion 1** (comparative): *Do mean log-transformed differences between eye-level and body-worn dosimeter measurements differ across contexts?*
+
+-   **Null hypothesis:** For each pairwise comparison of context-specific mean log‑transformed differences between eye‑level and body‑worn dosimeter measurements, the two means are equal.
+
+-   **Rationale:** If the mean log-transformed differences between eye-level and body-worn dosimeter measurements do not differ across contexts, the mean deviations can be considered context-invariant, and contextual information does not need to be considered when interpreting body-worn measurements.
+
+**Subquestion 2** (absolute): *Under which contexts do the mean log-transformed differences between eye-level and body-worn dosimeter measurements differ significantly from zero?*
+
+-   **Null hypothesis:** For each context, the mean log‑transformed difference between eye‑level and body‑worn dosimeter measurements is zero.
+
+-   **Rationale:** If the results from subquestion 1 indicate that the mean log-transformed differences between eye-level and body-worn dosimeter measurements depend on context, it becomes relevant to characterize the mean deviation under each context. Testing context-specific means against zero, i.e. the value corresponding to identical measurements at both dosimeter positions, allows identifying under which contexts body-worn dosimeters exhibit systematic deviations and assessing the direction and size of those deviations.
+
+## Model development
+
+The following modeling decisions were made.
+
+1.  The dataset includes four contextual classifications describing the measurement context: activity context (`act_context`), light context when working indoors (`work_light_context`), photoperiod (`photoperiod.state`), and environment (`environment`). As measurement deviations between dosimeter positions are primarily driven by the lighting conditions and participant posture under which the measurements were performed [@devries2026; @devries2026a], considerable overlap exists between these categories. For example, being outdoors typically makes daylight the most prevalent light source. Whether a participant was outdoors can be inferred from activity context, light context, and environment. Hence, to avoid multicollinearity, these contextual factors were not implemented in a single model, but a separate model was made for each factor. Each model and their rationale are described below.
+
+2.  The placement error (log‑transformed differences between eye‑level and body‑worn dosimeter measurements) for chest-worn (`logdif_c`) and wrist-worn (`logdif_w`) dosimeters was defined as the outcome variable for each model. The distributions of these errors show a sharp central peak and long tails, indicating leptokurtosis (kurtosis test substantially exceeded 3 for both distributions). Initial tests using a standard linear mixed-effects model (LMM), which assumes Gaussian residuals, revealed violations of the model assumptions, as evidenced by a clear S-shaped pattern in QQ plots and heteroscedasticity in residual diagnostics. Therefore, it was decided to adopt a Student-t residual distribution, as it better accommodates heavy-tailed residuals. Model diagnostics of the developed models are discussed in @sec-model-diagnostics.
+
+    As the measurements were recorded simultaneously at the eyes, chest, and wrist, the placement errors for the chest and wrist share the same eye-level term by construction. As they are hence not fully independent, modeling both jointly was explored, but resulted in convergence errors due to the additional model complexity. Moreover, as the dependence between both errors (outcomes) is deemed outside the current scope, a separate model was fitted for each.
+
+3.  The dataset has a nested structure, as hourly (i.e. averaged to hourly) measurements were collected over multiple days for each participant, and each participant participated at only one site. Consequently, observations are not independent, and measurements taken on the same day, by the same participant, or at the same site were expected to be correlated. To account for these correlations, a hierarchical mixed-effects modeling framework with random effects was specified. Random intercepts were included for site, participant within site, and day within participant. Random slopes were not included, as the primary aim was to estimate population‑level context effects rather than individual‑specific differences in context responses. Although some of these nested effects explained little variance in some of the models, all were retained because their inclusion is justified on theoretical grounds based on the measurement protocol's design.
+
+    Additionally, hourly measurements within a participant may not be independent, as an observation is expected to be correlated with the observation of the preceding hour (temporal autocorrelation). Thus, each model was checked for residual temporal autocorrelation by inspecting the autocorrelation function (ACF) of the residuals against lag. As substantial lag 1 autocorrelation was observed for all models, an AR(1) correlation structure was implemented for each participant. After implementing this structure, near-zero residual autocorrelation was observed.
+
+4.  Four models were developed to investigate how different contextual classifications impact placement errors. The contextual classifications were defined as fixed effects or smooths, as the aim was to estimate and compare placement errors under these specific, predefined contexts rather than to generalize to a broader population of contexts. The models (and their rationale) are:
+
+    1.  **Environment \* photoperiod model (m1)**
+
+        The environment \* photoperiod model was built using `environment` (indoor or outdoor) and `photoperiod.state` (day or night) as contextual classifications. The *other_env* variable was excluded from the `environment` classification, as it consists of observations with both indoor and outdoor measurements, or with missing contextual data. An interaction between `environment` and `photoperiod.state` was also included, as the effect of environment on measurement deviations was expected to differ across photoperiods. The following model formula was defined:
+
+        *logdif_x \~ environment \* photoperiod.state + (1 \| site / Id / day)*
+
+        where x refers to either the chest (c) or wrist (w) dosimeter.
+
+    2.  **Environment \* time-of-day model (m2)**
+
+        The environment \* time-of-day model was built using `environment` (indoor or outdoor) and `timeofday` (hourly, in local time) as contextual classifications. `timeofday` was anticipated to be a coarse proxy for a range of underlying contextual factors (e.g. behavioral patterns and daylight availability). It was modeled as a smooth and an interaction between both contextual classifications was included. The following model formula was defined:
+
+        *logdif_x \~ environment \* timeofday + (1 \| site / Id / day)*
+
+        where x refers to either the chest (c) or wrist (w) dosimeter.
+
+    3.  **Activity \* photoperiod model (m3)**
+
+        The activity \* photoperiod model was built using `act_context` (home, working_indoor, road_vehicle, or outdoor_act) and `photoperiod.state` (day or night) as contextual classifications. The `act_context` factor can be seen as a more detailed description of the environmental context (compared to model m1), as whether a participant was indoors or outdoors can still be inferred from this factor. Observations with *other_act* were not included (as this variable represents a combination of undefined or miscellaneous activities) and an interaction between both contextual classifications was included. The formula for the model was defined as:
+
+        *logdif_x \~ act_context \* photoperiod.state + (1 \| site / Id / day)*
+
+        where x refers to either the chest (c) or wrist (w) dosimeter.
+
+    4.  **Indoor work lighting model (m4)**
+
+        In previous work, the impact of generalized indoor (office) lighting conditions (electric ceiling-based lighting and daylighting from a vertical window or lighting from a screen) on the differences between eye-level and body-worn dosimeters was simulated [@devries2026; @devries2026a]. Building on this, an indoor work lighting model was developed to investigate whether similar effects are present in the current real-world datasets. This was done by filtering for measurements recorded while participants reported to be working indoors, and subsequently comparing conditions based on the primary light source: 1) electric lighting, 2) daylighting, or 3) display lighting (`work_light_context)`*.* A model that further subdivided categories based on the secondary light source was also considered; however, this was not continued due to the limited number of observations available.
+
+        `photoperiod` was not specified in this model, as the occurrence of "daylight" as a light source inherently explains the photoperiod. The formula for the model was defined as:
+
+        *logdif_x \~ work_light_context + (1 \| site / Id / day)*
+
+        where x refers to either the chest (c) or wrist (w) dosimeter.
+
+-   Several modeling frameworks were considered to accommodate the nested structure of the data through random effects and the heavy‑tailed distributions of `logdif_c` and `logdif_w` through a Student-t residual distribution. Generalized linear mixed models (GLMMs) were considered; however, the implementation of a Student‑t residual distribution is not straightforward, as this distribution does not belong to the exponential family typically underlying GLMMs. Bayesian hierarchical models were also considered, as they naturally allow the specification of heavy-tailed distributions. However, a frequentist framework was preferred to retain direct test statistics and p-values for reporting, and because more resources were available to support model development. Therefore, a generalized additive model (GAM) framework (with random effects) was adopted. Although all fixed effects in the models m1, m3, and m4 are categorical, implying a linear mean structure, the GAM framework supports Student‑t residual distributions while retaining a mixed‑effects formulation. Hence, for these models, the GAM was not used to model nonlinear predictor effects, but rather as a general framework for mixed-effects modeling with heavy-tailed residuals.
+
+```{r}
+#| label: load-packages
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(cowplot)    # used for plotting
+library(here)       # used to import the formatted data and exporting plots
+library(mgcv)       # used for GAM fitting
+library(gratia)     # used for model diagnostics
+library(emmeans)    # used to calculate marginal means and for testing
+library(gt)         # used to make tables
+library(patchwork)  # used to combine plots
+library(itsadug)    # used to compute rho
+library(ggh4x)      # used to color plots
+library(ggsci)      # used for color palette (pal_jco)
+library(ggtext)     # used to format footnotes
+library(grid)       # used to generate legends
+
+# Define colors
+pos_colors <- setNames(pal_jco()(3), c("head", "chest", "wrist"))
+photoperiod_colors <- c(day = "#377eb8", night = "#a65628")
+env_colors <- c(indoor = "#999999", outdoor = "#984ea3")
+
+# Define labels
+label_term <- function(x) {
+  recode(x,
+    indoor = "Indoors",
+    outdoor = "Outdoors",
+    home = "Awake at home",
+    working_indoor = "Working in the office/home",
+    road_vehicle = "In a vehicle",
+    outdoor_act = "Time outdoors\u00b2", # Superscript for footnotes in figures
+    electric = "Electric",
+    daylight = "Daylight",
+    display = "Display"  
+    )
+}
+
+label_term2 <- function(x) {
+  recode(x,
+    indoor = "Indoors",
+    outdoor = "Outdoors",
+    home = "Awake at home",
+    working_indoor = "Working in the\noffice/home",
+    road_vehicle = "In a vehicle",
+    outdoor_act = "Time outdoors\u00b2", # Superscript for footnotes in figures
+    electric = "Electric",
+    daylight = "Daylight",
+    display = "Display"  
+    )
+}
+```
+
+```{r}
+#| label: load-filter-data
+
+load(here("data/prepared_context_data.RData"))
+
+# Create subset of data for models m1 and m2
+# Drop other_env category
+m1m2_data <- prepared_context_data |>
+  filter(environment != "other_env")
+
+# Create subset of data for model m3
+# Drop other_act category
+m3_data <- prepared_context_data |>
+  filter(act_context != "other_act")
+
+# Create subset of data for model m4
+m4_data <- prepared_context_data |>
+  filter(!is.na(work_light_context))
+```
+
+## Fit and evaluate models {#sec-model-diagnostics}
+
+Models were fitted using the *mgcv* package. Random effects were implemented using bs = "re". Because *mgcv* does not use the *lme4*-style formula syntax (i.e. *site / Id / day*), the structure was specified using grouping factors rather than nesting operators. Each participant was observed at only one site, having a unique ID, so the participant's random effect was implicitly nested within site by design. Measurement day was not unique across participants, and therefore day‑within‑participant was represented by a constructed grouping factor that explicitly nested days within participants.
+
+```{r}
+#| label: format-random-effects
+
+# Create a nested category for Id/day
+m1m2_data$Id_day <- interaction(m1m2_data$Id, m1m2_data$day, drop = TRUE)
+m3_data$Id_day <- interaction(m3_data$Id, m3_data$day, drop = TRUE)
+m4_data$Id_day <- interaction(m4_data$Id, m4_data$day, drop = TRUE)
+
+# Convert Id to factor
+m1m2_data$Id <- factor(m1m2_data$Id)
+m3_data$Id <- factor(m3_data$Id)
+m4_data$Id <- factor(m4_data$Id)
+
+# Count the number of participants and participant-days for each model
+tibble(
+  dataset = c("Environment * photoperiod model (m1), Environment * time-of-day model (m2)", "Activity * photoperiod model (m3)", "Indoor work lighting model (m4)"),
+  participants = c(n_distinct(m1m2_data$Id),
+                       n_distinct(m3_data$Id),
+                       n_distinct(m4_data$Id)),
+  participant_days = c(n_distinct(m1m2_data$Id_day),
+                       n_distinct(m3_data$Id_day),
+                       n_distinct(m4_data$Id_day))
+) |>
+  gt(rowname_col = "dataset") |>
+  fmt_number(columns = c(participants, participant_days),
+             decimals = 0, sep_mark = ",") |>
+  cols_label(
+    participants     = "Participants",
+    participant_days = "Participant-days"
+  ) |>
+  tab_style(
+    style     = cell_text(weight = "bold"),
+    locations = list(cells_stub(), cells_column_labels())
+  ) |>
+  tab_header(
+    title = "Participants and participant-days per model"
+  )
+```
+
+```{r}
+#| label: format-AR
+
+# Add AR.start column
+# Flag the first row of each subject's time series as TRUE
+m1m2_data <- m1m2_data |>
+  arrange(Id, as.numeric(day), timeofday) |>
+  group_by(Id) |>
+  mutate(AR.start = row_number() == 1) |>
+  ungroup()
+
+m3_data <- m3_data |>
+  arrange(Id, as.numeric(day), timeofday) |>
+  group_by(Id) |>
+  mutate(AR.start = row_number() == 1) |>
+  ungroup()
+
+m4_data <- m4_data |>
+  arrange(Id, as.numeric(day), timeofday) |>
+  group_by(Id) |>
+  mutate(AR.start = row_number() == 1) |>
+  ungroup()
+```
+
+Models were fitted using the bam() function with the fast restricted maximum likelihood (fREML) method and the discrete = TRUE option. This was preferred over gam() with standard REML because the latter resulted in substantially longer computation times given the dataset size (approximately 10,000 observations). Comparisons against both gam() with REML and bam() with discrete = FALSE showed that fixed-effect estimates agreed to three decimal places in each case (maximum absolute difference \< 0.001 log₁₀ units), confirming no meaningful impact on these model predictions.
+
+### **Environment \* photoperiod model (m1)**
+
+```{r}
+#| label: fit-m1
+
+# Fit models without AR
+# Chest model (logdif_c)
+m1_logdif_c <- bam(
+  logdif_c ~ environment * photoperiod.state +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data   = m1m2_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML"
+)
+
+
+# Wrist model (logdif_w)
+m1_logdif_w <- bam(
+  logdif_w ~ environment * photoperiod.state +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data   = m1m2_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML"
+)
+
+r1_m1_logdif_c <- start_value_rho(m1_logdif_c, plot=TRUE)
+r1_m1_logdif_w <- start_value_rho(m1_logdif_w, plot=TRUE)
+
+
+# Fit models with AR
+# Chest model (logdif_c)
+m1_logdif_c <- bam(
+  logdif_c ~ environment * photoperiod.state +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data   = m1m2_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML",
+  rho = r1_m1_logdif_c,
+  AR.start = AR.start
+  )
+
+m1_logdif_w <- bam(
+  logdif_w ~ environment * photoperiod.state +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data   = m1m2_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML",
+  rho = r1_m1_logdif_w,
+  AR.start = AR.start
+  )
+
+acf_resid(m1_logdif_c, split_pred = "AR.start")
+acf_resid(m1_logdif_w, split_pred = "AR.start")
+```
+
+### **Environment \* time-of-day model (m2)**
+
+#### **Investigation on time of day smooth modeling approach**
+
+An average time of day smooth and separate smooths for each environment are defined. If the standard second derivative penalty (m=2) is applied to the average and by environment smooths, the two functions may look very similar, which could result in the model not being able to attribute structure to one versus the other (resulting in very large confidence intervals). This can be prevented by specifying m=1 for the by environment smooths, so that the penalty acts on the first derivative, and thus the by environment smooth measures deviations from the average smooth. However, this fix is only valid for TPRS and B-splines, and may induce piecewise linear behavior.
+
+To investigate how the time of day smooths should be implemented, six different modeling approaches are compared. The first three treat the smooth as non-cyclic, the latter three as cyclic.
+
+```{r}
+#| label: temp-model-investigation
+
+# Fit models without AR
+# Non-cyclic models
+mA_init <- bam(
+  logdif_c ~ environment +
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, by = environment, m = 1, k = 12) +
+    s(timeofday, k = 12),
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML"
+)
+
+mB_init <- bam(
+  logdif_c ~ environment +
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, by = environment, m = 2, k = 12) +
+    s(timeofday, k = 12),
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML"
+)
+
+mC_init <- bam(
+  logdif_c ~ 
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, k = 12) +
+    s(timeofday, environment, bs = "sz", k = 12),
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML"
+)
+
+# Cyclic models
+mD_init <- bam(
+  logdif_c ~ environment +
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, by = environment, bs = "cc", k = 12, m = 1) +
+    s(timeofday, bs = "cc", k = 12),
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML",
+  knots = list(timeofday = c(0, 24))
+)
+
+mE_init <- bam(
+  logdif_c ~ environment +
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, by = environment, bs = "cc", k = 12, m = 2) +
+    s(timeofday, bs = "cc", k = 12),
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML",
+  knots = list(timeofday = c(0, 24))
+)
+
+mF_init <- bam(
+  logdif_c ~ 
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, bs = "cc", k = 12) +
+    s(timeofday, environment, bs = "sz", k = 12, xt = list(bs = "cc")),
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML",
+  knots = list(timeofday = c(0, 24))
+)
+
+rho_A <- start_value_rho(mA_init)
+rho_B <- start_value_rho(mB_init)
+rho_C <- start_value_rho(mC_init)
+rho_D <- start_value_rho(mD_init)
+rho_E <- start_value_rho(mE_init)
+rho_F <- start_value_rho(mF_init)
+
+
+# Fit models with AR
+mA <- bam(
+  logdif_c ~ environment +
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, by = environment, m = 1, k = 12) + # One time of day smooth for each environment
+    s(timeofday, k = 12), # Average smooth effect of time of day
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML",
+  rho = rho_A, AR.start = AR.start
+)
+
+mB <- bam(
+  logdif_c ~ environment +
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, by = environment, m = 2, k = 12) +
+    s(timeofday, k = 12),
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML",
+  rho = rho_B, AR.start = AR.start
+)
+
+# Sz basis allows us to do a factor by smooth without changing to a first derivative
+# penalty (m=1). So basically all advantages of the factor by model, but not the possible limitations.
+mC <- bam(
+  logdif_c ~ 
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, k = 12) + # Average term
+    s(timeofday, environment, bs = "sz", k = 12), # Smooths are uncorrelated with average term
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML",
+  rho = rho_C, AR.start = AR.start
+)
+
+
+# The m=1 fix is only valid for TPRS and b-splines
+# So, this fix is actually not valid for this model. But kept in for completeness.
+mD <- bam(
+  logdif_c ~ environment +
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, by = environment, bs = "cc", k = 12, m = 1) +
+    s(timeofday, bs = "cc", k = 12),
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML",
+  knots = list(timeofday = c(0, 24)),
+  rho = rho_D, AR.start = AR.start
+)
+
+mE <- bam(
+  logdif_c ~ environment +
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, by = environment, bs = "cc", k = 12, m = 2) +
+    s(timeofday, bs = "cc", k = 12),
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML",
+  knots = list(timeofday = c(0, 24)),
+  rho = rho_E, AR.start = AR.start
+)
+
+mF <- bam(
+  logdif_c ~ 
+    s(site, bs = "re") + s(Id, bs = "re") + s(Id_day, bs = "re") +
+    s(timeofday, bs = "cc", k = 12) +
+    s(timeofday, environment, bs = "sz", k = 12, xt = list(bs = "cc")),
+  data = m1m2_data, family = scat(),
+  discrete = TRUE, nthreads = 10, method = "fREML",
+  knots = list(timeofday = c(0, 24)),
+  rho = rho_F, AR.start = AR.start
+)
+
+# Print model summaries
+models <- list(A = mA, B = mB, C = mC, D = mD, E = mE, F = mF)
+labels <- c(
+  A = "A: bs=tp + by (m=1) + param",
+  B = "B: bs=tp + by (m=2) + param",
+  C = "C: bs=tp + sz",
+  D = "D: bs=cc + by (m=1) + param",
+  E = "E: bs=cc + by (m=2) + param",
+  F = "F: bs=cc + sz"
+)
+
+rhos <- c(A = rho_A, B = rho_B, C = rho_C, D = rho_D, E = rho_E, F = rho_F)
+
+fit_summary <- tibble(
+  model     = labels,
+  rho       = rhos[names(models)],
+  fREML     = sapply(models, function(m) m$gcv.ubre),
+  edf_total = sapply(models, function(m) sum(m$edf)),
+  R2_adj    = sapply(models, function(m) summary(m)$r.sq),
+  AIC       = sapply(models, AIC)
+)
+print(fit_summary)
+# Rho is very similar, alllowing model comparison through AIC
+
+# Plot model predictions
+backtrans_pct <- function(x) (10^x - 1) * 100
+
+get_curve <- function(model, data, label, 
+                      times = seq(0, 24, by = 0.25)) {
+  pred_grid <- expand.grid(
+    environment = c("indoor", "outdoor"),
+    timeofday   = times,
+    site        = data$site[1],
+    Id          = data$Id[1],
+    Id_day      = data$Id_day[1],
+    stringsAsFactors = FALSE
+  )
+  
+  Xp <- predict(
+    model, newdata = pred_grid,
+    exclude = c("s(site)", "s(Id)", "s(Id_day)"),
+    type    = "lpmatrix"
+  )
+  
+  beta  <- coef(model)
+  Vbeta <- vcov(model)
+  fit   <- as.numeric(Xp %*% beta)
+  se    <- sqrt(rowSums((Xp %*% Vbeta) * Xp))
+  
+  pred_grid |>
+    mutate(
+      pct_error      = backtrans_pct(fit),
+      pct_error_low  = backtrans_pct(fit - 1.96 * se),
+      pct_error_high = backtrans_pct(fit + 1.96 * se),
+      model          = label
+    )
+}
+
+curves_all <- bind_rows(
+  Map(get_curve, models, list(m1m2_data), labels)
+) |>
+  mutate(model = factor(model, levels = labels))
+
+
+ggplot(curves_all, aes(x = timeofday, y = pct_error, 
+                       color = environment, fill = environment)) +
+  geom_ribbon(aes(ymin = pct_error_low, ymax = pct_error_high),
+              alpha = 0.20, color = NA) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
+  geom_line(linewidth = 0.7) +
+  facet_wrap(~ model, ncol = 3) +
+  scale_color_manual(values = env_colors,
+                     labels = c(indoor = "Indoors", outdoor = "Outdoors"),
+                     name   = NULL) +
+  scale_fill_manual(values = env_colors, guide = "none") +
+  scale_x_continuous(breaks = seq(0, 24, by = 6), expand = c(0, 0)) +
+  scale_y_continuous(labels = function(y) paste0(ifelse(y > 0, "+", ""), y, "%")) +
+  coord_cartesian(xlim = c(0, 24)) +
+  labs(x = "Time of day (hrs)", y = "Estimated error (%)") +
+  theme_minimal() +
+  theme(panel.spacing = unit(1.5, "lines"))
+
+```
+
+The cyclic models outperformed the non-cyclic ones on AIC and R^2^. A cyclic specification is also more appropriate on theoretical grounds, since placement errors just before and after midnight should roughly align. On visual inspection, the predictions for the cyclic models (D, E, and F) were approximately identical. Models D and E were identical in AIC and R^2^, and outperformed model F. Because model D applies the m=1 fix, which is not valid for the cyclic (cc) basis (but was kept in for consistency with the non-cyclic models), it behaves identically to model E (which uses the standard m=2 penalty). Since E outperforms F and the wide confidence interval problem that the m=1 fix is meant to address does not appear present for the m=2 specification, the time-of-day smooth was implemented as in model E.
+
+#### **Model fit**
+
+```{r}
+#| label: fit-m2
+
+# Fit models without AR
+# Chest model (logdif_c)
+m2_logdif_c <- bam(
+  logdif_c ~ environment +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re") +
+  s(timeofday, by = environment, bs = "cc", k = 12, m = 2) +
+  s(timeofday, bs = "cc", k = 12),
+  data   = m1m2_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML",
+  knots = list(timeofday = c(0, 24))
+)
+
+
+# Wrist model (logdif_w)
+m2_logdif_w <- bam(
+  logdif_w ~ environment +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re") +
+  s(timeofday, by = environment, bs = "cc", k = 12, m = 2) +
+  s(timeofday, bs = "cc", k = 12),
+  data   = m1m2_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML",
+  knots = list(timeofday = c(0, 24))
+)
+
+
+r1_m2_logdif_c <- start_value_rho(m2_logdif_c, plot=TRUE)
+r1_m2_logdif_w <- start_value_rho(m2_logdif_w, plot=TRUE)
+
+
+# Fit models with AR
+# Chest model (logdif_c)
+m2_logdif_c <- bam(
+  logdif_c ~ environment +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re") +
+  s(timeofday, by = environment, bs = "cc", k = 12, m = 2) +
+  s(timeofday, bs = "cc", k = 12),
+  data   = m1m2_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML",
+  rho = r1_m2_logdif_c,
+  AR.start = AR.start,
+  knots = list(timeofday = c(0, 24))
+  )
+
+# Wrist model (logdif_w)
+m2_logdif_w <- bam(
+  logdif_w ~ environment +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re") +
+  s(timeofday, by = environment, bs = "cc", k = 12, m = 2) +
+  s(timeofday, bs = "cc", k = 12),
+  data   = m1m2_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML",
+  rho = r1_m2_logdif_w,
+  AR.start = AR.start,
+  knots = list(timeofday = c(0, 24))
+  )
+
+
+acf_resid(m2_logdif_c, split_pred = "AR.start")
+acf_resid(m2_logdif_w, split_pred = "AR.start")
+```
+
+### **Activity \* photoperiod model (m3)**
+
+```{r}
+#| label: fit-m3
+
+# Fit models without AR
+# Chest model (logdif_c)
+m3_logdif_c <- bam(
+  logdif_c ~ act_context * photoperiod.state +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data   = m3_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML"
+)
+
+
+# Wrist model (logdif_w)
+m3_logdif_w <- bam(
+  logdif_w ~ act_context * photoperiod.state +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data   = m3_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML"
+)
+
+r1_m3_logdif_c <- start_value_rho(m3_logdif_c, plot=TRUE)
+r1_m3_logdif_w <- start_value_rho(m3_logdif_w, plot=TRUE)
+
+
+# Fit models with AR
+# Chest model (logdif_c)
+m3_logdif_c <- bam(
+  logdif_c ~ act_context * photoperiod.state +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data   = m3_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML",
+  rho = r1_m3_logdif_c,
+  AR.start = AR.start
+)
+
+# Wrist model (logdif_w)
+m3_logdif_w <- bam(
+  logdif_w ~ act_context * photoperiod.state +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data   = m3_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML",
+  rho = r1_m3_logdif_w,
+  AR.start = AR.start
+)
+
+acf_resid(m3_logdif_c, split_pred = "AR.start")
+acf_resid(m3_logdif_w, split_pred = "AR.start")
+```
+
+### **Indoor work lighting model (m4)**
+
+```{r}
+#| label: fit-m4
+
+# Fit models without AR
+# Chest model (logdif_c)
+m4_logdif_c <- bam(
+  logdif_c ~ work_light_context +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data   = m4_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML"
+)
+
+# Wrist model (logdif_w)
+m4_logdif_w <- bam(
+  logdif_w ~ work_light_context +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data   = m4_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML"
+)
+
+r1_m4_logdif_c <- start_value_rho(m4_logdif_c, plot=TRUE)
+r1_m4_logdif_w <- start_value_rho(m4_logdif_w, plot=TRUE)
+
+
+# Fit models with AR
+# Chest model (logdif_c)
+m4_logdif_c <- bam(
+  logdif_c ~ work_light_context +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data   = m4_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML",
+  rho = r1_m4_logdif_c,
+  AR.start = AR.start
+)
+
+# Wrist model (logdif_w)
+m4_logdif_w <- bam(
+  logdif_w ~ work_light_context +
+  s(site, bs = "re") +
+  s(Id, bs = "re") +
+  s(Id_day, bs = "re"),
+  data = m4_data,
+  family = scat(),
+  discrete = TRUE,
+  nthreads = 10,
+  method = "fREML",
+  rho = r1_m4_logdif_w,
+  AR.start = AR.start
+)
+
+
+acf_resid(m4_logdif_c, split_pred = "AR.start")
+acf_resid(m4_logdif_w, split_pred = "AR.start")
+```
+
+### **Model diagnostics**
+
+```{r}
+#| label: diag-summary
+
+models <- lst(
+  m1_logdif_c, m1_logdif_w,
+  m2_logdif_c, m2_logdif_w,
+  m3_logdif_c, m3_logdif_w,
+  m4_logdif_c, m4_logdif_w
+)
+
+# General model info
+model_summary <- imap(models, function(m, nm) {
+  s <- summary(m)
+  theta <- m$family$getTheta(TRUE)
+  
+  tibble(
+    model = nm,
+    n = nobs(m),
+    nu = theta[1],
+    sigma = theta[2],
+    r_sq_adj = s$r.sq,
+    dev_expl = s$dev.expl,
+    fREML = m$gcv.ubre,
+    converged = isTRUE(m$converged)
+  )
+}) |> list_rbind()
+
+model_summary |>
+  gt(rowname_col = "model") |>
+  tab_header(title = "Model summaries") |>
+  tab_stubhead(label = "Model") |>
+  fmt_integer(columns = n) |>
+  fmt_number(columns = c(nu, sigma), decimals = 3) |>
+  fmt_number(columns = c(r_sq_adj), decimals = 3) |>
+  fmt_number(columns = c(fREML), decimals = 0) |>
+  fmt_percent(columns = dev_expl, decimals = 1) |>
+  cols_label(
+    nu = html("&nu;"),
+    sigma = html("&sigma;"),
+    r_sq_adj = html("R&sup2; (adj)"),
+    dev_expl = "Deviance explained",
+    fREML = "fREML",
+    converged = "Converged"
+  ) |>
+  tab_spanner(label = "scat() family", columns = c(nu, sigma)) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = list(
+      cells_stub(),
+      cells_column_labels(),
+      cells_column_spanners()    
+      )
+  ) |>
+  tab_footnote(
+    footnote = "scat() residuals are modelled as scaled-t with degrees-of-freedom nu and scale sigma.",
+    locations = cells_column_spanners(spanners = "scat() family")
+  ) |>
+  tab_footnote(
+    footnote = "fREML scores are only comparable across models fit to identical data.",
+    locations = cells_column_labels(columns = fREML)
+  )
+```
+
+```{r}
+#| label: diag-random
+
+# Extract edf + p for each random effect
+random_long <- imap(models, function(m, nm) {
+  s <- as.data.frame(summary(m)$s.table)
+  tibble(
+    model = nm,
+    term = rownames(s),
+    edf = s[["edf"]],
+    p_value = s[["p-value"]]
+  )
+}) |> list_rbind()
+
+# Wide format: one row per model, edf + p columns per term
+random_wide <- random_long |>
+  pivot_wider(
+    names_from = term,
+    values_from = c(edf, p_value),
+    names_glue = "{term}__{.value}"
+  ) |>
+  # Reorder so edf and p sit next to each other per term
+  select(model,
+         `s(site)__edf`, `s(site)__p_value`,
+         `s(Id)__edf`, `s(Id)__p_value`,
+         `s(Id_day)__edf`, `s(Id_day)__p_value`)
+
+
+random_wide |>
+  gt(rowname_col = "model") |>
+  tab_header(title = "Approximate significance of random effects") |>
+  tab_stubhead(label = "Model") |>
+  fmt_number(columns = ends_with("__edf"), decimals = 2) |>
+  fmt(
+    columns = ends_with("__p_value"),
+    fns = function(x) ifelse(x < 0.001, "<0.001", sprintf("%.3f", x))
+  ) |>
+  cols_label(
+    `s(site)__edf` = "edf", `s(site)__p_value` = "p",
+    `s(Id)__edf` = "edf", `s(Id)__p_value` = "p",
+    `s(Id_day)__edf` = "edf", `s(Id_day)__p_value` = "p"
+  ) |>
+  tab_spanner(label = "s(site)", columns = starts_with("s(site)__")) |>
+  tab_spanner(label = "s(Id)", columns = starts_with("s(Id)__")) |>
+  tab_spanner(label = "s(Id_day)", columns = starts_with("s(Id_day)__")) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = list(
+      cells_stub(),
+      cells_column_labels(),
+      cells_column_spanners()
+      )
+  ) |>
+  tab_footnote(
+    footnote = "p-values larger than 0.05 suggest negligible contribution. However, p-values may be too low when the smoothing parameter is uncertain (reflected in very low edf, see warning on rdocumentation.org). Thus, edf is the primary indicator for effective contribution.",
+    locations = cells_column_spanners()
+  )
+```
+
+All models converged with ν = 3, the lower bound of the scat() family. This indicates that the residuals are at least as heavy-tailed as a t₃ distribution; the true residual distribution may be heavier still, but cannot be represented within this family. No alternative family available in mgcv accommodates heavier-tailed distributions, so this is a limitation of the modeling approach, which in turn results in limitations in the model diagnostics (discussed later). The scale parameter σ is consistently larger for the wrist models than for the chest models, indicating greater residual spread for wrist-versus-eye-level differences after accounting for fixed effects, smooths, and random effects.
+
+Wrist R² consistently exceeds chest R², meaning the model explains more variance for wrist deviations than for chest deviations. Combined with the larger σ for wrist, this implies that wrist deviations are both larger in absolute terms and better predicted by the fixed effects. Overall, however, deviance explained (and R²) is low across all models. This is expected as the outcome is a difference between two noisy paired measurements, which removes the variance shared between dosimeter positions and isolates position-specific noise; and the contextual factors are coarse categorical contrasts that cannot capture within-category variation in actual lighting conditions. Hence, these values are deemed acceptable as the aim of the models is to test whether systematic mean deviations exist across contexts, not to maximize predictive performance.
+
+For all chest models, the site random effect did not contribute meaningfully, but was retained for consistency across models.
+
+```{r}
+#| label: diag-plots
+#| fig-width: 8
+#| fig-height: 12
+
+build_grid <- function(plot_fn, x_label, y_label, title) {
+  plot_list <- map(names(models), ~ plot_fn(models[[.x]]) +
+                     ggtitle(.x) +
+                     labs(x = NULL, y = NULL))
+  inner <- wrap_plots(plot_list, ncol = 2)
+  
+  ggdraw() +
+    draw_plot(inner, x = 0.04, y = 0.04, width = 0.95, height = 0.86) +
+    draw_label(title,   x = 0.5,    y = 0.97, size = 14, fontface = "bold") +
+    draw_label("Chest", x = 0.2775, y = 0.92, fontface = "bold") +
+    draw_label("Wrist", x = 0.7525, y = 0.92, fontface = "bold") +
+    draw_label(x_label, x = 0.5,    y = 0.02) +
+    draw_label(y_label, x = 0.02,   y = 0.5, angle = 90)
+}
+
+build_grid(
+  qq_plot, 
+  x_label = "Theoretical quantiles", 
+  y_label = "Deviance residuals", 
+  title = "QQ plot of residuals")
+
+build_grid(
+  residuals_linpred_plot, 
+  x_label = "Linear predictor", 
+  y_label = "Deviance residuals", 
+  title = "Residuals vs linear predictor")
+
+build_grid(
+  residuals_hist_plot, 
+  x_label = "Deviance residuals", 
+  y_label = "Frequency", 
+  title = "Histogram of residuals")
+
+build_grid(
+  observed_fitted_plot, 
+  x_label = "Fitted values", 
+  y_label = "Response", 
+  title = "Observed vs fitted values")
+```
+
+Across all eight models, the central body of the residual distribution closely follows the reference line, indicating that the mean structure of the model is adequate. The lower tail consistently sits below the reference line, indicating that the residuals are more negative than the fitted scaled-t (ν = 3) distribution predicts. The upper tail is closer to the reference line, with generally modest deviations. The optimizer pushed the residual distribution toward the heaviest tails available, but this is still not heavy enough to accommodate the most extreme negative residuals. Overall, the chest models appear less well matched than the wrist models.
+
+These diagnostics are not optimal. However, the outcome variable has already been transformed to improve model fit and cannot reasonably be transformed further. This is an inherent difficulty of modeling errors of this kind. Model fit is therefore taken into account when interpreting the results, by focusing on the mean values and remaining conservative in the interpretation.
+
+## Placement errors between contexts (comparative)
+
+Subquestion 1 was formulated as: "Do mean log-transformed differences between eye-level and body-worn dosimeter measurements differ across contexts?"
+
+Using the fitted models and the *emmeans* package, estimated marginal means of the log-transformed differences between eye-level and body-worn dosimeter measurements were computed for each combination of contextual predictors. To identify if there are significant differences between the marginal means under each context, all combinations were compared using model-based t-tests (targeted contrasts). Confidence intervals and p-values were not adjusted for multiple comparisons, as in this analysis a false negative carries greater consequence than a false positive.
+
+### **Results table**
+
+```{r}
+#| label: calculate-emmeans
+
+# Compute the estimated marginal means for each combination
+# Each factor that is in the model is also in the emmeans calculation, thus no weighting needed
+emm_logdif_c_m1 <- emmeans(m1_logdif_c, ~ environment * photoperiod.state)
+emm_logdif_w_m1 <- emmeans(m1_logdif_w, ~ environment * photoperiod.state)
+
+emm_logdif_c_m3 <- emmeans(m3_logdif_c, ~ act_context * photoperiod.state)
+emm_logdif_w_m3 <- emmeans(m3_logdif_w, ~ act_context * photoperiod.state)
+
+emm_logdif_c_m4 <- emmeans(m4_logdif_c, ~ work_light_context)
+emm_logdif_w_m4 <- emmeans(m4_logdif_w, ~ work_light_context)
+
+# Marginal means for time of day are calculated in 6 hour bins
+emm_logdif_c_m2 <- emmeans(m2_logdif_c, ~ environment | timeofday, at = list(timeofday = seq(0, 18, by = 6)))
+emm_logdif_w_m2 <- emmeans(m2_logdif_w, ~ environment | timeofday, at = list(timeofday = seq(0, 18, by = 6)))
+
+
+# Build dataset with emmean contrasts
+build_block <- function(emm_obj, position, source, by_var = NULL) {
+  emm_df <- as.data.frame(emm_obj)
+
+  # Exclude the stratifier (if any) plus the standard stat columns
+  ctx_col <- setdiff(names(emm_df),
+                     c(by_var, "emmean", "SE", "df", "lower.CL", "upper.CL"))
+
+  emm_small <- emm_df |>
+    select(all_of(by_var), all_of(ctx_col), emmean) |>
+    rename(context_level = !!ctx_col)
+
+  # Contrast: stratified by by_var when supplied, unstratified otherwise
+  ct <- contrast(emm_obj, method = "pairwise", by = by_var, adjust = "none")
+
+  # Join keys: include by_var only when stratifying
+  join_a <- c(by_var, c("ctx_a_raw" = "context_level"))
+  join_b <- c(by_var, c("ctx_b_raw" = "context_level"))
+
+  as.data.frame(summary(ct)) |>
+    mutate(
+      ctx_a_raw = str_split_fixed(contrast, " - ", 2)[, 1],
+      ctx_b_raw = str_split_fixed(contrast, " - ", 2)[, 2]
+    ) |>
+    left_join(emm_small, by = join_a) |>
+    rename(emm_a = emmean) |>
+    left_join(emm_small, by = join_b) |>
+    rename(emm_b = emmean) |>
+    mutate(position = position, source = source)
+}
+
+blocks <- bind_rows(
+  build_block(emm_logdif_c_m1, "Chest", "m1", by_var = "photoperiod.state"),
+  build_block(emm_logdif_w_m1, "Wrist", "m1", by_var = "photoperiod.state"),
+  build_block(emm_logdif_c_m3, "Chest", "m3", by_var = "photoperiod.state"),
+  build_block(emm_logdif_w_m3, "Wrist", "m3", by_var = "photoperiod.state"),
+  build_block(emm_logdif_c_m4, "Chest", "m4"),
+  build_block(emm_logdif_w_m4, "Wrist", "m4")
+)
+
+format_blocks <- function(df) {
+  df |>
+    mutate(
+      position = factor(position, levels = c("Chest", "Wrist")),
+      # photoperiod is NA for m4 rows; that's expected and unused by the m4 outputs
+      photoperiod = factor(photoperiod.state,
+                           levels = c("day", "night"),
+                           labels = c("Day", "Night")),
+      # table display strings
+      ctxA = label_term(ctx_a_raw),
+      ctxB = label_term(ctx_b_raw),
+      logdifA = sprintf("%.3f", emm_a),
+      logdifB = sprintf("%.3f", emm_b),
+      ratioA = sprintf("%.3f", 10^emm_a),
+      ratioB = sprintf("%.3f", 10^emm_b),
+      errA = sprintf("%+.1f", (10^emm_a - 1) * 100),
+      errB = sprintf("%+.1f", (10^emm_b - 1) * 100),
+      delta = sprintf("%.3f", estimate),
+      fold = sprintf("%.2f", 10^estimate),
+      pval = ifelse(p.value < 0.001, "<0.001", sprintf("%.3f", p.value)),
+      pval_num = p.value,
+      # plot fields
+      cell_label = sprintf("%.2f\u00d7", 10^estimate),   # fold-change
+      is_sig = p.value < 0.05
+    )
+}
+
+fmt <- format_blocks(blocks)
+```
+
+```{r}
+#| label: overview-table-contrasts
+
+# Plot the results for model m1, m3, and m4. As model m2 is time based, it is not included in this table
+contrast_levels_m1m3 <- c(
+  "indoor - outdoor",
+  "home - working_indoor",
+  "home - road_vehicle",
+  "home - outdoor_act",
+  "working_indoor - road_vehicle",
+  "working_indoor - outdoor_act",
+  "road_vehicle - outdoor_act"
+)
+
+contrast_levels_m4 <- c(
+  "electric - daylight",
+  "electric - display",
+  "daylight - display"
+)
+
+# Pretty contrast labeller (raw "a - b" -> "Label A − Label B")
+nice_contrast <- function(raw) {
+  vapply(raw, function(s) {
+    p <- strsplit(s, " - ", fixed = TRUE)[[1]]
+    paste(label_term(p[1]), label_term(p[2]), sep = " \u2212 ")
+  }, character(1), USE.NAMES = FALSE)
+}
+
+# Define the columns for each table
+# 12 sub-columns per (position, photoperiod) block, in display order.
+# pval_num is carried to make significant p values bold
+
+sub_cols <- c("ctxA", "logdifA", "ratioA", "errA",
+              "ctxB", "logdifB", "ratioB", "errB",
+              "delta", "fold", "pval", "pval_num")
+
+# Pivot a formatted subset to wide. periods = NULL means no split for day or night (m4).
+to_wide <- function(df, contrast_levels, periods = c("Day", "Night")) {
+  d <- df |>
+    filter(contrast %in% contrast_levels) |>
+    mutate(contrast = factor(contrast, levels = contrast_levels)) |>
+    arrange(contrast)
+
+  if (is.null(periods)) {
+    w <- d |>
+      select(contrast, position, all_of(sub_cols)) |>
+      pivot_wider(names_from = position,
+                  values_from = all_of(sub_cols),
+                  names_glue = "{position}_{.value}")
+    ordered <- c("contrast",
+      unlist(lapply(c("Chest", "Wrist"),
+                    \(pos) paste(pos, sub_cols, sep = "_"))))
+  } else {
+    w <- d |>
+      select(contrast, position, photoperiod, all_of(sub_cols)) |>
+      pivot_wider(names_from = c(position, photoperiod),
+                  values_from = all_of(sub_cols),
+                  names_glue = "{position}_{photoperiod}_{.value}")
+    ordered <- c("contrast",
+      unlist(lapply(c("Chest", "Wrist"), \(pos)
+        unlist(lapply(periods, \(per) paste(pos, per, sub_cols, sep = "_"))))))
+  }
+
+  w <- w[, ordered]
+  # relabel contrasts
+  w |>
+    mutate(contrast = factor(contrast,
+                             levels = contrast_levels,
+                             labels = nice_contrast(contrast_levels)))
+}
+
+wide_tbl_m1m3 <- to_wide(fmt, contrast_levels_m1m3, periods = c("Day", "Night"))
+wide_tbl_m4 <- to_wide(fmt, contrast_levels_m4, periods = NULL)
+
+# Table m1m3
+make_spanners_m1m3 <- function(g) {
+  for (pos in c("Chest", "Wrist")) {
+    for (per in c("Day", "Night")) {
+      cols_A <- paste(pos, per, c("ctxA", "logdifA", "ratioA", "errA"),
+                        sep = "_")
+      cols_B <- paste(pos, per, c("ctxB", "logdifB", "ratioB", "errB"),
+                        sep = "_")
+      cols_cmp <- paste(pos, per, c("delta", "fold", "pval", "pval_num"),
+                        sep = "_")
+
+      g <- g |>
+        tab_spanner(label = "Context A", columns = all_of(cols_A),
+                    id = paste0(pos, "_", per, "_A")) |>
+        tab_spanner(label = "Context B", columns = all_of(cols_B),
+                    id = paste0(pos, "_", per, "_B")) |>
+        tab_spanner(label = "Contrast comparison", columns = all_of(cols_cmp),
+                    id = paste0(pos, "_", per, "_cmp"))
+
+      cols_per <- paste(pos, per, sub_cols, sep = "_")
+      g <- g |>
+        tab_spanner(label = per, columns = all_of(cols_per),
+                    id = paste0(pos, "_", per), level = 2)
+    }
+    pos_cols <- paste(pos,
+                      rep(c("Day", "Night"), each = length(sub_cols)),
+                      rep(sub_cols, 2),
+                      sep = "_")
+    g <- g |> tab_spanner(label = pos, columns = all_of(pos_cols),
+                          id = pos, level = 3)
+  }
+  g
+}
+
+# Column groupings
+pval_cols_m1m3 <- unlist(lapply(c("Chest", "Wrist"), function(pos) {
+  unlist(lapply(c("Day", "Night"), function(per) {
+    paste(pos, per, "pval", sep = "_")
+  }))
+}))
+
+pval_num_cols_m1m3 <- unlist(lapply(c("Chest", "Wrist"), function(pos) {
+  unlist(lapply(c("Day", "Night"), function(per) {
+    paste(pos, per, "pval_num", sep = "_")
+  }))
+}))
+
+metric_labels_m1m3 <- setNames(
+  rep(c("Context", "logdif (body/head)", "ratio (body/head)", "error (%)",
+        "Context", "logdif (body/head)", "ratio (body/head)", "error (%)",
+        "\u0394 (logdif A \u2212 B)", "Ratio (A/B)", "p", "p_num"),
+      times = 4),
+  unlist(lapply(c("Chest", "Wrist"), function(pos) {
+    unlist(lapply(c("Day", "Night"), function(per) {
+      paste(pos, per, sub_cols, sep = "_")
+    }))
+  }))
+)
+
+gt_tbl <- wide_tbl_m1m3 |>
+  gt() |>
+  cols_label(.list = c(list(contrast = "Contrast"), as.list(metric_labels_m1m3))) |>
+  cols_hide(columns = all_of(pval_num_cols_m1m3)) |>
+  make_spanners_m1m3() |>
+  tab_header(title = "Differences in placement errors between contexts") |>
+  cols_align(align = "center", columns = -contrast) |>
+  cols_align(align = "left", columns = contrast) |>
+
+  # Bold all spanners (Context A/B/cmp, Day/Night, Chest/Wrist)
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_spanners()
+  ) |>
+
+  # Bold significant p-values
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = lapply(seq_along(pval_cols_m1m3), function(i) {
+      cells_body(columns = all_of(pval_cols_m1m3[i]),
+                 rows = wide_tbl_m1m3[[pval_num_cols_m1m3[i]]] < 0.05)
+    })
+  ) |>
+  
+  # Footnote on p-value column headers
+  tab_footnote(
+    footnote = "P-values are unadjusted for multiple comparisons.",
+    locations = cells_column_labels(columns = all_of(pval_cols_m1m3))
+  ) |>
+  # Footnote on outdoor time classifications. Subscript already in label.
+  tab_footnote(
+    footnote = "\u00b2 Cycling/walking, working, or leisure outdoors", 
+    locations = NULL)
+
+
+# Table m4
+# Spanner builder for m4 (only 2 levels: A/B/cmp under Chest or Wrist, no day/night)
+make_spanners_m4 <- function(g) {
+  for (pos in c("Chest", "Wrist")) {
+    cols_A <- paste(pos, c("ctxA", "logdifA", "ratioA", "errA"), sep = "_")
+    cols_B <- paste(pos, c("ctxB", "logdifB", "ratioB", "errB"), sep = "_")
+    cols_cmp <- paste(pos, c("delta", "fold", "pval", "pval_num"), sep = "_")
+
+    g <- g |>
+      tab_spanner(label = "Context A", columns = all_of(cols_A),
+                  id = paste0(pos, "_A")) |>
+      tab_spanner(label = "Context B", columns = all_of(cols_B),
+                  id = paste0(pos, "_B")) |>
+      tab_spanner(label = "Contrast comparison", columns = all_of(cols_cmp),
+                  id = paste0(pos, "_cmp"))
+
+    pos_cols <- paste(pos, sub_cols, sep = "_")
+    g <- g |> tab_spanner(label = pos, columns = all_of(pos_cols),
+                          id = pos, level = 2)
+  }
+  g
+}
+
+pval_cols_m4 <- unlist(lapply(c("Chest", "Wrist"), function(pos) {
+  paste(pos, "pval", sep = "_")
+}))
+pval_num_cols_m4 <- unlist(lapply(c("Chest", "Wrist"), function(pos) {
+  paste(pos, "pval_num", sep = "_")
+}))
+
+metric_labels_m4 <- setNames(
+  rep(c("Context", "logdif (body/head)", "ratio (body/head)", "error (%)",
+        "Context", "logdif (body/head)", "ratio (body/head)", "error (%)",
+        "\u0394 (logdif A \u2212 B)", "Ratio (A/B)", "p", "p_num"),
+      times = 2),
+  unlist(lapply(c("Chest", "Wrist"), function(pos) {
+    paste(pos, sub_cols, sep = "_")
+  }))
+)
+
+gt_m4 <- wide_tbl_m4 |>
+  gt() |>
+  cols_label(.list = c(list(contrast = "Contrast"), as.list(metric_labels_m4))) |>
+  cols_hide(columns = all_of(pval_num_cols_m4)) |>
+  make_spanners_m4() |>
+  tab_header(title = "Differences in placement errors between indoor work light contexts") |>
+  cols_align(align = "center", columns = -contrast) |>
+  cols_align(align = "left", columns = contrast) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_column_spanners()
+  ) |>
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = lapply(seq_along(pval_cols_m4), function(i) {
+      cells_body(columns = all_of(pval_cols_m4[i]),
+                 rows = wide_tbl_m4[[pval_num_cols_m4[i]]] < 0.05)
+    })
+  ) |>
+  
+  # Footnote on p-value column headers
+  tab_footnote(
+    footnote = "P-values are unadjusted for multiple comparisons.",
+    locations = cells_column_labels(columns = all_of(pval_cols_m4))
+  ) 
+
+# Combine tables
+gt_group(gt_tbl, gt_m4)
+```
+
+### **Results figure**
+
+```{r}
+#| label: fig-contrasts
+#| fig-width: 7
+#| fig-height: 8
+#| fig-cap: "Ratios between placement errors under each context. A negative ratio indicates that the placement error decreases when changing from the first to the second context. Significant contrasts are in bold (unadjusted for multiple comparisons)."
+
+
+m1_levels <- "indoor - outdoor"
+m3_levels <- c("home - working_indoor", "home - road_vehicle",
+               "home - outdoor_act", "working_indoor - road_vehicle",
+               "working_indoor - outdoor_act", "road_vehicle - outdoor_act")
+m4_levels <- c("electric - daylight", "electric - display",
+               "daylight - display")
+
+# reversed factor so first listed contrast sits at the TOP of each plot
+apply_local_factor <- function(df, raw_levels) {
+  df |>
+    filter(contrast %in% raw_levels) |>
+    mutate(contrast = factor(contrast,
+                             levels = rev(raw_levels),
+                             labels = rev(nice_contrast(raw_levels))))
+}
+
+m1_df <- apply_local_factor(fmt, m1_levels)
+m3_df <- apply_local_factor(fmt, m3_levels)
+m4_df <- apply_local_factor(fmt, m4_levels)
+
+# Shared color scale
+fill_lim  <- c(log10(0.67) - 0.01, log10(1.5) + 0.01)
+fc_breaks <- c(-0.176, 0, 0.176)
+fc_labels <- c("0.67\u00d7", "1\u00d7", "1.5\u00d7")
+
+shared_fill <- scale_fill_gradient2(
+  low = "#377eb8", mid = "white", high = "#ff7f00",
+  midpoint = 0,
+  limits = fill_lim,
+  breaks = fc_breaks,
+  labels = fc_labels,
+  name = "Ratio",
+  guide = guide_colorbar(
+    barwidth = 0.6,
+    barheight = 6,
+    ticks.colour = "grey30",
+    frame.linewidth = 0.3
+  )
+)
+
+
+# Plot builders
+# Lower panels suppress strip text and x-axis labels with element_text(color = NA) to preserve panel alignment
+make_m13_plot <- function(df, ylab, show_strip_text) {
+  ggplot(df,
+         aes(x = photoperiod, y = contrast, fill = estimate)) +
+    geom_tile(color = "white", linewidth = 0.6) +
+    geom_text(aes(label = cell_label,
+                  fontface = ifelse(is_sig, "bold", "plain")),
+              size = 11 / .pt) +
+    shared_fill +
+    ggh4x::facet_wrap2(~ position, strip = if (show_strip_text)
+      ggh4x::strip_themed(background_x = ggh4x::elem_list_rect(
+        fill = pos_colors[c("chest", "wrist")]))
+      else ggh4x::strip_vanilla()) +
+    scale_x_discrete(expand = c(0, 0), position = "top") +
+    scale_y_discrete(expand = c(0, 0)) +
+    labs(x = NULL, y = ylab) +
+    theme_cowplot() +
+    theme(
+      panel.spacing = unit(2, "lines"),
+      axis.line = element_blank(),
+      axis.ticks = element_blank(),
+      axis.title.y = element_text(angle = 90),
+      strip.text = if (show_strip_text) element_text() else
+                                              element_text(color = NA),
+      strip.background = if (show_strip_text) element_rect() else
+                                              element_blank(),
+      axis.text.x = if (show_strip_text) element_text() else
+                                              element_text(color = NA),
+      plot.margin = margin(t = 0, r = 5, b = 0, l = 5)
+    )
+}
+
+make_m4_plot <- function(df, ylab) {
+  ggplot(df) +
+    # m4 has no photoperiod split, thus cells span day and night width
+    geom_rect(aes(xmin = 0.5, xmax = 2.5,
+                  ymin = as.numeric(contrast) - 0.5,
+                  ymax = as.numeric(contrast) + 0.5,
+                  fill = estimate),
+              color = "white", linewidth = 0.6) +
+    geom_text(aes(x = 1.5, y = as.numeric(contrast), label = cell_label,
+                  fontface = ifelse(is_sig, "bold", "plain")),
+              size = 11 / .pt) +
+    facet_wrap(~ position) +
+    shared_fill +
+    scale_x_continuous(limits = c(0.5, 2.5), expand = c(0, 0),
+                       breaks = c(1, 2),
+                       labels = c("Day", "Night"),
+                       position = "top") +
+    scale_y_continuous(breaks = 1:length(levels(df$contrast)),
+                       labels = levels(df$contrast),
+                       limits = c(0.5, length(levels(df$contrast)) + 0.5),
+                       expand = c(0, 0)) +
+    labs(x = NULL, y = ylab) +
+    theme_cowplot() +
+    theme(
+      panel.spacing = unit(2, "lines"),
+      axis.line = element_blank(),
+      axis.ticks = element_blank(),
+      axis.title.y = element_text(angle = 90),
+      strip.text = element_text(color = NA),
+      strip.background = element_blank(),
+      axis.text.x = element_text(color = NA),
+      plot.margin = margin(t = 0, r = 5, b = 0, l = 5)
+    )
+}
+
+p_m1 <- make_m13_plot(m1_df, "Environment\u00b9", show_strip_text = TRUE) # Shows day night labels and includes footnote
+p_m3 <- make_m13_plot(m3_df, "Activity", show_strip_text = FALSE)
+p_m4 <- make_m4_plot (m4_df, "Indoor work lighting\u00b3") # Includes footnote
+
+# Combined plots
+final_plot <- (p_m1 / plot_spacer() / p_m3 / plot_spacer() / p_m4) +
+  plot_layout(guides = "collect",
+              heights = c(1, -0.7, 6, -0.7, 3)) +
+  plot_annotation(
+    title    = "Ratios of placement errors (m-EDI) between contexts",
+    subtitle = paste("Comparisons with significant differences (p < 0.05) are bold."),
+    caption  = paste(
+      "\u00b9 Inside (indoors) or outside (outdoors) a building",
+      "\u00b2 Cycling/walking, working, or leisure outdoors",
+      "\u00b3 Primary light source when working in the office/home",
+      sep = "<br>"),
+    theme = theme(plot.caption = element_markdown(hjust = 0, size = 8)))
+
+final_plot
+
+ggsave(here("output/figures/ratio_context_error.pdf"),
+       plot   = final_plot,
+       width  = 7,
+       height = 8,
+       units  = "in")
+
+ggsave(here("output/figures/ratio_context_error.jpeg"),
+       plot   = final_plot,
+       width  = 7,
+       height = 8,
+       units  = "in")
+```
+
+## Placement error per context (absolute)
+
+Subquestion 2 was formulated as: "Under which contexts do the mean log-transformed differences between eye-level and body-worn dosimeter measurements differ significantly from zero?"
+
+Each estimated marginal mean was tested against zero using model‑based t‑tests, where a value of zero corresponds to the eye-level and body-worn dosimeters measuring the same value. A negative estimate indicates that eye-level measurements were higher than body-worn measurements. For interpretability, estimates were back-transformed to percentage errors. Confidence intervals and p-values were not adjusted for multiple comparisons, as in this analysis a false negative carries greater consequence than a false positive.
+
+### **Results table**
+
+```{r}
+#| label: overview-table-errors
+# Create a table for each model
+
+get_emm_table <- function(emm_obj) {
+  emm_test <- as.data.frame(test(emm_obj, null = 0, adjust = "none"))
+  emm_ci <- as.data.frame(confint(emm_obj, level = 0.95, adjust = "none"))
+  emm_test |>
+    mutate(lower.CL = emm_ci$lower.CL,
+           upper.CL = emm_ci$upper.CL)
+}
+
+# Combine chest + wrist EMMs, convert log10 differences to % error, relabel outcome
+build_pct_table <- function(emm_c_obj, emm_w_obj) {
+  bind_rows(
+    get_emm_table(emm_c_obj) |> mutate(outcome = "Chest-worn dosimeter"),
+    get_emm_table(emm_w_obj) |> mutate(outcome = "Wrist-worn dosimeter")
+  ) |>
+    mutate(
+      pct_error = 100 * (10^emmean - 1),
+      pct_error_low = 100 * (10^lower.CL - 1),
+      pct_error_high = 100 * (10^upper.CL - 1)
+    )
+}
+
+# Shared gt styling
+style_pct_gt <- function(df, label_map, title) {
+  df |>
+    gt(groupname_col = "outcome") |>
+    cols_label(.list = label_map) |>
+    tab_spanner(label = "95% CI",
+                columns = c(pct_error_low, pct_error_high)) |>
+    fmt_number(columns = c(pct_error, pct_error_low, pct_error_high),
+               decimals = 1) |>
+    fmt(columns = p.value,
+        fns = function(x) ifelse(x < 0.001, "<0.001", sprintf("%.3f", x))) |>
+    tab_style(style = cell_text(weight = "bold"),
+              locations = cells_body(columns = p.value,
+                                     rows = p.value < 0.05)) |>
+    tab_style(style = cell_text(weight = "bold"),
+              locations = list(cells_row_groups(),
+                               cells_column_labels())) |>
+    tab_header(title = title)
+}
+
+# Shared label map for the %/CI/p columns
+pct_labels <- list(
+  pct_error = "%",
+  pct_error_low = "low %",
+  pct_error_high = "high %",
+  p.value = "p"
+)
+
+# m1
+build_pct_table(emm_logdif_c_m1, emm_logdif_w_m1) |>
+  mutate(environment = label_term(environment)) |>
+  select(outcome, environment, photoperiod.state,
+         pct_error, pct_error_low, pct_error_high, p.value) |>
+  style_pct_gt(
+    label_map = c(list(environment       = "Environment",
+                       photoperiod.state = "Photoperiod"),
+                  pct_labels),
+    title = "Placement errors per environment"
+  )
+
+# m2
+build_pct_table(emm_logdif_c_m2, emm_logdif_w_m2) |>
+  mutate(environment = label_term(environment),
+         time_label  = sprintf("%02d:00", as.integer(timeofday))) |>
+  select(outcome, environment, time_label,
+         pct_error, pct_error_low, pct_error_high, p.value) |>
+  style_pct_gt(
+    label_map = c(list(environment = "Environment",
+                       time_label  = "Time of day"),
+                  pct_labels),
+    title = "Placement errors per time of day"
+  )
+
+# m3
+build_pct_table(emm_logdif_c_m3, emm_logdif_w_m3) |>
+  mutate(act_context = factor(act_context,
+                            levels = c("home", "working_indoor",
+                                       "road_vehicle", "outdoor_act"),
+                            labels = label_term(c("home", "working_indoor",
+                                                  "road_vehicle", "outdoor_act")))) |>
+  select(outcome, act_context, photoperiod.state,
+         pct_error, pct_error_low, pct_error_high, p.value) |>
+  style_pct_gt(
+    label_map = c(list(act_context       = "Activity",
+                       photoperiod.state = "Photoperiod"),
+                  pct_labels),
+    title = "Placement errors per activity context"
+  )
+
+# m4
+build_pct_table(emm_logdif_c_m4, emm_logdif_w_m4) |>
+  mutate(work_light_context = label_term(work_light_context)) |>
+  select(outcome, work_light_context,
+         pct_error, pct_error_low, pct_error_high, p.value) |>
+  style_pct_gt(
+    label_map = c(list(work_light_context = "Light context"),
+                  pct_labels),
+    title = "Placement errors per primary light source (indoor work lighting)"
+  )
+```
+
+### **Results figure**
+
+```{r}
+#| label: fig-contex-error
+#| fig-cap: "Placement errors under each context. A negative percentage indicates that the body-worn dosimeter underestimates eye-level light exposure. Confidence intervals are asymmetric on the percentage scale because back-transformation from log space is nonlinear. Confidence intervals and p-values were not adjusted for multiple comparisons."
+#| fig-width: 8
+#| fig-height: 9
+
+backtrans_pct <- function(x) (10^x - 1) * 100
+
+# Prepare data
+prep_df <- function(emm_obj, group_var, position_label) {
+  df <- get_emm_table(emm_obj)
+  df$category <- df[[group_var]]
+  df$position <- position_label
+  df |>
+    select(category, photoperiod.state, emmean, lower.CL, upper.CL, p.value, position) |>
+    mutate(
+      pct_est = backtrans_pct(emmean),
+      pct_lower = backtrans_pct(lower.CL),
+      pct_upper = backtrans_pct(upper.CL),
+      is_sig = p.value < 0.05,
+      period = factor(photoperiod.state, levels = c("day", "night"),
+                      labels = c("Day", "Night")),
+      line_color = photoperiod_colors[as.character(photoperiod.state)],
+      point_fill = ifelse(is_sig, line_color, "white")
+    )
+}
+
+prep_df_m4 <- function(emm_obj, position_label) {
+  df <- get_emm_table(emm_obj)
+  df$category <- df$work_light_context
+  df$position <- position_label
+  df |>
+    select(category, emmean, lower.CL, upper.CL, p.value, position) |>
+    mutate(
+      pct_est = backtrans_pct(emmean),
+      pct_lower = backtrans_pct(lower.CL),
+      pct_upper = backtrans_pct(upper.CL),
+      is_sig = p.value < 0.05,
+      line_color = pos_colors[tolower(position_label)],
+      point_fill = ifelse(is_sig, line_color, "white")
+    )
+}
+
+m1_cats <- c("indoor", "outdoor")
+m3_cats <- c("home", "working_indoor", "road_vehicle", "outdoor_act")
+m4_cats <- c("electric", "daylight", "display")
+
+mk_cat <- function(df, cats) {
+  df |>
+    mutate(category = factor(category,
+                             levels = rev(cats),
+                             labels = rev(label_term2(cats))),
+           position = factor(position, levels = c("Chest", "Wrist")))
+}
+
+df_m1 <- bind_rows(prep_df(emm_logdif_c_m1, "environment", "Chest"),
+                   prep_df(emm_logdif_w_m1, "environment", "Wrist")) |>
+  mk_cat(m1_cats)
+df_m3 <- bind_rows(prep_df(emm_logdif_c_m3, "act_context", "Chest"),
+                   prep_df(emm_logdif_w_m3, "act_context", "Wrist")) |>
+  mk_cat(m3_cats)
+df_m4 <- bind_rows(prep_df_m4(emm_logdif_c_m4, "Chest"),
+                   prep_df_m4(emm_logdif_w_m4, "Wrist")) |>
+  mk_cat(m4_cats)
+
+# Shared x-axis scale
+all_x <- c(df_m1$pct_lower, df_m1$pct_upper, df_m3$pct_lower, df_m3$pct_upper,
+           df_m4$pct_lower, df_m4$pct_upper)
+x_pad <- diff(range(all_x, na.rm = TRUE)) * 0.03
+x_lims <- c(min(all_x, na.rm = TRUE) - x_pad, max(all_x, na.rm = TRUE) + x_pad)
+x_breaks <- seq(floor(x_lims[1] / 10) * 10, ceiling(x_lims[2] / 10) * 10, by = 10)
+pd <- position_dodge(width = 0.55)
+
+# Shared plot pieces
+gridlines <- list(
+  map(x_breaks[x_breaks != 0],
+      \(xv) geom_vline(xintercept = xv, linewidth = 0.5,
+                       color = "grey70", linetype = "dotted")),
+  geom_vline(xintercept = 0, linewidth = 0.7,
+             linetype = "dashed", color = "grey30")
+)
+x_scale <- scale_x_continuous(
+  labels = function(x) paste0(ifelse(x > 0, "+", ""), x, "%"))
+
+hidden_x <- theme(
+  axis.text.x  = element_text(color = NA),
+  axis.ticks.x = element_line(color = NA),
+  axis.title.x = element_text(color = NA),
+  axis.line.x  = element_line(color = NA)
+)
+
+strip_pos <- strip_themed(
+  background_x = elem_list_rect(fill = unname(pos_colors[c("chest", "wrist")]))
+)
+
+# Legend for combined top 3 plots
+# Key glyph: horizontal line + circle
+draw_key_cpoint <- function(data, params, size) {
+  grobTree(
+    draw_key_path(data, params, size),
+    draw_key_point(data, params, size)
+  )
+}
+
+# Dummy data to build the legend
+legend_df <- data.frame(
+  x = 0,
+  y = levels(df_m1$category)[1],
+  key = factor(c("Day", "Night", " ", "Significant", "Non-signif."),
+               levels = c("Day", "Night", " ", "Significant", "Non-signif."))
+)
+
+# p_m1: colored strips (chest/wrist), x hidden, supplies the shared legend
+p_m1 <- ggplot(df_m1, aes(x = pct_est, y = category)) +
+  gridlines +
+  geom_linerange(aes(xmin = pct_lower, xmax = pct_upper,
+                     color = period, group = period),
+                 position = pd, linewidth = 0.6, show.legend = FALSE) +
+  geom_point(aes(color = period, fill = point_fill, group = period),
+             shape = 21, position = pd, size = 3, stroke = 1,
+             show.legend = FALSE) +
+  # invisible layer that only exists to build the legend
+  geom_point(data = legend_df, aes(x = x, y = y, color = key),
+             shape = NA, na.rm = TRUE, inherit.aes = FALSE,
+             key_glyph = draw_key_cpoint) +
+  scale_color_manual(
+  values = c(Day = unname(photoperiod_colors["day"]),
+             Night = unname(photoperiod_colors["night"]),
+             " " = NA,                     # invisible spacer key
+             "Significant" = "black",
+             "Non-signif." = "black"),
+  limits = c("Day", "Night", " ", "Significant", "Non-signif."),
+  labels = c("Day", "Night", "", "Significant", "Non-signif."),  # blank label for spacer
+  name = NULL) +
+  scale_fill_identity() +
+  guides(color = guide_legend(override.aes = list(
+  shape = 21, size = 3, stroke = 1,
+  linewidth = 0.6, linetype = "solid",
+  fill = c(unname(photoperiod_colors["day"]),
+           unname(photoperiod_colors["night"]),
+           NA, "black", "white")))) +   # NA for the spacer
+  facet_wrap2(~ position, strip = strip_pos) +
+  x_scale +
+  coord_cartesian(xlim = x_lims) +
+  labs(x = NULL, y = "Environ.\u00b9", tag = "A") +
+  theme_cowplot() +
+  theme(panel.spacing = unit(2, "lines"),
+        plot.margin = margin(t = 0, r = 5, b = 0, l = 5)) +
+  hidden_x
+
+# p_m3: strips (chest/wrist) hidden, x hidden, no legend
+p_m3 <- ggplot(df_m3, aes(x = pct_est, y = category)) +
+  gridlines +
+  geom_linerange(aes(xmin = pct_lower, xmax = pct_upper,
+                     color = period, group = period),
+                 position = pd, linewidth = 0.6) +
+  geom_point(aes(color = period, fill = point_fill, group = period),
+             shape = 21, position = pd, size = 3, stroke = 1) +
+  scale_color_manual(
+    values = c(Day = unname(photoperiod_colors["day"]),
+               Night = unname(photoperiod_colors["night"])),
+    name = NULL, drop = FALSE) +
+  scale_fill_identity() +
+  facet_wrap2(~ position) +
+  x_scale +
+  coord_cartesian(xlim = x_lims) +
+  labs(x = NULL, y = "Activity") +
+  theme_cowplot() +
+  theme(panel.spacing = unit(2, "lines"),
+        strip.text = element_text(color = NA),
+        strip.background = element_blank(),
+        legend.position = "none",
+        plot.margin = margin(t = 0, r = 5, b = 0, l = 5)) +
+  hidden_x
+
+# p_m4: strips (chest/wrist) hidden, x shown, no legend
+p_m4 <- ggplot(df_m4, aes(x = pct_est, y = category)) +
+  gridlines +
+  geom_linerange(aes(xmin = pct_lower, xmax = pct_upper, color = line_color),
+                 linewidth = 0.6) +
+  geom_point(aes(color = line_color, fill = point_fill),
+             shape = 21, size = 3, stroke = 1) +
+  scale_color_identity() +
+  scale_fill_identity() +
+  facet_wrap2(~ position) +
+  x_scale +
+  coord_cartesian(xlim = x_lims) +
+  labs(x = "Error (%)", y = "Indoor work lighting\u00b3") +
+  theme_cowplot() +
+  theme(panel.spacing = unit(2, "lines"),
+        strip.text = element_text(color = NA),
+        strip.background = element_blank(),
+        plot.margin = margin(t = 0, r = 5, b = 0, l = 5))
+
+# p_m2: time of day curves, colored strips (chest/wrist), x shown, legend
+get_emm_curve <- function(model, position_label) {
+  emm <- emmeans(model, ~ environment | timeofday,
+                 at = list(timeofday = seq(0, 24, by = 0.25)))
+  emm_test <- as.data.frame(test(emm, null = 0, adjust = "none"))
+  emm_ci   <- as.data.frame(confint(emm, level = 0.95, adjust = "none"))
+  emm_test |>
+    mutate(lower.CL = emm_ci$lower.CL,
+           upper.CL = emm_ci$upper.CL,
+           pct_error = backtrans_pct(emmean),
+           pct_error_low = backtrans_pct(lower.CL),
+           pct_error_high = backtrans_pct(upper.CL),
+           significant = p.value < 0.05,
+           position = position_label)
+}
+
+curves <- bind_rows(get_emm_curve(m2_logdif_c, "Chest"),
+                    get_emm_curve(m2_logdif_w, "Wrist")) |>
+  arrange(position, environment, timeofday) |>
+  mutate(position    = factor(position, levels = c("Chest", "Wrist")),
+         environment = factor(environment, levels = c("indoor", "outdoor"))) |>
+  mutate(signif_id = consecutive_id(significant),
+         .by = c(position, environment))
+
+y_data_range  <- range(c(curves$pct_error_low, curves$pct_error_high), na.rm = TRUE)
+y_grid_breaks <- seq(floor(y_data_range[1] / 10) * 10,
+                     ceiling(y_data_range[2] / 10) * 10, by = 10)
+y_grid_breaks <- y_grid_breaks[y_grid_breaks != 0]
+
+p_m2 <- ggplot(curves, aes(x = timeofday, y = pct_error, color = environment)) +
+  geom_ribbon(aes(ymin = pct_error_low, ymax = pct_error_high, fill = environment),
+              alpha = 0.20, color = NA) +
+  map(y_grid_breaks,
+      \(yv) geom_hline(yintercept = yv, linewidth = 0.5,
+                       color = "grey70", linetype = "dotted")) +
+  geom_hline(yintercept = 0, linewidth = 0.7, linetype = "dashed", color = "grey30") +
+  geom_line(aes(linewidth = "Non-signif.")) +
+  geom_line(data = curves |> filter(significant),
+            aes(group = interaction(environment, signif_id),
+                linewidth = "Significant")) +
+  facet_wrap2(~ position, strip = strip_pos) +
+  scale_color_manual(values = env_colors,
+                     labels = c(indoor = "Indoors", outdoor = "Outdoors"),
+                     name = NULL) +
+  scale_fill_manual(values = env_colors, guide = "none") +
+  scale_linewidth_manual(
+    values = c("Significant" = 1.4, "Non-signif." = 0.5),
+    limits = c("Significant", "Non-signif."),
+    name = NULL,
+    guide = guide_legend(order = 2,
+                         override.aes = list(colour = "black", fill = NA))) +
+  scale_x_continuous(breaks = seq(0, 24, by = 6), expand = c(0, 0)) +
+  scale_y_continuous(labels = function(y) paste0(ifelse(y > 0, "+", ""), y, "%")) +
+  coord_cartesian(xlim = c(0, 24)) +
+  guides(color = guide_legend(order = 1,
+                              override.aes = list(linewidth = 1.4))) +
+  theme_cowplot() +
+  labs(x = "Local time (hrs)", y = "Error (%)", tag = "B") +
+  theme(panel.spacing = unit(2, "lines"))
+
+# Combine plots
+top <- (p_m1 / plot_spacer() / p_m3 / plot_spacer() / p_m4) +
+  plot_layout(guides = "collect", heights = c(2, -1.3, 4, -1.3, 3))
+
+final_plot <- wrap_plots(top, plot_spacer(), p_m2,
+                         ncol = 1, heights = c(7.8, 0, 3.8)) +
+  plot_annotation(
+    title = "Placement error (% m-EDI) by context",
+    subtitle = "Mean placement errors (m-EDI) and 95% confidence intervals (horizontal lines or shaded bands).\nEstimates significantly different from zero (p < 0.05) are shown as filled circles or bold curves.",
+    caption = paste(
+      "\u00b9 Environment: Inside (indoors) or outside (outdoors) a building",
+      "\u00b2 Cycling/walking, working, or leisure outdoors",
+      "\u00b3 Primary light source when working in the office/home",
+      sep = "<br>"),
+    theme = theme(plot.caption = element_markdown(hjust = 0, size = 8)))
+
+final_plot
+
+ggsave(here("output/figures/absolute_context_error.pdf"),
+       plot   = final_plot,
+       width  = 8,
+       height = 9,
+       units  = "in")
+
+ggsave(here("output/figures/absolute_context_error.jpeg"),
+       plot   = final_plot,
+       width  = 8,
+       height = 9,
+       units  = "in")
+
+
+# Extract minimum and maximum placement error for time of day
+curves |>
+  group_by(position, environment) |>
+  summarise(
+    min_pct   = min(pct_error),
+    min_time  = timeofday[which.min(pct_error)],
+    max_pct   = max(pct_error),
+    max_time  = timeofday[which.max(pct_error)],
+    .groups = "drop"
+  )
+```
+
+## Session info
+
+```{r}
+sessionInfo()
+```
+
+## Acknowledgments
+
+Code optimization was assisted by Claude Opus 4.7 (Anthropic) and text formatting by Grammarly. All generated suggestions were reviewed and validated by the author, who takes full responsibility for the document.
+
+## References {.unnumbered}
