@@ -305,7 +305,7 @@ The contextual classifications introduce additional uncertainty, as each combine
 
 As noted in the Methods, modelling placement error is challenging because the response is the difference between two paired, noisy measurements and is strongly heavy-tailed. The GAMMs were specified to accommodate this, but residual diagnostics indicated that the tails remained incompletely represented; the estimated mean placement errors underlying our conclusions are likely less sensitive to this misspecification than tail probabilities, but confidence intervals and hypothesis tests should be regarded as approximate. The analyses also included many related contrasts and metrics without correction for multiple comparisons, and were therefore treated as estimation-focused and exploratory rather than independent confirmatory tests. Some nominally significant findings may be false positives, and interpretation should emphasise effect magnitude, uncertainty, directional consistency, and replication across related metrics or contexts rather than individual p-values.
 
-Finally, fewer observations were available at night than during the day, because sleep-time measurements were excluded from the measurement-level analysis (a plot of observations by time of day is in the repository). Nighttime estimates are therefore less precise and may be disproportionately influenced by the remaining waking observations; they should not be read as representative of the full nocturnal period, which is dominated by sleep.
+Finally, fewer observations were available at night than during the day (see @suppfig-obs_timeofday), because sleep-time measurements were excluded from the measurement-level analysis. Nighttime estimates are therefore less precise and may be disproportionately influenced by the remaining waking observations; they should not be read as representative of the full nocturnal period, which is dominated by sleep.
 
 #### **Practical implications**
 
@@ -416,6 +416,11 @@ SWV declares no potential conflicts of interest
 
 ::: {#suppfig-bias_stability}
 ![Bootstrap results for the variability of placement bias as a function of participant number (left) or participant-days (right) for the chest placement (top) and the wrist (bottom). At each level, 1000 bootstraps were drawn. A dashed horizontal line indicates a standard deviation of 5%.](output/figures/Fig_bias_stability.jpeg)
+:::
+
+
+::: {#suppfig-obs_timeofday}
+![Number of hourly-averaged observations per time of day used in the measurement-level anaylsis.](output/figures/obs_timeofday.jpeg)
 :::
 
 ### Tables
