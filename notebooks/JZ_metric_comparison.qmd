@@ -9,9 +9,7 @@ editor_options:
 
 ## Preface
 
-This document contains the analysis steps from the pre-calculated metrics (see @fig-fc_sample), through inference and the summary of results. This primary analysis removes documented non-wear outside diary-defined sleep while retaining sleep-time measurements.
-
-{{< include _metric_flowchart.qmd >}}
+This document contains the analysis steps from the pre-calculated metrics, through inference and the summary of results. This primary analysis removes documented non-wear outside diary-defined sleep while retaining sleep-time measurements.
 
 ## Setup
 
