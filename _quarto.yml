@@ -1,9 +1,41 @@
 project:
-  type: manuscript
+  type: website
   output-dir: docs
 
 website:
   site-url: https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/
+  navbar:
+    left:
+      - href: index.qmd
+        text: Manuscript
+      - text: Analysis notebooks
+        menu:
+          - text: Measurement level
+          - href: notebooks/SWV_context_preparation.qmd
+            text: Data preparation
+          - href: notebooks/SWV_context_comparison.qmd
+            text: Contextual placement-error analysis
+          - text: Outcome level
+          - href: notebooks/JZ_metric_preparation.qmd
+            text: Metric preparation
+          - href: notebooks/JZ_metric_comparison.qmd
+            text: Metric comparison
+          - text: Sensitivity analysis
+          - href: notebooks/JZ_metric_preparation_nonwear.qmd
+            text: Retained non-wear — preparation
+          - href: notebooks/JZ_metric_comparison_nonwear.qmd
+            text: Retained non-wear — comparison
+          - href: notebooks/JZ_metric_preparation_wake_only.qmd
+            text: Wake-only — preparation
+          - href: notebooks/JZ_metric_comparison_wake_only.qmd
+            text: Wake-only — comparison
+          - text: Bootstrapping
+          - href: notebooks/JZ_error_stabilisation.qmd
+            text: Bias stability by sample size
+    tools:
+      - icon: github
+        href: https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026
+        text: GitHub repository
 
 execute:
   freeze: auto
@@ -11,12 +43,10 @@ execute:
 format:
   html:
     toc: true
-    comments:
-      hypothesis: true
+    # comments:
+      # hypothesis: true
     canonical-url: true
   # docx: default
   # jats: default
   # agu-pdf: default
-
-
 

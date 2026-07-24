@@ -367,7 +367,7 @@ Supervision: JD, MS
 
 All authors reviewed and approved the final manuscript.
 
-## Statement of data availability
+### Statement of data availability
 
 All data used in this study are available at https://github.com/MeLiDosProject and are archived on Zenodo (https://zenodo.org/communities/22nrm05_melidos/), accessed through the melidosData R package (https://melidosproject.github.io/melidosData/).
 
@@ -387,13 +387,13 @@ The individual site datasets are available from:
 | THUAS | Delft | The Netherlands | [AertsEtAl_Dataset_2025](https://github.com/MeLiDosProject/AertsEtAl_Dataset_2025) | 10.5281/zenodo.17979893 |
 | RISE | Borås | Sweden | [NilssonTengelinEtAl_Dataset_2026](https://github.com/MeLiDosProject/NilssonTengelinEtAl_Dataset_2026) | 10.5281/zenodo.18925834 |
 
-## Statement of AI use
+### Statement of AI use
 
 During manuscript preparation, generative artificial intelligence tools (ChatGPT 5.5 and Anthropic Claude Opus 4.8) were used to support language editing, structural refinement, and condensation of text. AI assistance was used to improve clarity, coherence, concision, and journal fit, but **not** to generate, analyse, or interpret primary data. All AI-assisted text was critically reviewed, edited, and approved by the authors, who take full responsibility for the content, accuracy, integrity, and conclusions of the manuscript.
 
 During data analysis, AI assistance was used to bugfix code sections, support figure and table styling, and resolve modelling convergence and singularity issues. AI assistance was **not** used to develop the analysis strategy, write analysis scripts, or interpret results, **except** for the two-directional bootstrap function, which was used in the explorative sensitivity analysis on participant and participant-day numbers. The function was reviewed and approved by JZ.
 
-## Statement of competing interests
+### Statement of competing interests
 
 M.S. declares the following potential conflicts of interest in the past five years (2021–2025): academic roles as Member of the Board of Directors of the Society of Light, Rhythms, and Circadian Health (SLRCH), Chair of Joint Technical Committee 20 (JTC20) of the International Commission on Illumination (CIE), Member of the Daylight Academy, and Chair of the Research Data Alliance Working Group Optical Radiation and Visual Experience Data; remunerated roles as Speaker of the Steering Committee of the Daylight Academy, ad-hoc reviewer for the Health and Digital Executive Agency of the European Commission, ad-hoc reviewer for the Swedish Research Council, Associate Editor for LEUKOS, examiner for the University of Manchester, Flinders University, and the University of Southern Norway, and consultant for LyS Technologies and RoX Health; research funding and support from the Max Planck Society, Max Planck Foundation, Max Planck Innovation, Technical University of Munich, Wellcome Trust, National Research Foundation Singapore, European Partnership on Metrology, VELUX Foundation, Bayerisch-Tschechische Hochschulagentur (BTHA), BayFrance/Bayerisch-Französisches Hochschulzentrum, BayFOR/Bayerische Forschungsallianz, and Reality Labs Research; honoraria for talks from ISGlobal, the Research Foundation of the City University of New York, and the Stadt Ebersberg, Museum Wald und Umwelt; travel reimbursements from the Daimler und Benz Stiftung; and being named on European Patent Application EP23159999.4A, “System and method for corneal-plane physiologically-relevant light logging with an application to personalized light interventions related to health and well-being.” M.S. declares that the disclosed roles and relationships had no influence on the work presented herein. The funders had no role in study design, data collection and analysis, the decision to publish, or preparation of the manuscript.
 
