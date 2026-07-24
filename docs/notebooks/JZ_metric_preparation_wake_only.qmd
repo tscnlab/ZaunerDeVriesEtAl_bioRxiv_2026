@@ -1,0 +1,544 @@
+---
+title: "Preparation of metrics for participant-day analyses - wake-only sensitivity"
+subtitle: "Sensitivity analysis: documented non-wear and diary-defined sleep removed"
+format: html
+author: Johannes Zauner
+---
+
+## Preface
+
+This document prepares a wake-only sensitivity dataset from the same primary-analysis participant-day sample used in `JZ_metric_preparation.qmd`. The existing 50% hourly and 80% daily completeness checks are applied before diary-defined sleep is removed, so planned sleep does not make a day fail a 24-hour completeness rule. Immediately before metrics are calculated, measurements are set to missing during documented non-wear and diary-defined sleep. Pre-sleep time is retained, and absent state information is treated as undocumented rather than inferred.
+
+The wake-only estimand is each participant-day's light exposure during valid, concurrent waking wear at the glasses, chest, and wrist positions. Timestamps and missing epochs are preserved. Missing periods therefore break threshold episodes and cannot be mistaken for darkness or silently join measurements from opposite sides of sleep or non-wear.
+
+Forty-two metrics are retained. Interdaily stability, intradaily variability, `nvRD`, the four darkest-10-hour outcomes, the three dark Barroso outcomes, circadian variation, and disparity index are excluded. `frequency_crossing_250` is retained using a gap-aware implementation. Brightest-10-hour and bright Barroso outcomes are interpreted conditionally on available valid waking-wear observations, not as complete 24-hour light schedules.
+
+## Setup
+
+```{r}
+#| label: setup
+#| filename: Setup
+library(tidyverse)
+library(LightLogR)
+library(melidosData)
+library(gt)
+library(here)
+library(rlang)
+library(cowplot)
+source("../scripts/site_names.R")
+```
+
+## Importing data
+
+### Light
+
+The unaggregated glasses, chest, and wrist data have already been trimmed to trial dates and checked for irregular observations and gaps. With one documented exception, they use a 10-second epoch.
+
+```{r}
+#| label: import-light-data
+#| message: false
+#| filename: Import light data
+light_glasses <- load_data("light_glasses")
+light_chest <- load_data("light_chest")
+light_wrist <- load_data("light_wrist")
+```
+
+```{r}
+#| label: count-participants
+#| filename: Count participants and participant-days
+light_glasses |> flatten_data() |> group_by(Id) |> n_groups()
+light_chest |> flatten_data() |> group_by(Id) |> n_groups()
+light_wrist |> flatten_data() |> group_by(Id) |> n_groups()
+light_glasses |> flatten_data() |> group_by(Id) |> add_Date_col(group.by = TRUE) |> n_groups()
+light_chest |> flatten_data() |> group_by(Id) |> add_Date_col(group.by = TRUE) |> n_groups()
+light_wrist |> flatten_data() |> group_by(Id) |> add_Date_col(group.by = TRUE) |> n_groups()
+```
+
+### Sleep and wear logs
+
+Sleep intervals come from the morning sleep diary. Documented non-wear intervals come from the app-based wear log.
+
+```{r}
+#| label: import-state-data
+#| message: false
+#| filename: Import sleep and wear-log data
+sleepdiary <- load_data("sleepdiaries")
+wearlog <- load_data("wearlog")
+```
+
+### Combine wearing positions
+
+Only melanopic EDI (`MEDI`) and photopic illuminance (`LIGHT`) are retained. MPI is excluded because matching chest data are unavailable. The three positions are temporally aligned and photoperiod information is added.
+
+```{r}
+#| label: remove-mpi-site
+#| filename: Remove MPI site
+light_glasses$MPI <- NULL
+```
+
+```{r}
+#| label: align-combine-positions
+#| filename: Select relevant columns, combine positions, add photoperiod
+light <-
+  imap(
+    light_glasses,
+    \(data, idx) data |>
+      select(Id, Datetime, MEDI, LIGHT) |>
+      data2reference(light_chest[[idx]], Reference.column = MEDI_chest) |>
+      data2reference(
+        light_chest[[idx]],
+        Data.column = LIGHT,
+        Reference.column = LIGHT_chest
+      ) |>
+      data2reference(light_wrist[[idx]], Reference.column = MEDI_wrist) |>
+      data2reference(
+        light_wrist[[idx]],
+        Data.column = LIGHT,
+        Reference.column = LIGHT_wrist
+      ) |>
+      add_photoperiod(melidos_coordinates[[idx]]) |>
+      rename(MEDI_glasses = MEDI, LIGHT_glasses = LIGHT)
+  )
+```
+
+> The alignment warnings for participant `FUSPCEU_S014` reflect the documented 60-second glasses epoch versus 10-second chest and wrist epochs. As in the primary analysis, the last matching chest and wrist measurement is used.
+
+### Enforce concurrent measurements
+
+```{r}
+#| label: enforce-concurrency
+#| filename: Remove instances with fewer than all wearing positions
+light <-
+  light |>
+  map(
+    \(data) data |>
+      mutate(
+        across(
+          MEDI_glasses:LIGHT_wrist,
+          \(x) ifelse(
+            is.na(MEDI_glasses) | is.na(MEDI_chest) | is.na(MEDI_wrist),
+            NA,
+            x
+          )
+        )
+      )
+  )
+```
+
+### Add sleep and wear states
+
+`sleepprep` is used as the start of the sleep interval because this is when the device positions were set for the night. The derived Brown sleep state is used to distinguish sleep from pre-sleep and waking time.
+
+```{r}
+#| label: prepare-sleep-wearlog
+#| filename: Prepare sleep diaries and wear logs for merging
+#| message: false
+sleepdiary_adj <-
+  sleepdiary |>
+  map(
+    \(x) x |>
+      select(Id, sleepprep, wake) |>
+      group_by(Id) |>
+      pivot_longer(-Id, names_to = "sleep", values_to = "Datetime") |>
+      sc2interval(Statechange.colname = sleep, starting.state = "wake") |>
+      sleep_int2Brown(
+        sleep.state = "sleepprep",
+        Brown.day = "wake",
+        Brown.evening = "pre-sleep",
+        Brown.night = "sleep"
+      ) |>
+      mutate(
+        sleep = case_when(
+          is.na(sleep) & State.Brown == "pre-sleep" ~ "wake",
+          .default = sleep
+        )
+      )
+  )
+
+wearlog_adj <-
+  wearlog |>
+  map(\(x) x |> select(Id, start, end, wear = state))
+```
+
+```{r}
+#| label: merge-sleep-wearlog
+#| filename: Add sleep diaries and wear logs to light data
+light <-
+  light |>
+  imap(
+    \(x, idx) x |>
+      add_states(sleepdiary_adj[[idx]], start = Interval, end = Interval) |>
+      add_states(wearlog_adj[[idx]])
+  )
+```
+
+## Primary-analysis preprocessing and eligibility
+
+The primary preprocessing is retained through participant-day selection. Out-of-range measurements and documented non-wear outside sleep are set to missing, and concurrent availability is re-enforced.
+
+```{r}
+#| label: preprocessing-step1
+#| filename: Remove waking non-wear and out-of-range measurements
+light <-
+  light |>
+  imap(
+    \(x, idx) x |>
+      mutate(
+        across(
+          c(starts_with("MEDI"), starts_with("LIGHT")),
+          \(y) replace_when(
+            y,
+            wear == "off" & (State.Brown != "sleep" | is.na(State.Brown)) ~ NA,
+            y >= 100000 ~ NA
+          )
+        ),
+        across(
+          MEDI_glasses:LIGHT_wrist,
+          \(z) ifelse(
+            is.na(MEDI_glasses) | is.na(MEDI_chest) | is.na(MEDI_wrist),
+            NA,
+            z
+          )
+        )
+      )
+  )
+```
+
+```{r}
+#| label: flatten-to-dataframe
+#| filename: Flatten structure from list to data frame
+light_flat <-
+  structure(light, class = "melidos_data") |>
+  flatten_data() |>
+  group_by(site, Id)
+```
+
+Hours with less than 50% available data are removed, followed by days with less than 80% availability. Diary-defined sleep remains available during this eligibility step so planned sleep does not count as missing.
+
+```{r}
+#| label: preprocessing-step2
+#| filename: Apply primary hourly and daily completeness criteria
+light_fin <-
+  light_flat |>
+  cut_Datetime(unit = "1 hour", group_by = TRUE, type = "floor") |>
+  remove_partial_data(MEDI_glasses, threshold.missing = 0.5) |>
+  ungroup(Datetime.rounded) |>
+  select(-Datetime.rounded) |>
+  add_Date_col(group.by = TRUE) |>
+  gap_handler(full.days = TRUE) |>
+  remove_partial_data(MEDI_glasses, threshold.missing = 0.2) |>
+  ungroup(Date)
+```
+
+The selected participant-days are checked against the primary prepared metric dataset before sleep is masked.
+
+```{r}
+#| label: verify-primary-sample
+#| filename: Verify primary eligible participant-days
+primary_eligible_days <-
+  light_fin |>
+  ungroup() |>
+  distinct(site, Id, Date)
+
+primary_metrics_env <- new.env(parent = emptyenv())
+load(here("data/prepared_metrics.RData"), envir = primary_metrics_env)
+expected_primary_days <-
+  primary_metrics_env$metrics |>
+  filter(!is.na(Date)) |>
+  distinct(site, Id, Date)
+
+if (!setequal(primary_eligible_days, expected_primary_days)) {
+  stop(
+    "Wake-only eligibility does not match the primary participant-day sample.",
+    call. = FALSE
+  )
+}
+
+rm(primary_metrics_env, expected_primary_days)
+```
+
+## Remove documented non-wear and sleep before metrics
+
+The state exclusion is applied simultaneously to all six light channels. Missing state flags remain `FALSE`; no undocumented sleep or non-wear is inferred. Timestamps, state columns, and inserted gap rows are preserved.
+
+```{r}
+#| label: mask-sleep-nonwear
+#| filename: Mask documented non-wear and diary-defined sleep
+light_fin <-
+  light_fin |>
+  mutate(
+    excluded_wake_only =
+      coalesce(wear == "off", FALSE) |
+      coalesce(State.Brown == "sleep", FALSE),
+    valid_before_wake_only = !is.na(MEDI_glasses),
+    across(
+      c(starts_with("MEDI"), starts_with("LIGHT")),
+      \(x) if_else(excluded_wake_only, NA_real_, x)
+    ),
+    across(
+      MEDI_glasses:LIGHT_wrist,
+      \(x) ifelse(
+        is.na(MEDI_glasses) | is.na(MEDI_chest) | is.na(MEDI_wrist),
+        NA,
+        x
+      )
+    )
+  )
+
+if (any(light_fin$excluded_wake_only & !is.na(light_fin$MEDI_glasses))) {
+  stop("Documented sleep or non-wear remains in valid wake-only light data.", call. = FALSE)
+}
+
+valid_wake_days <-
+  light_fin |>
+  ungroup() |>
+  group_by(site, Id, Date) |>
+  summarize(has_valid_wake = any(!is.na(MEDI_glasses)), .groups = "drop") |>
+  filter(has_valid_wake) |>
+  select(-has_valid_wake)
+
+if (!setequal(primary_eligible_days, valid_wake_days)) {
+  stop(
+    "At least one primary participant-day has no valid waking-wear measurement.",
+    call. = FALSE
+  )
+}
+```
+
+```{r}
+#| label: tbl-wake-only-audit
+#| filename: Summarize wake-only state masking
+light_fin |>
+  ungroup() |>
+  summarize(
+    `Eligible participant-days` = nrow(primary_eligible_days),
+    `Eligible participants` = n_distinct(Id),
+    `Valid epochs before wake-only mask` = sum(valid_before_wake_only),
+    `Valid epochs excluded as sleep or non-wear` =
+      sum(valid_before_wake_only & excluded_wake_only),
+    `Valid waking-wear epochs retained` = sum(!is.na(MEDI_glasses))
+  ) |>
+  pivot_longer(everything(), names_to = "Measure", values_to = "Value") |>
+  gt() |>
+  fmt_integer(Value, use_seps = TRUE) |>
+  tab_header(
+    "Wake-only data audit",
+    subtitle = "Documented non-wear and diary-defined sleep removed after primary eligibility"
+  )
+```
+
+## Calculate metrics
+
+Clock-time outputs are converted to seconds since midnight. Missing observations remain on the regular time grid.
+
+```{r}
+#| label: metric-helpers
+#| filename: Metric helper functions
+datetime_2_numeric <- function(x) {
+  x |>
+    mutate(
+      across(
+        where(is.POSIXct),
+        \(value) value |> hms::as_hms() |> as.numeric()
+      )
+    )
+}
+
+frequency_crossing_gap_aware <- function(light, time, threshold) {
+  stopifnot(
+    is.numeric(light),
+    inherits(time, "POSIXct"),
+    length(light) == length(time),
+    length(threshold) == 1L,
+    is.numeric(threshold)
+  )
+
+  if (length(light) < 2L) {
+    return(0L)
+  }
+
+  expected_epoch <-
+    count_difftime(tibble(Datetime = time)) |>
+    slice(1) |>
+    pull(difftime) |>
+    as.numeric(units = "secs")
+  adjacent_in_time <- as.numeric(diff(time), units = "secs") == expected_epoch
+  valid_pair <-
+    !is.na(light[-length(light)]) &
+    !is.na(light[-1L]) &
+    adjacent_in_time
+  threshold_state <- light >= threshold
+  transitions <- abs(diff(as.integer(threshold_state)))
+
+  as.integer(sum(transitions[valid_pair]))
+}
+```
+
+The custom crossing helper fills a limitation in `frequency_crossing_threshold()`, which otherwise removes missing observations and can count a transition across a sleep or non-wear gap. It agrees with LightLogR for complete, regular data and does not count changes across missing intervals.
+
+```{r}
+#| label: test-frequency-helper
+#| filename: Test gap-aware frequency crossing
+frequency_test_time <-
+  as.POSIXct("2024-01-01 12:00:00", tz = "UTC") + seq(0, by = 10, length.out = 4)
+
+complete_light <- c(0, 300, 300, 0)
+stopifnot(
+  frequency_crossing_gap_aware(complete_light, frequency_test_time, 250) ==
+    frequency_crossing_threshold(complete_light, 250, na.rm = TRUE)
+)
+stopifnot(
+  frequency_crossing_gap_aware(c(0, 300, NA, 0), frequency_test_time, 250) == 1L
+)
+stopifnot(
+  frequency_crossing_gap_aware(c(0, NA, 300, 300), frequency_test_time, 250) == 0L
+)
+```
+
+```{r}
+#| label: prepare-metrics-data
+#| filename: Prepare wake-only metric data
+metrics_data <-
+  light_fin |>
+  distinct(site, Id, Datetime, .keep_all = TRUE) |>
+  pivot_longer(
+    MEDI_glasses:LIGHT_wrist,
+    names_sep = "_",
+    names_to = c("metric", "position")
+  ) |>
+  pivot_wider(values_from = value, names_from = metric)
+```
+
+The three bright Barroso outcomes and the brightest-10-hour outcomes are retained as sensitivity summaries of valid waking-wear data. They are not interpreted as complete daily light-dark schedules.
+
+```{r}
+#| label: calculate-daily-metrics
+#| filename: Calculate wake-only participant-day metrics
+#| warning: false
+metrics <-
+  metrics_data |>
+  group_by(site, Id, Date, position) |>
+  summarize(
+    duration_above_threshold(
+      MEDI, Datetime, "above", 10, na.rm = TRUE, as.df = TRUE
+    ),
+    duration_above_threshold(
+      MEDI, Datetime, "above", 250, na.rm = TRUE, as.df = TRUE
+    ),
+    duration_above_threshold(
+      MEDI, Datetime, "above", 1000, na.rm = TRUE, as.df = TRUE
+    ),
+    period_above_threshold(
+      MEDI, Datetime, "above", 10,
+      na.replace = TRUE, na.rm = FALSE, as.df = TRUE
+    ),
+    period_above_threshold(
+      MEDI, Datetime, "above", 250,
+      na.replace = TRUE, na.rm = FALSE, as.df = TRUE
+    ),
+    period_above_threshold(
+      MEDI, Datetime, "above", 1000,
+      na.replace = TRUE, na.rm = FALSE, as.df = TRUE
+    ),
+    pulses_above_threshold(
+      MEDI, Datetime, threshold = 250, na.rm = TRUE, as.df = TRUE
+    ) |>
+      datetime_2_numeric(),
+    pulses_above_threshold(
+      MEDI, Datetime, threshold = 1000, na.rm = TRUE, as.df = TRUE
+    ) |>
+      datetime_2_numeric(),
+    bright_dark_period(
+      MEDI |> log_zero_inflated(),
+      Datetime, "brightest", "10 hours",
+      as.df = TRUE, na.rm = TRUE
+    ) |>
+      datetime_2_numeric(),
+    timing_above_threshold(
+      MEDI, Datetime, "above", 10, na.rm = TRUE, as.df = TRUE
+    ) |>
+      datetime_2_numeric(),
+    timing_above_threshold(
+      MEDI, Datetime, "above", 250, na.rm = TRUE, as.df = TRUE
+    ) |>
+      datetime_2_numeric(),
+    frequency_crossing_250 =
+      frequency_crossing_gap_aware(MEDI, Datetime, 250),
+    timing_above_threshold(
+      MEDI, Datetime, "above", 1000, na.rm = TRUE, as.df = TRUE
+    ) |>
+      datetime_2_numeric(),
+    barroso_lighting_metrics(
+      MEDI, Datetime, loop = TRUE, na.rm = TRUE, as.df = TRUE
+    ) |>
+      select(bright_threshold, bright_mean_level, bright_cluster),
+    centroidLE(MEDI, Datetime, na.rm = TRUE, as.df = TRUE) |>
+      datetime_2_numeric(),
+    midpointCE(MEDI, Datetime, TRUE, TRUE) |>
+      datetime_2_numeric(),
+    mean_MEDI = mean(MEDI |> log_zero_inflated(), na.rm = TRUE),
+    dose(MEDI, Datetime, na.rm = TRUE, as.df = TRUE),
+    MDER = median(MEDI / LIGHT, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  mutate(across(where(is.duration), as.numeric)) |>
+  pivot_longer(
+    cols = -c(site, Id, Date, position),
+    names_to = "metric"
+  )
+```
+
+```{r}
+#| label: verify-metric-set
+#| filename: Verify the 42-metric wake-only set
+excluded_metrics <- c(
+  "interdaily_stability",
+  "intradaily_variability",
+  "nvRD",
+  "darkest_10h_mean",
+  "darkest_10h_midpoint",
+  "darkest_10h_onset",
+  "darkest_10h_offset",
+  "dark_threshold",
+  "dark_mean_level",
+  "dark_cluster",
+  "circadian_variation",
+  "disparity_index"
+)
+
+retained_sensitivity_metrics <- c(
+  "frequency_crossing_250",
+  "brightest_10h_mean",
+  "brightest_10h_midpoint",
+  "brightest_10h_onset",
+  "brightest_10h_offset",
+  "bright_threshold",
+  "bright_mean_level",
+  "bright_cluster"
+)
+
+if (n_distinct(metrics$metric) != 42L) {
+  stop("The wake-only dataset does not contain exactly 42 metrics.", call. = FALSE)
+}
+if (any(excluded_metrics %in% metrics$metric)) {
+  stop("At least one excluded wake-only metric was calculated.", call. = FALSE)
+}
+if (!all(retained_sensitivity_metrics %in% metrics$metric)) {
+  stop("At least one required wake-only sensitivity metric is missing.", call. = FALSE)
+}
+```
+
+## Export metrics
+
+```{r}
+#| label: export-data
+#| filename: Export wake-only metric data
+save(metrics, file = here("data/prepared_metrics_wake_only.RData"))
+```
+
+## Session info
+
+```{r}
+#| label: session-info
+sessionInfo()
+```

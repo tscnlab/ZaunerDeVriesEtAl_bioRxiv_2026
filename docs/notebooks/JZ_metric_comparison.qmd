@@ -58,28 +58,38 @@ load(here("data/prepared_metrics.RData"))
 
 ### Derive wake and sleep duration denominators
 
-Timing differences are expressed relative to the behavioural interval in which the underlying metric is defined. The sleep interval follows the preparation workflow and extends from diary-recorded `sleepprep` (when the devices were positioned for the night) to `wake`. A mean sleep duration is calculated for each participant before averaging across participants, so participants with more completed diary nights do not receive greater weight. Mean wake duration is the complement of mean sleep duration to 24 hours. The three darkest-10-hour timing outcomes are classified as darkness-based; all other timing outcomes are classified as brightness-based.
+Timing differences are expressed relative to the behavioural interval in which the underlying metric is defined. The sleep interval follows the preparation workflow and extends from diary-recorded `sleepprep` (when the devices were positioned for the night) to `wake`. Diary intervals are restricted to participant-dates retained in the prepared metrics, with each interval assigned to its wake date. Mean sleep duration is the grand mean across all retained diary intervals, so each retained night receives equal weight. Mean wake duration is the complement of mean sleep duration to 24 hours. The three darkest-10-hour timing outcomes are classified as darkness-based; all other timing outcomes are classified as brightness-based.
 
 ```{r}
 #| label: derive-state-duration-denominators
-#| filename: Derive participant-weighted wake and sleep durations
+#| filename: Derive grand-mean wake and sleep durations
 #| message: false
 #| warning: false
-analysis_ids <- unique(as.character(metrics$Id))
+
+analysis_days <-
+  metrics |>
+  filter(!is.na(Date)) |>
+  transmute(
+    Id = as.character(Id),
+    Date = as.Date(Date)
+  ) |>
+  distinct()
 
 sleep_intervals <-
   load_data("sleepdiaries") |>
   list_rbind(names_to = "diary_site") |>
   filter(
-    Id %in% analysis_ids,
     !is.na(sleepprep),
     !is.na(wake)
   ) |>
   mutate(
+    Id = as.character(Id),
+    Date = as.Date(wake),
     sleep_duration_seconds = as.numeric(
       difftime(wake, sleepprep, units = "secs")
     )
-  )
+  ) |>
+  semi_join(analysis_days, by = join_by(Id, Date))
 
 invalid_sleep_intervals <-
   sleep_intervals |>
@@ -96,25 +106,7 @@ if (nrow(invalid_sleep_intervals) > 0L) {
   )
 }
 
-participant_state_durations <-
-  sleep_intervals |>
-  group_by(Id) |>
-  summarize(
-    mean_sleep_duration_seconds = mean(sleep_duration_seconds),
-    diary_nights = n(),
-    .groups = "drop"
-  )
-
-missing_sleep_ids <- setdiff(analysis_ids, participant_state_durations$Id)
-if (length(missing_sleep_ids) > 0L) {
-  stop(
-    "At least one analysed participant has no valid diary-defined sleep interval.",
-    call. = FALSE
-  )
-}
-
-mean_sleep_duration_seconds <-
-  mean(participant_state_durations$mean_sleep_duration_seconds)
+mean_sleep_duration_seconds <- mean(sleep_intervals$sleep_duration_seconds)
 mean_wake_duration_seconds <- 24 * 60 * 60 - mean_sleep_duration_seconds
 
 format_duration <- function(seconds) {
@@ -140,18 +132,18 @@ darkness_timing_metrics <- c(
 )
 
 timing_normalization_footnote <- paste0(
-  "Timing effects and timing-model SDs use the participant-weighted mean ",
-  "diary-defined wake duration (", mean_wake_duration_label,
+  "Timing effects and timing-model SDs use the grand mean diary-defined ",
+  "wake duration (", mean_wake_duration_label,
   "; 1% = ", mean_wake_one_percent_label,
-  ") for brightness-based timing metrics and the participant-weighted mean ",
-  "diary-defined sleep duration (", mean_sleep_duration_label,
+  ") for brightness-based timing metrics and the grand mean diary-defined ",
+  "sleep duration (", mean_sleep_duration_label,
   "; 1% = ", mean_sleep_one_percent_label,
   ") for darkness-based timing metrics. All other metrics use the absolute ",
   "glasses reference on the modelling scale."
 )
 ```
 
-The resulting participant-weighted averages are `r mean_wake_duration_label` of wake and `r mean_sleep_duration_label` of sleep. Consequently, 1% represents `r mean_wake_one_percent_label` for brightness-based timing metrics and `r mean_sleep_one_percent_label` for darkness-based timing metrics.
+The resulting grand means are `r mean_wake_duration_label` of wake and `r mean_sleep_duration_label` of sleep. Consequently, 1% represents `r mean_wake_one_percent_label` for brightness-based timing metrics and `r mean_sleep_one_percent_label` for darkness-based timing metrics.
 
 ## Visualizing metrics
 
@@ -557,7 +549,7 @@ metrics_nested <-
 
 ## Result table
 
-The full result table is assembled in two stages. First, all relevant columns are collected and reshaped into a wide format suitable for display: p-values, position effect estimates, random-effect standard deviations, and partial $$R^2$$ components. For non-timing metrics, placement effects and standard deviations are normalised by the absolute reference value (glasses mean) on the modelling scale. Clock time has an arbitrary zero point, so an intercept-relative percentage such as a percentage of 16:00 is not meaningful. Brightness-based timing metrics are therefore normalised by the participant-weighted mean diary-defined wake duration, whereas darkness-based timing metrics are normalised by the participant-weighted mean diary-defined sleep duration. This expresses timing differences relative to the behavioural interval represented by each metric.
+The full result table is assembled in two stages. First, all relevant columns are collected and reshaped into a wide format suitable for display: p-values, position effect estimates, random-effect standard deviations, and partial $$R^2$$ components. For non-timing metrics, placement effects and standard deviations are normalised by the absolute reference value (glasses mean) on the modelling scale. Clock time has an arbitrary zero point, so an intercept-relative percentage such as a percentage of 16:00 is not meaningful. Brightness-based timing metrics are therefore normalised by the grand mean diary-defined wake duration, whereas darkness-based timing metrics are normalised by the grand mean diary-defined sleep duration. This expresses timing differences relative to the behavioural interval represented by each metric.
 
 The `gt` table is then formatted with colour-coded cell backgrounds (red for significant negative deviations, blue for significant positive deviations), bold text for significant p-values, colored SVG arrows summarising site-level effects, and column spanners that group related columns. The table is saved as a high-resolution PNG for use in the manuscript.
 
@@ -625,11 +617,11 @@ format_metric <- function(x) {
     x %in% c("MDER", "nvRD")  ~ x,
     x == "centroidLE"          ~ "Centroid LE",
     x == "midpointCE"          ~ "Midpoint CE",
-    x == "mean_MEDI"           ~ "Mean mel EDI",
+    x == "mean_MEDI"           ~ "Mean melEDI",
     TRUE ~ x |>
       str_replace_all("_", " ") |>
       str_to_sentence() |>
-      str_replace_all("(\\d+)(?!\\d|h)", "\\1 lx mel EDI")
+      str_replace_all("(\\d+)(?!\\d|h)", "\\1 lx melEDI")
   )
 } 
 
@@ -1212,9 +1204,7 @@ normalization_caption <- paste(
   sep = "\n"
 )
 combined_bias_caption <- paste(
-  "Bin width = 5%; significant errors are highlighted in the position color.",
-  normalization_caption,
-  sep = "\n"
+  "Bin width = 5%; significant errors are highlighted in the position color."
 )
 
 fig_abs_error <- 
@@ -1287,7 +1277,6 @@ combined_error_figure <-
   wrap_elements(color_strips(fig_abs_error, strip_fills)) +
   plot_annotation(
     tag_levels = "A",
-    title = scenario_label,
     caption = combined_bias_caption,
     theme = theme(
       plot.title = element_text(hjust = 0, size = 14),
