@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "Toward scalable ambulatory light dosimetry: sensor-placement bias under naturalistic conditions"
+type: software
+authors:
+  - family-names: Zauner
+    given-names: Johannes
+    orcid: "https://orcid.org/0000-0003-2171-4566"
+    affiliation: "Technical University of Munich, Germany"
+  - family-names: de Vries
+    given-names: Sietse W.
+    orcid: "https://orcid.org/0009-0009-2534-4129"
+    affiliation: "Building Lighting group, Department of the Built Environment, Eindhoven University of Technology, the Netherlands"
+  - family-names: Didikoglu
+    given-names: Altug
+    orcid: "https://orcid.org/0000-0002-5582-6956"
+    affiliation: "Department of Neuroscience, Izmir Institute of Technology, Izmir, Türkiye"
+  - family-names: van Duijnhoven
+    given-names: Juliëtte
+    orcid: "https://orcid.org/0000-0003-1145-7033"
+    affiliation: "Building Lighting group, Department of the Built Environment, Eindhoven University of Technology, the Netherlands"
+  - family-names: Spitschan
+    given-names: Manuel
+    orcid: "https://orcid.org/0000-0002-8572-9268"
+    affiliation: "Technical University of Munich, Germany"
+abstract: >-
+  Analysis code and computational environment supporting the manuscript.
+  The study quantifies how chest and wrist placement affects time-resolved
+  estimates of eye-level light exposure across naturalistic contexts and
+  derived exposure metrics.
+keywords:
+  - personal light exposure
+  - wearable dosimetry
+  - exposure assessment
+  - exposure misclassification
+  - measurement error
+  - sensor placement
+version: 0.9.9
+date-released: 2026-07-24
+doi: "10.5281/zenodo.21533915"
+license: CC-BY-4.0
+repository-code: "https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026"
+url: "https://doi.org/10.5281/zenodo.21533915"

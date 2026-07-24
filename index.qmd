@@ -139,7 +139,7 @@ All data processing, statistical analyses, and visualisations were performed in 
 
 Generalized additive mixed models were fitted using *mgcv* version 1.9-4 [@mgcv], and model-derived smooths, differences, and predictions were processed using *gratia* version 0.11.2 [@gratia]. Linear and generalized linear mixed-effects models were fitted using *lme4* version 2.0-1 [@lme4] and *glmmTMB* version 1.1.14 [@glmmTMB]. Estimated marginal means and contrasts were calculated using *emmeans* version 2.0.3 [@emmeans], and model diagnostics and variance-explanation statistics were obtained using *performance* version 0.16.0 [@performance].
 
-All analyses used scripted workflows for reproducibility. The analysis code, computational environment, and package-version information are available in a version-controlled repository <https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026> and an archived release (to be added and referenced).
+All analyses used scripted workflows for reproducibility. The analysis code, computational environment, and package-version information are available in a version-controlled repository <https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026> and an archived release (https://doi.org/10.5281/zenodo.21533915).
 
 ### Preprocessing and cleaning of data
 
@@ -371,7 +371,7 @@ All authors reviewed and approved the final manuscript.
 
 All data used in this study are available at https://github.com/MeLiDosProject and are archived on Zenodo (https://zenodo.org/communities/22nrm05_melidos/), accessed through the melidosData R package (https://melidosproject.github.io/melidosData/).
 
-All analyses are available on GitHub (xyz), hosted on GitHub pages (xyz), and archived on Zenodo (xyz).
+All analyses are available on GitHub (https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026), hosted on GitHub pages (https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/), and archived on Zenodo (https://doi.org/10.5281/zenodo.21533915).
 
 The individual site datasets are available from:
 

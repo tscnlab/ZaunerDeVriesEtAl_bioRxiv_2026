@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  site-url: https://tscnlab.github.io/WearingPositionError_2026
+  site-url: https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/
 
 execute:
   freeze: auto
