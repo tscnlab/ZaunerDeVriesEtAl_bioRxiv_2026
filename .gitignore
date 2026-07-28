@@ -14,3 +14,5 @@
 
 **/*.quarto_ipynb
 .posit/assistant
+
+/Cover Letter.docx
