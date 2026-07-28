@@ -1,9 +1,7 @@
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
-
 /.quarto/
 /_manuscript
-
 /agujournal2019.cls
 /trackchanges.sty
 .Rproj.user
@@ -11,8 +9,7 @@
 .Rdata
 .httr-oauth
 .DS_Store
-
 **/*.quarto_ipynb
 .posit/assistant
-
 /Cover Letter.docx
+manuscript
