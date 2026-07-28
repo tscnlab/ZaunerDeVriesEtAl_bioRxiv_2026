@@ -369,9 +369,9 @@ All authors reviewed and approved the final manuscript.
 
 ### Statement of data availability
 
-All data used in this study are available at https://github.com/MeLiDosProject and are archived on Zenodo (https://zenodo.org/communities/22nrm05_melidos/), accessed through the melidosData R package (https://melidosproject.github.io/melidosData/).
+All data used in this study are available at [https://github.com/MeLiDosProject](https://github.com/MeLiDosProject) and are archived on Zenodo ([https://zenodo.org/communities/22nrm05_melidos/](https://zenodo.org/communities/22nrm05_melidos/)), accessed through the melidosData R package ([https://melidosproject.github.io/melidosData/](https://melidosproject.github.io/melidosData/)).
 
-All analyses are available on GitHub (https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026), hosted on GitHub pages (https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/), and archived on Zenodo (https://doi.org/10.5281/zenodo.21533915).
+All analyses are available on GitHub ([https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026](https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026)), hosted on GitHub pages ([https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/](https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/)), and archived on Zenodo ([https://doi.org/10.5281/zenodo.21533915](https://doi.org/10.5281/zenodo.21533915)).
 
 The individual site datasets are available from:
 
