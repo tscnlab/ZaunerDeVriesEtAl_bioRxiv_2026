@@ -369,14 +369,14 @@ All authors reviewed and approved the final manuscript.
 
 ### Statement of data availability
 
-All data used in this study are available at [https://github.com/MeLiDosProject](https://github.com/MeLiDosProject) and are archived on Zenodo ([https://zenodo.org/communities/22nrm05_melidos/](https://zenodo.org/communities/22nrm05_melidos/)), accessed through the melidosData R package ([https://melidosproject.github.io/melidosData/](https://melidosproject.github.io/melidosData/)).
+All data used in this study are available at <https://github.com/MeLiDosProject> and are archived on Zenodo (<https://zenodo.org/communities/22nrm05_melidos/>), accessed through the melidosData R package (<https://melidosproject.github.io/melidosData/>).
 
-All analyses are available on GitHub ([https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026](https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026)), hosted on GitHub pages ([https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/](https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/)), and archived on Zenodo ([https://doi.org/10.5281/zenodo.21533915](https://doi.org/10.5281/zenodo.21533915)).
+All analyses are available on GitHub (<https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026>), hosted on GitHub pages (<https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/>), and archived on Zenodo (<https://doi.org/10.5281/zenodo.21533915>).
 
 The individual site datasets are available from:
 
 | Institution (site Abbr.) | City | Country | Repository | DOI |
-|---------------|---------------|---------------|---------------|---------------|
+|----|----|----|----|----|
 | KNUST | Kumasi | Ghana | [AkuffoEtAl_Dataset_2025](https://github.com/MeLiDosProject/AkuffoEtAl_Dataset_2025) | 10.5281/zenodo.15576731 |
 | UCR | San José | Costa Rica | [Sancho-SalasEtAl_Dataset_2025](https://github.com/MeLiDosProject/Sancho-SalasEtAl_Dataset_2025) | 10.5281/zenodo.17289456 |
 | IZTECH | Izmir | Turkey | [DidikogluEtAl_Dataset_2025](https://github.com/MeLiDosProject/DidikogluEtAl_Dataset_2025) | 10.5281/zenodo.16568109 |
@@ -426,7 +426,7 @@ SWV declares no potential conflicts of interest
 
 ::: {#supptbl-wearing-position}
 | Study | Sample and duration | Measure and outcome | Positions | Position-dependent result | Notes |
-|------------|------------|------------|------------|------------|------------|
+|----|----|----|----|----|----|
 | Diffey et al. (1977) [@diffey1977] | One manikin; 2 h each on 19 days | Solar UVR; dose relative to vertex | Vertex; lower sternum | Sternum received 58–73% of vertex exposure, depending on cloud condition. | Rotating unclothed manikin; no behaviour or clothing. No wrist measurement, but hand. |
 | Holman et al. (1983), occupational field study [@holman1983] | 5 participants; 6 h/day for 11–15 days | Solar UVR; proportion of ambient dose | Vertex; lower sternum; dorsum of hand | Vertex generally received the highest and sternum consistently lower exposure. Hand exposure varied strongly by occupation, from 0.07 of ambient exposure in a classroom teacher to 0.78 in a bricklayer. | One participant per occupation; hand used as the closest approximation to wrist. Sensors were attached to skin, hair, or clothing. |
 | Okudaira et al. (1983) [@Okudaira1983] | 10 participants; ≥ 24 h | Photopic illuminance | Forward-facing forehead, above the eyes; wrist, oriented like a wristwatch dial | Mean within-person correlation of 0.76 between wrist and forehead log illuminance, with a range of 0.59–0.90 across participants. | Limited reporting of device equivalence and agreement statistics. |
@@ -444,7 +444,7 @@ SWV declares no potential conflicts of interest
 
 ::: {#supptbl-metric-list}
 | Metric | Family | Metric class | Scale | Distribution | LightLogR function |
-|------------|------------|------------|------------|------------|------------|
+|----|----|----|----|----|----|
 | Bright cluster | Barroso | duration | log~10~ (zero-inflated) | Gaussian | [barroso_lighting_metrics()](https://tscnlab.github.io/LightLogR/reference/barroso_lighting_metrics.html) |
 | Dark cluster | Barroso | duration | log~10~ (zero-inflated) | Gaussian | [barroso_lighting_metrics()](https://tscnlab.github.io/LightLogR/reference/barroso_lighting_metrics.html) |
 | Duration above 10 | Duration crossing threshold | duration | log (Tweedie) | Tweedie | [duration_above_threshold()](https://tscnlab.github.io/LightLogR/reference/duration_above_threshold.html) |
@@ -505,7 +505,7 @@ SWV declares no potential conflicts of interest
 
 ::: {#supptbl-context-class}
 | Set of contextual classifications | Categories | Number of unique classifications |
-|------------------------|------------------------|------------------------|
+|----|----|----|
 | Environment & photoperiod | (*indoor*s or *outdoors*) × (*day* or *night*) | 4 |
 | Environment & time of day | (*indoors* or *outdoors*) × (*15-minute interval^1^*) | 192 |
 | Activity & photoperiod | (*awake at home* or *working in the office/home* or *in a vehicle* or *time outdoors) × (day* or *night*) | 8 |
@@ -516,7 +516,7 @@ SWV declares no potential conflicts of interest
 
 ::: {#supptbl-formulas-context}
 | Model formulas |
-|------------------------------------------------------------------------|
+|----|
 | placement_error_x \~ environment \* photoperiod + s(site, bs = "re") + s(participant, bs = "re") + s(participant_day, bs = "re") |
 | placement_error_x \~ environment + s(site, bs = "re") + s(participant, bs = "re") + s(participant_day, bs = "re") + s(timeofday, by = environment, bs = "cc", k = 12, m = 2) + s(timeofday, bs = "cc", k = 12) |
 | placement_error_x \~ activity \* photoperiod + s(site, bs = "re") + s(participant, bs = "re") + s(participant_day, bs = "re") |

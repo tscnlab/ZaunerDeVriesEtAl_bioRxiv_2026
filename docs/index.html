@@ -2,19 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.37">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Johannes Zauner**,1,✉, Sietse W. de Vries**,2,✉, Altug Didikoglu3,4, Juliëtte van Duijnhoven2, and Manuel Spitschan1,5,6,7">
-<meta name="dcterms.date" content="2026-07-28">
+<meta name="dcterms.date" content="2026-07-30">
 <meta name="keywords" content="personal light exposure, wearable dosimetry, exposure assessment, exposure misclassification, measurement error, sensor placement">
 
 <title>Toward scalable ambulatory light dosimetry: sensor-placement bias under naturalistic conditions</title>
 <style>
-/* Default styles provided by pandoc.
-** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -93,14 +90,15 @@ div.csl-indent {
 <meta name="quarto:offset" content="./">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-872178ae4d3cd603b148d6a7543028b2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-5ba49e35bb2bc2375b46ccdeef4955ef.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
 <link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
 <link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
@@ -133,7 +131,7 @@ div.csl-indent {
 }</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -171,6 +169,10 @@ window.Quarto = {
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+  </div>
             <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
@@ -316,7 +318,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 28, 2026</p>
+      <p class="date">July 30, 2026</p>
     </div>
   </div>
   
@@ -575,8 +577,8 @@ Figure&nbsp;4: Distribution of the (A) outcome-level bias across metrics and (B)
 </section>
 <section id="statement-of-data-availability" class="level3" data-number="6.5">
 <h3 data-number="6.5" class="anchored" data-anchor-id="statement-of-data-availability"><span class="header-section-number">6.5</span> Statement of data availability</h3>
-<p>All data used in this study are available at <a href="https://github.com/MeLiDosProject">https://github.com/MeLiDosProject</a> and are archived on Zenodo (<a href="https://zenodo.org/communities/22nrm05_melidos/">https://zenodo.org/communities/22nrm05_melidos/</a>), accessed through the melidosData R package (<a href="https://melidosproject.github.io/melidosData/">https://melidosproject.github.io/melidosData/</a>).</p>
-<p>All analyses are available on GitHub (<a href="https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026">https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026</a>), hosted on GitHub pages (<a href="https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/">https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/</a>), and archived on Zenodo (<a href="https://doi.org/10.5281/zenodo.21533915">https://doi.org/10.5281/zenodo.21533915</a>).</p>
+<p>All data used in this study are available at <a href="https://github.com/MeLiDosProject" class="uri">https://github.com/MeLiDosProject</a> and are archived on Zenodo (<a href="https://zenodo.org/communities/22nrm05_melidos/" class="uri">https://zenodo.org/communities/22nrm05_melidos/</a>), accessed through the melidosData R package (<a href="https://melidosproject.github.io/melidosData/" class="uri">https://melidosproject.github.io/melidosData/</a>).</p>
+<p>All analyses are available on GitHub (<a href="https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026" class="uri">https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026</a>), hosted on GitHub pages (<a href="https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/" class="uri">https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/</a>), and archived on Zenodo (<a href="https://doi.org/10.5281/zenodo.21533915" class="uri">https://doi.org/10.5281/zenodo.21533915</a>).</p>
 <p>The individual site datasets are available from:</p>
 <table class="caption-top table">
 <thead>
@@ -682,16 +684,16 @@ Figure&nbsp;4: Distribution of the (A) outcome-level bias across metrics and (B)
 <div class="csl-left-margin">3. </div><div class="csl-right-inline">Brown, T. M., Brainard, G. C., Cajochen, C., Czeisler, C. A., Hanifin, J. P., Lockley, S. W., <em>et al.</em> <a href="https://doi.org/10.1371/journal.pbio.3001571">Recommendations for daytime, evening, and nighttime indoor light exposure to best support physiology, sleep, and wakefulness in healthy adults</a>. <em>PLOS Biology</em> <strong>20</strong>, e3001571 (2022).</div>
 </div>
 <div id="ref-spitschan2026" class="csl-entry" role="listitem">
-<div class="csl-left-margin">4. </div><div class="csl-right-inline">Spitschan, M., Biller, A. M., Broszio, K., Fischer, E., Hegewald, J., Rabstein, S., <em>et al.</em> <a href="https://doi.org/10.1186/s12916-025-04608-8">Ocular light and optical radiation exposure as a modifiable environmental determinant of health: Expert consensus on research gaps and priorities</a>. <em>BMC Medicine</em> <strong>24</strong>, (2026).</div>
+<div class="csl-left-margin">4. </div><div class="csl-right-inline">Spitschan, M., Biller, A. M., Broszio, K., Fischer, E., Hegewald, J., Rabstein, S., <em>et al.</em> <a href="https://doi.org/10.1186/s12916-025-04608-8">Ocular light and optical radiation exposure as a modifiable environmental determinant of health: expert consensus on research gaps and priorities</a>. <em>BMC Medicine</em> <strong>24</strong>, (2026).</div>
 </div>
 <div id="ref-didikoglu2023" class="csl-entry" role="listitem">
 <div class="csl-left-margin">5. </div><div class="csl-right-inline">Didikoglu, A., Mohammadian, N., Johnson, S., Tongeren, M. van, Wright, P., Casson, A. J., <em>et al.</em> <a href="https://doi.org/10.1073/pnas.2301608120">Associations between light exposure and sleep timing and sleepiness while awake in a sample of UK adults in everyday life</a>. <em>Proceedings of the National Academy of Sciences</em> <strong>120</strong>, (2023).</div>
 </div>
 <div id="ref-burns2023" class="csl-entry" role="listitem">
-<div class="csl-left-margin">6. </div><div class="csl-right-inline">Burns, A. C., Windred, D. P., Rutter, M. K., Olivier, P., Vetter, C., Saxena, R., <em>et al.</em> <a href="https://doi.org/10.1038/s44220-023-00135-8">Day and night light exposure are associated with psychiatric disorders: An objective light study in &gt;85,000 people</a>. <em>Nature Mental Health</em> <strong>1</strong>, 853–862 (2023).</div>
+<div class="csl-left-margin">6. </div><div class="csl-right-inline">Burns, A. C., Windred, D. P., Rutter, M. K., Olivier, P., Vetter, C., Saxena, R., <em>et al.</em> <a href="https://doi.org/10.1038/s44220-023-00135-8">Day and night light exposure are associated with psychiatric disorders: an objective light study in &gt;85,000 people</a>. <em>Nature Mental Health</em> <strong>1</strong>, 853–862 (2023).</div>
 </div>
 <div id="ref-windred2024" class="csl-entry" role="listitem">
-<div class="csl-left-margin">7. </div><div class="csl-right-inline">Windred, D. P., Burns, A. C., Rutter, M. K., Ching Yeung, C. H., Lane, J. M., Xiao, Q., <em>et al.</em> <a href="https://doi.org/10.1016/j.lanepe.2024.100943">Personal light exposure patterns and incidence of type 2 diabetes: Analysis of 13 million hours of light sensor data and 670,000 person-years of prospective observation</a>. <em>The Lancet Regional Health - Europe</em> <strong>42</strong>, 100943 (2024).</div>
+<div class="csl-left-margin">7. </div><div class="csl-right-inline">Windred, D. P., Burns, A. C., Rutter, M. K., Ching Yeung, C. H., Lane, J. M., Xiao, Q., <em>et al.</em> <a href="https://doi.org/10.1016/j.lanepe.2024.100943">Personal light exposure patterns and incidence of type 2 diabetes: analysis of 13 million hours of light sensor data and 670,000 person-years of prospective observation</a>. <em>The Lancet Regional Health - Europe</em> <strong>42</strong>, 100943 (2024).</div>
 </div>
 <div id="ref-windred2024a" class="csl-entry" role="listitem">
 <div class="csl-left-margin">8. </div><div class="csl-right-inline">Windred, D. P., Burns, A. C., Lane, J. M., Olivier, P., Rutter, M. K., Saxena, R., <em>et al.</em> <a href="https://doi.org/10.1073/pnas.2405924121">Brighter nights and darker days predict higher mortality risk: A prospective analysis of personal light exposure in &gt;88,000 individuals</a>. <em>Proceedings of the National Academy of Sciences</em> <strong>121</strong>, (2024).</div>
@@ -700,16 +702,16 @@ Figure&nbsp;4: Distribution of the (A) outcome-level bias across metrics and (B)
 <div class="csl-left-margin">9. </div><div class="csl-right-inline">Zheng, N., Wang, W., Li, B., Mei, X., Liu, Y., Du, J., <em>et al.</em> <a href="https://doi.org/10.1002/gps3.70039">Associations between wearable-device-measured daytime and nighttime light exposures and dementia risk: A prospective cohort study</a>. <em>General Psychiatry</em> <strong>39</strong>, e70039 (2026).</div>
 </div>
 <div id="ref-vanduijnhoven2025" class="csl-entry" role="listitem">
-<div class="csl-left-margin">10. </div><div class="csl-right-inline"><span class="nocase">van Duijnhoven, J., Hartmeyer, S. L., Didikoglu, A., Stefani, O., Houser, K. W., Kalavally, V., <em>et al.</em></span> <a href="https://doi.org/10.1016/j.buildenv.2025.112771">Measuring light exposure in daily life: A review of wearable light loggers</a>. <em>Building and Environment</em> <strong>274</strong>, 112771 (2025).</div>
+<div class="csl-left-margin">10. </div><div class="csl-right-inline">van Duijnhoven, J., Hartmeyer, S. L., Didikoglu, A., Stefani, O., Houser, K. W., Kalavally, V., <em>et al.</em> <a href="https://doi.org/10.1016/j.buildenv.2025.112771">Measuring light exposure in daily life: A review of wearable light loggers</a>. <em>Building and Environment</em> <strong>274</strong>, 112771 (2025).</div>
 </div>
 <div id="ref-zauner2026b" class="csl-entry" role="listitem">
-<div class="csl-left-margin">11. </div><div class="csl-right-inline"><span class="nocase">Zauner, J., Didikoglu, A., Aerts, S., Agbeshie, G. K., Akuffo, K. O., Akgun, S. G., <em>et al.</em></span> Environmental and behavioural determinants of the personal light exposome. <em>bioRxiv</em> <a href="https://doi.org/10.64898/2026.06.04.730226">https://doi.org/10.64898/2026.06.04.730226</a> (2026) doi:<a href="https://doi.org/10.64898/2026.06.04.730226">10.64898/2026.06.04.730226</a>.</div>
+<div class="csl-left-margin">11. </div><div class="csl-right-inline">Zauner, J., Didikoglu, A., Aerts, S., Agbeshie, G. K., Akuffo, K. O., Akgun, S. G., <em>et al.</em> Environmental and behavioural determinants of the personal light exposome. <em>bioRxiv</em> <a href="https://doi.org/10.64898/2026.06.04.730226">https://doi.org/10.64898/2026.06.04.730226</a> (2026) doi:<a href="https://doi.org/10.64898/2026.06.04.730226">10.64898/2026.06.04.730226</a>.</div>
 </div>
 <div id="ref-siraji2023" class="csl-entry" role="listitem">
 <div class="csl-left-margin">12. </div><div class="csl-right-inline">Siraji, M. A., Lazar, R. R., Duijnhoven, J. van, Schlangen, L. J. M., Haque, S., Kalavally, V., <em>et al.</em> <a href="https://doi.org/10.1038/s41598-023-48241-y">An inventory of human light exposure behaviour</a>. <em>Scientific Reports</em> <strong>13</strong>, (2023).</div>
 </div>
 <div id="ref-spitschan2024" class="csl-entry" role="listitem">
-<div class="csl-left-margin">13. </div><div class="csl-right-inline">Spitschan, M., Zauner, J., Nilsson Tengelin, M., Bouroussis, C. A., Caspar, P. &amp; Eloi, F. <a href="https://doi.org/10.1016/j.measurement.2024.114909">Illuminating the future of wearable light metrology: Overview of the MeLiDos project</a>. <em>Measurement</em> <strong>235</strong>, 114909 (2024).</div>
+<div class="csl-left-margin">13. </div><div class="csl-right-inline">Spitschan, M., Zauner, J., Nilsson Tengelin, M., Bouroussis, C. A., Caspar, P. &amp; Eloi, F. <a href="https://doi.org/10.1016/j.measurement.2024.114909">Illuminating the future of wearable light metrology: Overview of the MeLiDos Project</a>. <em>Measurement</em> <strong>235</strong>, 114909 (2024).</div>
 </div>
 <div id="ref-zauner2026" class="csl-entry" role="listitem">
 <div class="csl-left-margin">14. </div><div class="csl-right-inline">Zauner, J., Stefani, O., Bocanegra, G., Guidolin, C., Schrader, B., Udovicic, L., <em>et al.</em> <a href="https://doi.org/10.1038/s44323-025-00067-9">Auxiliary data, quality assurance and quality control for wearable light loggers and optical radiation dosimeters</a>. <em>npj Biological Timing and Sleep</em> <strong>3</strong>, (2026).</div>
@@ -748,7 +750,7 @@ Figure&nbsp;4: Distribution of the (A) outcome-level bias across metrics and (B)
 <div class="csl-left-margin">25. </div><div class="csl-right-inline">Bhandari, K. R., Mirhajianmoghadam, H. &amp; Ostrin, L. A. <a href="https://doi.org/10.3390/s21217096">Wearable sensors for measurement of viewing behavior, light exposure, and sleep</a>. <em>Sensors</em> <strong>21</strong>, (2021).</div>
 </div>
 <div id="ref-aarts2017" class="csl-entry" role="listitem">
-<div class="csl-left-margin">26. </div><div class="csl-right-inline"><span class="nocase">Aarts, M. P. J., van Duijnhoven, J., Aries, M. B. C. &amp; Rosemann, A. L. P.</span> <a href="https://doi.org/10.1016/j.buildenv.2017.03.002">Performance of personally worn dosimeters to study non-image forming effects of light: Assessment methods</a>. <em>Building and Environment</em> <strong>117</strong>, 60–72 (2017).</div>
+<div class="csl-left-margin">26. </div><div class="csl-right-inline">Aarts, M. P. J., van Duijnhoven, J., Aries, M. B. C. &amp; Rosemann, A. L. P. <a href="https://doi.org/10.1016/j.buildenv.2017.03.002">Performance of personally worn dosimeters to study non-image forming effects of light: Assessment methods</a>. <em>Building and Environment</em> <strong>117</strong>, 60–72 (2017).</div>
 </div>
 <div id="ref-Wen2023" class="csl-entry" role="listitem">
 <div class="csl-left-margin">27. </div><div class="csl-right-inline">Longbo Wen, Z. C., Hong Liu. Effect of mount location on the quantification of light intensity in myopia study. <em>BMJ Open Ophthalmology</em> e001409 (2023) doi:<a href="https://doi.org/10.1136/bmjophth-2023-001409">10.1136/bmjophth-2023-001409</a>.</div>
@@ -757,7 +759,7 @@ Figure&nbsp;4: Distribution of the (A) outcome-level bias across metrics and (B)
 <div class="csl-left-margin">28. </div><div class="csl-right-inline">Gibaldi, A., Harb, E. N., Wildsoet, C. F. &amp; Banks, M. S. <a href="https://doi.org/10.1167/tvst.13.10.28">A child-friendly wearable device for quantifying environmental risk factors for myopia</a>. <em>Translational Vision Science &amp; Technology</em> <strong>13</strong>, 28–28 (2024).</div>
 </div>
 <div id="ref-devries2026" class="csl-entry" role="listitem">
-<div class="csl-left-margin">29. </div><div class="csl-right-inline">Vries, S. W. de, Mardaljevic, J. &amp; Duijnhoven, J. van. <a href="https://doi.org/10.1038/s44323-026-00079-z">Impact of wear position on dosimeter performance: A hybrid measurement-simulation approach to quantify in-situ factors</a>. <em>npj Biological Timing and Sleep</em> <strong>3</strong>, (2026).</div>
+<div class="csl-left-margin">29. </div><div class="csl-right-inline">Vries, S. W. de, Mardaljevic, J. &amp; Duijnhoven, J. van. <a href="https://doi.org/10.1038/s44323-026-00079-z">Impact of wear position on dosimeter performance: a hybrid measurement-simulation approach to quantify in-situ factors</a>. <em>npj Biological Timing and Sleep</em> <strong>3</strong>, (2026).</div>
 </div>
 <div id="ref-Yoshimura04052022" class="csl-entry" role="listitem">
 <div class="csl-left-margin">30. </div><div class="csl-right-inline">Yoshimura, M., Kitamura, S., Eto, N., Hida, A., Katsunuma, R., Ayabe, N., <em>et al.</em> <a href="https://doi.org/10.1080/09291016.2020.1782691">Relationship between indoor daytime light exposure and circadian phase response under laboratory free-living conditions</a>. <em>Biological Rhythm Research</em> <strong>53</strong>, 765–785 (2022).</div>
@@ -769,7 +771,7 @@ Figure&nbsp;4: Distribution of the (A) outcome-level bias across metrics and (B)
 <div class="csl-left-margin">32. </div><div class="csl-right-inline">Vries, S. W. de, Mardaljevic, J. &amp; Duijnhoven, J. van. Characterising inter-individual variability in simulated personal light exposure: Impact of body morphology on light-dosimetry. in <em>Proceedings of the CIE midterm meeting 2025</em> (CIE, Vienna, Austria, 2025). doi:<a href="https://doi.org/10.25039/x051.2025/62xbgg">10.25039/x051.2025/62xbgg</a>.</div>
 </div>
 <div id="ref-devries2026a" class="csl-entry" role="listitem">
-<div class="csl-left-margin">33. </div><div class="csl-right-inline">Vries, S. W. de, Mardaljevic, J. &amp; Duijnhoven, J. van. <a href="https://doi.org/10.1038/s44323-026-00073-5">Impact of wear position on dosimeter performance: Measurement validity under simulated indoor illumination</a>. <em>npj Biological Timing and Sleep</em> <strong>3</strong>, (2026).</div>
+<div class="csl-left-margin">33. </div><div class="csl-right-inline">Vries, S. W. de, Mardaljevic, J. &amp; Duijnhoven, J. van. <a href="https://doi.org/10.1038/s44323-026-00073-5">Impact of wear position on dosimeter performance: measurement validity under simulated indoor illumination</a>. <em>npj Biological Timing and Sleep</em> <strong>3</strong>, (2026).</div>
 </div>
 <div id="ref-hartmeyer2022" class="csl-entry" role="listitem">
 <div class="csl-left-margin">34. </div><div class="csl-right-inline">Hartmeyer, S., Webler, F. &amp; Andersen, M. <a href="https://doi.org/10.1177/14771535221103258">Towards a framework for light-dosimetry studies: Methodological considerations</a>. <em>Lighting Research &amp; Technology</em> <strong>55</strong>, 377–399 (2022).</div>
@@ -784,7 +786,7 @@ Figure&nbsp;4: Distribution of the (A) outcome-level bias across metrics and (B)
 <div class="csl-left-margin">37. </div><div class="csl-right-inline">Guidolin, C., Aerts, S., Agbeshie, G. K., Akuffo, K. O., Aydin, S. N., Baeza-Moyano, D., <em>et al.</em> <a href="https://doi.org/10.1186/s12889-024-20206-4">Protocol for a prospective, multicentre, cross-sectional cohort study to assess personal light exposure</a>. <em>BMC Public Health</em> <strong>24</strong>, (2024).</div>
 </div>
 <div id="ref-zauner2026a" class="csl-entry" role="listitem">
-<div class="csl-left-margin">38. </div><div class="csl-right-inline"><span class="nocase">Zauner, J., Akuffo, K. O., Agbeshie, G. K., Sancho-Salas, A., von-Breymann, H., Didikoglu, A., <em>et al.</em></span> MeLiDos project data hub. <a href="https://doi.org/10.5281/ZENODO.19678543">https://doi.org/10.5281/ZENODO.19678543</a> (2026) doi:<a href="https://doi.org/10.5281/ZENODO.19678543">10.5281/ZENODO.19678543</a>.</div>
+<div class="csl-left-margin">38. </div><div class="csl-right-inline">Zauner, J., Akuffo, K. O., Agbeshie, G. K., Sancho-Salas, A., von-Breymann, H., Didikoglu, A., <em>et al.</em> MeLiDos project data hub. <a href="https://doi.org/10.5281/ZENODO.19678543">https://doi.org/10.5281/ZENODO.19678543</a> (2026) doi:<a href="https://doi.org/10.5281/ZENODO.19678543">10.5281/ZENODO.19678543</a>.</div>
 </div>
 <div id="ref-ishihara2026" class="csl-entry" role="listitem">
 <div class="csl-left-margin">39. </div><div class="csl-right-inline">Ishihara, A., Brychta, R. J., LaMunion, S. R., McGehee, S., Donayre, M., Jordan, O., <em>et al.</em> <a href="https://doi.org/10.1093/sleep/zsaf358">Performance of wearable light sensors for measuring photopic and melanopic illuminance under laboratory and free-living conditions</a>. <em>SLEEPJ</em> <strong>49</strong>, (2026).</div>
@@ -814,7 +816,7 @@ Figure&nbsp;4: Distribution of the (A) outcome-level bias across metrics and (B)
 <div class="csl-left-margin">47. </div><div class="csl-right-inline">Bates, D., Mächler, M., Bolker, B. &amp; Walker, S. <a href="https://doi.org/10.18637/jss.v067.i01">Fitting linear mixed-effects models using <span></span>lme4<span></span></a>. <strong>67</strong>, (2015).</div>
 </div>
 <div id="ref-glmmTMB" class="csl-entry" role="listitem">
-<div class="csl-left-margin">48. </div><div class="csl-right-inline"><span class="nocase">Brooks, M. E., Kristensen, K., van, K. J., Magnusson, A., Berg, C. W., Nielsen, A., <em>et al.</em></span> <a href="https://doi.org/10.32614/RJ-2017-066"><span></span>glmmTMB<span></span> balances speed and flexibility among packages for zero-inflated generalized linear mixed modeling</a>. <strong>9</strong>, (2017).</div>
+<div class="csl-left-margin">48. </div><div class="csl-right-inline">Brooks, M. E., Kristensen, K., van, K. J., Magnusson, A., Berg, C. W., Nielsen, A., <em>et al.</em> <a href="https://doi.org/10.32614/RJ-2017-066"><span></span>glmmTMB<span></span> balances speed and flexibility among packages for zero-inflated generalized linear mixed modeling</a>. <strong>9</strong>, (2017).</div>
 </div>
 <div id="ref-emmeans" class="csl-entry" role="listitem">
 <div class="csl-left-margin">49. </div><div class="csl-right-inline">Lenth, R. V. &amp; Piaskowski, J. Emmeans: Estimated marginal means, aka least-squares means. <a href="https://doi.org/10.32614/CRAN.package.emmeans">https://doi.org/10.32614/CRAN.package.emmeans</a> (2026) doi:<a href="https://doi.org/10.32614/CRAN.package.emmeans">10.32614/CRAN.package.emmeans</a>.</div>
@@ -823,7 +825,7 @@ Figure&nbsp;4: Distribution of the (A) outcome-level bias across metrics and (B)
 <div class="csl-left-margin">50. </div><div class="csl-right-inline">Lüdecke, D., Ben-Shachar, M. S., Patil, I., Waggoner, P. &amp; Makowski, D. <a href="https://doi.org/10.21105/joss.03139"><span></span>Performance<span></span>: An <span></span>r<span></span> package for assessment, comparison and testing of statistical models</a>. <strong>6</strong>, 3139 (2021).</div>
 </div>
 <div id="ref-zauner2025a" class="csl-entry" role="listitem">
-<div class="csl-left-margin">51. </div><div class="csl-right-inline">Zauner, J., Guidolin, C. &amp; Spitschan, M. <a href="https://doi.org/10.1177/07487304251336624">How to deal with darkness: Modeling and visualization of zero-inflated personal light exposure data on a logarithmic scale</a>. <em>Journal of Biological Rhythms</em> <strong>40</strong>, 480–490 (2025).</div>
+<div class="csl-left-margin">51. </div><div class="csl-right-inline">Zauner, J., Guidolin, C. &amp; Spitschan, M. <a href="https://doi.org/10.1177/07487304251336624">How to Deal With Darkness: Modeling and Visualization of Zero-Inflated Personal Light Exposure Data on a Logarithmic Scale</a>. <em>Journal of Biological Rhythms</em> <strong>40</strong>, 480–490 (2025).</div>
 </div>
 <div id="ref-hastie1986" class="csl-entry" role="listitem">
 <div class="csl-left-margin">52. </div><div class="csl-right-inline">Hastie, T. &amp; Tibshirani, R. <a href="https://doi.org/10.1214/ss/1177013604">Generalized additive models</a>. <em>Statistical Science</em> <strong>1</strong>, (1986).</div>
@@ -832,7 +834,7 @@ Figure&nbsp;4: Distribution of the (A) outcome-level bias across metrics and (B)
 <div class="csl-left-margin">53. </div><div class="csl-right-inline">Hastie, T. &amp; Tibshirani, R. <a href="https://doi.org/10.1177/096228029500400302">Generalized additive models for medical research</a>. <em>Statistical Methods in Medical Research</em> <strong>4</strong>, 187–196 (1995).</div>
 </div>
 <div id="ref-pedersen2019" class="csl-entry" role="listitem">
-<div class="csl-left-margin">54. </div><div class="csl-right-inline">Pedersen, E. J., Miller, D. L., Simpson, G. L. &amp; Ross, N. <a href="https://doi.org/10.7717/peerj.6876">Hierarchical generalized additive models in ecology: An introduction with mgcv</a>. <em>PeerJ</em> <strong>7</strong>, e6876 (2019).</div>
+<div class="csl-left-margin">54. </div><div class="csl-right-inline">Pedersen, E. J., Miller, D. L., Simpson, G. L. &amp; Ross, N. <a href="https://doi.org/10.7717/peerj.6876">Hierarchical generalized additive models in ecology: an introduction with mgcv</a>. <em>PeerJ</em> <strong>7</strong>, e6876 (2019).</div>
 </div>
 <div id="ref-gilchrist2000" class="csl-entry" role="listitem">
 <div class="csl-left-margin">55. </div><div class="csl-right-inline">Gilchrist, R. &amp; Drinkwater, D. The use of the tweedie distribution in statistical modelling. in <em>COMPSTAT</em> (eds. Bethlehem, J. G. &amp; Heijden, P. G. M. van der) 313–318 (Physica-Verlag HD, Heidelberg, 2000).</div>
@@ -1589,7 +1591,7 @@ Supplementary Table S8: First sample size at which the pointwise metric-class me
     Altug and van Duijnhoven, Juliëtte and Spitschan, Manuel},
   title = {Toward Scalable Ambulatory Light Dosimetry: Sensor-Placement
     Bias Under Naturalistic Conditions},
-  date = {2026-07-28},
+  date = {2026-07-30},
   url = {https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/},
   langid = {en}
 }
@@ -2422,14 +2424,14 @@ dosimetry: sensor-placement bias under naturalistic conditions.
 <span id="cb1-369"><a href="#cb1-369" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-370"><a href="#cb1-370" aria-hidden="true" tabindex="-1"></a><span class="fu">### Statement of data availability</span></span>
 <span id="cb1-371"><a href="#cb1-371" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-372"><a href="#cb1-372" aria-hidden="true" tabindex="-1"></a>All data used in this study are available at <span class="co">[</span><span class="ot">https://github.com/MeLiDosProject</span><span class="co">](https://github.com/MeLiDosProject)</span> and are archived on Zenodo (<span class="co">[</span><span class="ot">https://zenodo.org/communities/22nrm05_melidos/</span><span class="co">](https://zenodo.org/communities/22nrm05_melidos/)</span>), accessed through the melidosData R package (<span class="co">[</span><span class="ot">https://melidosproject.github.io/melidosData/</span><span class="co">](https://melidosproject.github.io/melidosData/)</span>).</span>
+<span id="cb1-372"><a href="#cb1-372" aria-hidden="true" tabindex="-1"></a>All data used in this study are available at <span class="ot">&lt;https://github.com/MeLiDosProject&gt;</span> and are archived on Zenodo (<span class="ot">&lt;https://zenodo.org/communities/22nrm05_melidos/&gt;</span>), accessed through the melidosData R package (<span class="ot">&lt;https://melidosproject.github.io/melidosData/&gt;</span>).</span>
 <span id="cb1-373"><a href="#cb1-373" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-374"><a href="#cb1-374" aria-hidden="true" tabindex="-1"></a>All analyses are available on GitHub (<span class="co">[</span><span class="ot">https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026</span><span class="co">](https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026)</span>), hosted on GitHub pages (<span class="co">[</span><span class="ot">https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/</span><span class="co">](https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/)</span>), and archived on Zenodo (<span class="co">[</span><span class="ot">https://doi.org/10.5281/zenodo.21533915</span><span class="co">](https://doi.org/10.5281/zenodo.21533915)</span>).</span>
+<span id="cb1-374"><a href="#cb1-374" aria-hidden="true" tabindex="-1"></a>All analyses are available on GitHub (<span class="ot">&lt;https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026&gt;</span>), hosted on GitHub pages (<span class="ot">&lt;https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/&gt;</span>), and archived on Zenodo (<span class="ot">&lt;https://doi.org/10.5281/zenodo.21533915&gt;</span>).</span>
 <span id="cb1-375"><a href="#cb1-375" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-376"><a href="#cb1-376" aria-hidden="true" tabindex="-1"></a>The individual site datasets are available from:</span>
 <span id="cb1-377"><a href="#cb1-377" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-378"><a href="#cb1-378" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Institution (site Abbr.) <span class="pp">|</span> City <span class="pp">|</span> Country <span class="pp">|</span> Repository <span class="pp">|</span> DOI <span class="pp">|</span></span>
-<span id="cb1-379"><a href="#cb1-379" aria-hidden="true" tabindex="-1"></a><span class="pp">|---------------|---------------|---------------|---------------|---------------|</span></span>
+<span id="cb1-379"><a href="#cb1-379" aria-hidden="true" tabindex="-1"></a><span class="pp">|----|----|----|----|----|</span></span>
 <span id="cb1-380"><a href="#cb1-380" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> KNUST <span class="pp">|</span> Kumasi <span class="pp">|</span> Ghana <span class="pp">|</span> <span class="co">[</span><span class="ot">AkuffoEtAl_Dataset_2025</span><span class="co">](https://github.com/MeLiDosProject/AkuffoEtAl_Dataset_2025)</span> <span class="pp">|</span> 10.5281/zenodo.15576731 <span class="pp">|</span></span>
 <span id="cb1-381"><a href="#cb1-381" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> UCR <span class="pp">|</span> San José <span class="pp">|</span> Costa Rica <span class="pp">|</span> <span class="co">[</span><span class="ot">Sancho-SalasEtAl_Dataset_2025</span><span class="co">](https://github.com/MeLiDosProject/Sancho-SalasEtAl_Dataset_2025)</span> <span class="pp">|</span> 10.5281/zenodo.17289456 <span class="pp">|</span></span>
 <span id="cb1-382"><a href="#cb1-382" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> IZTECH <span class="pp">|</span> Izmir <span class="pp">|</span> Turkey <span class="pp">|</span> <span class="co">[</span><span class="ot">DidikogluEtAl_Dataset_2025</span><span class="co">](https://github.com/MeLiDosProject/DidikogluEtAl_Dataset_2025)</span> <span class="pp">|</span> 10.5281/zenodo.16568109 <span class="pp">|</span></span>
@@ -2479,7 +2481,7 @@ dosimetry: sensor-placement bias under naturalistic conditions.
 <span id="cb1-426"><a href="#cb1-426" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-427"><a href="#cb1-427" aria-hidden="true" tabindex="-1"></a>::: {#supptbl-wearing-position}</span>
 <span id="cb1-428"><a href="#cb1-428" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Study <span class="pp">|</span> Sample and duration <span class="pp">|</span> Measure and outcome <span class="pp">|</span> Positions <span class="pp">|</span> Position-dependent result <span class="pp">|</span> Notes <span class="pp">|</span></span>
-<span id="cb1-429"><a href="#cb1-429" aria-hidden="true" tabindex="-1"></a><span class="pp">|------------|------------|------------|------------|------------|------------|</span></span>
+<span id="cb1-429"><a href="#cb1-429" aria-hidden="true" tabindex="-1"></a><span class="pp">|----|----|----|----|----|----|</span></span>
 <span id="cb1-430"><a href="#cb1-430" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Diffey et al. (1977) <span class="co">[</span><span class="ot">@diffey1977</span><span class="co">]</span> <span class="pp">|</span> One manikin; 2 h each on 19 days <span class="pp">|</span> Solar UVR; dose relative to vertex <span class="pp">|</span> Vertex; lower sternum <span class="pp">|</span> Sternum received 58–73% of vertex exposure, depending on cloud condition. <span class="pp">|</span> Rotating unclothed manikin; no behaviour or clothing. No wrist measurement, but hand. <span class="pp">|</span></span>
 <span id="cb1-431"><a href="#cb1-431" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Holman et al. (1983), occupational field study <span class="co">[</span><span class="ot">@holman1983</span><span class="co">]</span> <span class="pp">|</span> 5 participants; 6 h/day for 11–15 days <span class="pp">|</span> Solar UVR; proportion of ambient dose <span class="pp">|</span> Vertex; lower sternum; dorsum of hand <span class="pp">|</span> Vertex generally received the highest and sternum consistently lower exposure. Hand exposure varied strongly by occupation, from 0.07 of ambient exposure in a classroom teacher to 0.78 in a bricklayer. <span class="pp">|</span> One participant per occupation; hand used as the closest approximation to wrist. Sensors were attached to skin, hair, or clothing. <span class="pp">|</span></span>
 <span id="cb1-432"><a href="#cb1-432" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Okudaira et al. (1983) <span class="co">[</span><span class="ot">@Okudaira1983</span><span class="co">]</span> <span class="pp">|</span> 10 participants; ≥ 24 h <span class="pp">|</span> Photopic illuminance <span class="pp">|</span> Forward-facing forehead, above the eyes; wrist, oriented like a wristwatch dial <span class="pp">|</span> Mean within-person correlation of 0.76 between wrist and forehead log illuminance, with a range of 0.59–0.90 across participants. <span class="pp">|</span> Limited reporting of device equivalence and agreement statistics. <span class="pp">|</span></span>
@@ -2497,7 +2499,7 @@ dosimetry: sensor-placement bias under naturalistic conditions.
 <span id="cb1-444"><a href="#cb1-444" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-445"><a href="#cb1-445" aria-hidden="true" tabindex="-1"></a>::: {#supptbl-metric-list}</span>
 <span id="cb1-446"><a href="#cb1-446" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Metric <span class="pp">|</span> Family <span class="pp">|</span> Metric class <span class="pp">|</span> Scale <span class="pp">|</span> Distribution <span class="pp">|</span> LightLogR function <span class="pp">|</span></span>
-<span id="cb1-447"><a href="#cb1-447" aria-hidden="true" tabindex="-1"></a><span class="pp">|------------|------------|------------|------------|------------|------------|</span></span>
+<span id="cb1-447"><a href="#cb1-447" aria-hidden="true" tabindex="-1"></a><span class="pp">|----|----|----|----|----|----|</span></span>
 <span id="cb1-448"><a href="#cb1-448" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Bright cluster <span class="pp">|</span> Barroso <span class="pp">|</span> duration <span class="pp">|</span> log~10~ (zero-inflated) <span class="pp">|</span> Gaussian <span class="pp">|</span> <span class="co">[</span><span class="ot">barroso_lighting_metrics()</span><span class="co">](https://tscnlab.github.io/LightLogR/reference/barroso_lighting_metrics.html)</span> <span class="pp">|</span></span>
 <span id="cb1-449"><a href="#cb1-449" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Dark cluster <span class="pp">|</span> Barroso <span class="pp">|</span> duration <span class="pp">|</span> log~10~ (zero-inflated) <span class="pp">|</span> Gaussian <span class="pp">|</span> <span class="co">[</span><span class="ot">barroso_lighting_metrics()</span><span class="co">](https://tscnlab.github.io/LightLogR/reference/barroso_lighting_metrics.html)</span> <span class="pp">|</span></span>
 <span id="cb1-450"><a href="#cb1-450" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Duration above 10 <span class="pp">|</span> Duration crossing threshold <span class="pp">|</span> duration <span class="pp">|</span> log (Tweedie) <span class="pp">|</span> Tweedie <span class="pp">|</span> <span class="co">[</span><span class="ot">duration_above_threshold()</span><span class="co">](https://tscnlab.github.io/LightLogR/reference/duration_above_threshold.html)</span> <span class="pp">|</span></span>
@@ -2558,7 +2560,7 @@ dosimetry: sensor-placement bias under naturalistic conditions.
 <span id="cb1-505"><a href="#cb1-505" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-506"><a href="#cb1-506" aria-hidden="true" tabindex="-1"></a>::: {#supptbl-context-class}</span>
 <span id="cb1-507"><a href="#cb1-507" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Set of contextual classifications <span class="pp">|</span> Categories <span class="pp">|</span> Number of unique classifications <span class="pp">|</span></span>
-<span id="cb1-508"><a href="#cb1-508" aria-hidden="true" tabindex="-1"></a><span class="pp">|------------------------|------------------------|------------------------|</span></span>
+<span id="cb1-508"><a href="#cb1-508" aria-hidden="true" tabindex="-1"></a><span class="pp">|----|----|----|</span></span>
 <span id="cb1-509"><a href="#cb1-509" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Environment &amp; photoperiod <span class="pp">|</span> (*indoor*s or *outdoors*) × (*day* or *night*) <span class="pp">|</span> 4 <span class="pp">|</span></span>
 <span id="cb1-510"><a href="#cb1-510" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Environment &amp; time of day <span class="pp">|</span> (*indoors* or *outdoors*) × (*15-minute interval^1^*) <span class="pp">|</span> 192 <span class="pp">|</span></span>
 <span id="cb1-511"><a href="#cb1-511" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Activity &amp; photoperiod <span class="pp">|</span> (*awake at home* or *working in the office/home* or *in a vehicle* or *time outdoors) × (day* or *night*) <span class="pp">|</span> 8 <span class="pp">|</span></span>
@@ -2569,7 +2571,7 @@ dosimetry: sensor-placement bias under naturalistic conditions.
 <span id="cb1-516"><a href="#cb1-516" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-517"><a href="#cb1-517" aria-hidden="true" tabindex="-1"></a>::: {#supptbl-formulas-context}</span>
 <span id="cb1-518"><a href="#cb1-518" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> Model formulas <span class="pp">|</span></span>
-<span id="cb1-519"><a href="#cb1-519" aria-hidden="true" tabindex="-1"></a><span class="pp">|------------------------------------------------------------------------|</span></span>
+<span id="cb1-519"><a href="#cb1-519" aria-hidden="true" tabindex="-1"></a><span class="pp">|----|</span></span>
 <span id="cb1-520"><a href="#cb1-520" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> placement_error_x \~ environment <span class="sc">\*</span> photoperiod + s(site, bs = "re") + s(participant, bs = "re") + s(participant_day, bs = "re") <span class="pp">|</span></span>
 <span id="cb1-521"><a href="#cb1-521" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> placement_error_x \~ environment + s(site, bs = "re") + s(participant, bs = "re") + s(participant_day, bs = "re") + s(timeofday, by = environment, bs = "cc", k = 12, m = 2) + s(timeofday, bs = "cc", k = 12) <span class="pp">|</span></span>
 <span id="cb1-522"><a href="#cb1-522" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> placement_error_x \~ activity <span class="sc">\*</span> photoperiod + s(site, bs = "re") + s(participant, bs = "re") + s(participant_day, bs = "re") <span class="pp">|</span></span>
