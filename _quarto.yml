@@ -1,6 +1,17 @@
 project:
   type: website
   output-dir: docs
+  render:
+    - index.qmd
+    - notebooks/SWV_context_preparation.qmd
+    - notebooks/SWV_context_comparison.qmd
+    - notebooks/JZ_metric_preparation.qmd
+    - notebooks/JZ_metric_comparison.qmd
+    - notebooks/JZ_metric_preparation_nonwear.qmd
+    - notebooks/JZ_metric_comparison_nonwear.qmd
+    - notebooks/JZ_metric_preparation_wake_only.qmd
+    - notebooks/JZ_metric_comparison_wake_only.qmd
+    - notebooks/JZ_error_stabilisation.qmd
 
 website:
   site-url: https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/
@@ -49,4 +60,3 @@ format:
   # docx: default
   # jats: default
   # agu-pdf: default
-

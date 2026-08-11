@@ -1,5 +1,5 @@
 ---
-title: "Toward scalable ambulatory light dosimetry: sensor-placement bias under naturalistic conditions"
+title: "Sensor placement causes outcome-dependent bias in ambulatory light-exposure estimates"
 author:
   - name: "Johannes Zauner*"
     id: JZ
@@ -54,7 +54,7 @@ funding: "JZ's position is funded by the MeLiDos project. The project MeLiDos (2
 date: last-modified
 bibliography: references.bib
 citation:
-  container-title: Journal of Exposure Science and Environmental Epidemiology
+  container-title: Communications Health
 number-sections: true
 crossref:
   custom:
@@ -97,15 +97,7 @@ lightbox: true
 
 ## Abstract
 
-**Background:** Personal light dosimeters enable exposure assessment under free-living conditions, but sensors are rarely positioned near the eyes—the relevant site for visual and non-visual responses. Chest and wrist placement may improve adherence and scalability, yet placement-dependent error and its consequences for derived outcomes remain insufficiently characterised.
-
-**Objective:** To quantify how chest and wrist placement affects time-resolved estimates of eye-level light exposure across naturalistic contexts and derived exposure metrics.
-
-**Methods:** We analysed concurrent 10-s melanopic equivalent daylight illuminance measurements from identical dosimeter models at the glasses, chest, and wrist across eight sites in seven countries. Melanopic equivalent daylight illuminance was compared at two analytical scales. Generalised additive mixed models quantified time-resolved placement error across contexts (N=787 participant-days), and mixed-effects models compared 54 daily metrics (N=604 participant-days). Hierarchical bootstrap resampling quantified the precision of population-average metric bias across participant numbers and monitoring durations.
-
-**Results:** Body-worn dosimeters generally underestimated eye-level exposure. Across categorical contexts, estimated mean errors ranged from −23.1% to −4.2% at the chest and from −54.7% to −30.3% at the wrist, with larger errors generally observed at night. Nineteen of 54 chest-derived and 27 of 54 wrist-derived metrics differed nominally from glasses. Among these, median absolute bias was 5% at both placements, but maxima reached 50% and 84%, respectively. Timing outcomes were comparatively insensitive, whereas level and temporal-dynamics outcomes were more sensitive. With seven days per participant, the class-median bias standard deviation reached the 5% precision tolerance with 2–16 participants for all classes except temporal dynamics, which required 33 at the chest and 59 at the wrist.
-
-**Significance:** Dosimeter-placement validity depends on analytical scale and exposure construct. Chest placement can support scalable studies focused on aggregated timing or duration outcomes, whereas wrist placement introduces greater and less predictable bias. Near-eye measurement remains preferable for small-sample studies, time-resolved exposure levels and temporal-dynamics analyses.
+Population studies use wearable sensors to investigate light as an environmental determinant of health, yet anatomical placement may misclassify exposure across outcomes. We analysed concurrent free-living measurements from identical dosimeters worn near the eyes, chest, and wrist across seven countries. Generalised additive mixed models characterised momentary errors; mixed models compared 54 daily metrics; hierarchical bootstrap estimated validation precision. Context-specific eye-level underestimation ranged from −23.1% to −4.2% at the chest and −54.7% to −30.3% at the wrist. Across 54 metrics, median absolute bias was 1% at the chest and 2% at the wrist; timing outcomes were robust, whereas level and temporal-dynamics outcomes were more placement-sensitive, with maximum absolute biases of 50% and 84%, respectively. With seven days, most metric classes reached 5% precision with 2–16 participants; temporal dynamics required 33 at the chest and 59 at the wrist. Sensor placement should match the intended outcome, with validation subsamples supporting scalable exposure epidemiology.
 
 ## Introduction {#sec-intro}
 

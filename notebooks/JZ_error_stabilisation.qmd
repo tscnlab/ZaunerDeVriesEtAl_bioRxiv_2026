@@ -53,6 +53,9 @@ library(LightLogR)
 library(cowplot)
 library(gt)
 library(here)
+library(webshot2)
+
+here::i_am("notebooks/JZ_error_stabilisation.qmd")
 
 if (packageVersion("LightLogR") < package_version("0.10.3")) {
   stop("This analysis requires LightLogR 0.10.3 or newer.", call. = FALSE)
@@ -89,6 +92,22 @@ if (length(draws) != 1L || is.na(draws) || draws < 2L) {
 days_per_participant <- c(3L, 7L)
 day_axis_participants <- c(25L, 50L)
 tolerance <- 5
+
+bootstrap_input_paths <- c(
+  prepared_metrics = here("data/prepared_metrics.RData"),
+  metric_types = here("data/metric_types.xlsx"),
+  bootstrap_helpers = here("scripts/bootstrap_stability.R")
+)
+bootstrap_input_checksums <- setNames(
+  unname(tools::md5sum(bootstrap_input_paths)),
+  names(bootstrap_input_paths)
+)
+bootstrap_cache_key <- list(
+  draws = draws,
+  days_per_participant = days_per_participant,
+  day_axis_participants = day_axis_participants,
+  input_checksums = bootstrap_input_checksums
+)
 
 set.seed(7391)
 
@@ -248,7 +267,7 @@ population information.
 #| label: full-run
 #| filename: Bootstrap all daily metrics and four design scenarios
 #| cache: true
-#| cache.extra: !expr list(draws, days_per_participant, day_axis_participants)
+#| cache.extra: !expr bootstrap_cache_key
 metric_stability <- bootstrap_stability(
   bias_df,
   n_range = 1:200,

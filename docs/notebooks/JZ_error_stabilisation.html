@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>Stability of wearing-position bias with sample size</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -68,15 +71,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-1d4f84655f446305ac42a8f1abcf7405.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-45431c2918bd31147ddb3fa7038bb99f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -106,7 +108,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 const typesetMath = (el) => {
@@ -144,10 +146,6 @@ window.Quarto = {
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container mx-auto">
-    <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    </a>
-  </div>
             <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
@@ -290,10 +288,13 @@ window.Quarto = {
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cowplot)</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">packageVersion</span>(<span class="st">"LightLogR"</span>) <span class="sc">&lt;</span> <span class="fu">package_version</span>(<span class="st">"0.10.3"</span>)) {</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"This analysis requires LightLogR 0.10.3 or newer."</span>, <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(webshot2)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>here<span class="sc">::</span><span class="fu">i_am</span>(<span class="st">"notebooks/JZ_error_stabilisation.qmd"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">packageVersion</span>(<span class="st">"LightLogR"</span>) <span class="sc">&lt;</span> <span class="fu">package_version</span>(<span class="st">"0.10.3"</span>)) {</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">"This analysis requires LightLogR 0.10.3 or newer."</span>, <span class="at">call. =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>The prepared long-format metric data and their model metadata are loaded from the same sources used by the metric-comparison notebook. The reusable bootstrap helpers are kept in a separate script so the sampling and aggregation logic can be tested independently.</p>
@@ -323,19 +324,35 @@ window.Quarto = {
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>day_axis_participants <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">25</span>L, <span class="dv">50</span>L)</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>tolerance <span class="ot">&lt;-</span> <span class="dv">5</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7391</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>position_colors <span class="ot">&lt;-</span> ggsci<span class="sc">::</span><span class="fu">pal_jco</span>()(<span class="dv">3</span>) <span class="sc">|&gt;</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(<span class="fu">c</span>(<span class="st">"glasses"</span>, <span class="st">"chest"</span>, <span class="st">"wrist"</span>))</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>metric_class_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">duration =</span> <span class="st">"Duration"</span>,</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">exposure history</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"Exposure history"</span>,</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">level =</span> <span class="st">"Level"</span>,</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">spectrum =</span> <span class="st">"Spectrum"</span>,</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">temporal dynamics</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"Temporal dynamics"</span>,</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">timing =</span> <span class="st">"Timing"</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>bootstrap_input_paths <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">prepared_metrics =</span> <span class="fu">here</span>(<span class="st">"data/prepared_metrics.RData"</span>),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">metric_types =</span> <span class="fu">here</span>(<span class="st">"data/metric_types.xlsx"</span>),</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">bootstrap_helpers =</span> <span class="fu">here</span>(<span class="st">"scripts/bootstrap_stability.R"</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>bootstrap_input_checksums <span class="ot">&lt;-</span> <span class="fu">setNames</span>(</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unname</span>(tools<span class="sc">::</span><span class="fu">md5sum</span>(bootstrap_input_paths)),</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(bootstrap_input_paths)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>bootstrap_cache_key <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">draws =</span> draws,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">days_per_participant =</span> days_per_participant,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">day_axis_participants =</span> day_axis_participants,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">input_checksums =</span> bootstrap_input_checksums</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7391</span>)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>position_colors <span class="ot">&lt;-</span> ggsci<span class="sc">::</span><span class="fu">pal_jco</span>()(<span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_names</span>(<span class="fu">c</span>(<span class="st">"glasses"</span>, <span class="st">"chest"</span>, <span class="st">"wrist"</span>))</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>metric_class_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">duration =</span> <span class="st">"Duration"</span>,</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">exposure history</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"Exposure history"</span>,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">level =</span> <span class="st">"Level"</span>,</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">spectrum =</span> <span class="st">"Spectrum"</span>,</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">temporal dynamics</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"Temporal dynamics"</span>,</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">timing =</span> <span class="st">"Timing"</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 <p>This production render uses <strong>B = 10,000</strong> bootstrap draws.</p>
@@ -869,7 +886,7 @@ Table&nbsp;1
 }
 </style>
 
-<table class="gt_table do-not-create-environment caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
 <thead>
 <tr class="gt_heading header">
 <td colspan="2" class="gt_heading gt_title gt_font_normal">Daily metrics included in the stability analysis</td>
@@ -969,7 +986,7 @@ Table&nbsp;1
 <h2 class="anchored" data-anchor-id="bootstrap-design">Bootstrap design</h2>
 <p>Both axes use hierarchical resampling with replacement. For the participant axis, each bootstrap replicate samples <span class="math inline">\(N\)</span> participants and then samples exactly 3 or 7 valid paired days from each selected participant’s empirical daily-bias distribution. For the participant-day axis, each replicate first samples 25 or 50 participants and then samples 1–7 days from each. Sampling days with replacement retains participants with fewer observed valid days while making the target design size explicit.</p>
 <p>The participant axis extends to 200 as an empirical-distribution projection, although the prepared cohort contains 106 participants. It therefore describes expected sampling precision under repeated sampling from this cohort’s empirical distribution, not the acquisition of new independent population information.</p>
-<div class="cell" data-cache.extra="[10000,[3,7],[25,50]]">
+<div class="cell" data-cache.extra="{&quot;draws&quot;:10000,&quot;days_per_participant&quot;:[3,7],&quot;day_axis_participants&quot;:[25,50],&quot;input_checksums&quot;:[&quot;f64f961d092c3fe596c9f40df3e99882&quot;,&quot;6f1c4b81d19a8bcbe5af3f82bdc42c96&quot;,&quot;d38097b527891356d063e58b11374882&quot;]}">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Bootstrap all daily metrics and four design scenarios</strong></pre>
@@ -1677,7 +1694,7 @@ Table&nbsp;2
 }
 </style>
 
-<table class="gt_table do-not-create-environment caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
 <thead>
 <tr class="gt_heading header">
 <td colspan="10" class="gt_heading gt_title gt_font_normal">Sample size for class-median bias SD ≤ 5%</td>
@@ -1822,7 +1839,7 @@ Days per participant
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>file:///C:/Users/s157926/AppData/Local/Temp/RtmpOon7v8/file5a3820697b82.html screenshot completed</code></pre>
+<pre><code>file:////var/folders/9p/326_k3kx43qbn_cyl1rqfhb00000gn/T//RtmpxdVJVs/filecf662b04585c.html screenshot completed</code></pre>
 </div>
 </div>
 </section>
@@ -1836,46 +1853,45 @@ Days per participant
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>R version 4.5.2 (2025-10-31 ucrt)
-Platform: x86_64-w64-mingw32/x64
-Running under: Windows 11 x64 (build 26200)
+<pre><code>R version 4.6.1 (2026-06-24)
+Platform: aarch64-apple-darwin23
+Running under: macOS Tahoe 26.5.2
 
 Matrix products: default
-  LAPACK version 3.12.1
+BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
 
 locale:
-[1] LC_COLLATE=English_Netherlands.utf8  LC_CTYPE=English_Netherlands.utf8   
-[3] LC_MONETARY=English_Netherlands.utf8 LC_NUMERIC=C                        
-[5] LC_TIME=English_Netherlands.utf8    
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
 
-time zone: Europe/Amsterdam
+time zone: Europe/Berlin
 tzcode source: internal
 
 attached base packages:
 [1] stats     graphics  grDevices datasets  utils     methods   base     
 
 other attached packages:
- [1] here_1.0.2       gt_1.3.0         cowplot_1.2.0    LightLogR_0.10.3
- [5] readxl_1.5.0     lubridate_1.9.5  forcats_1.0.1    stringr_1.6.0   
- [9] dplyr_1.2.1      purrr_1.2.2      readr_2.2.0      tidyr_1.3.2     
-[13] tibble_3.3.1     ggplot2_4.0.3    tidyverse_2.0.0 
+ [1] webshot2_0.1.2   here_1.0.2       gt_1.3.0         cowplot_1.2.0   
+ [5] LightLogR_0.10.3 readxl_1.5.0     lubridate_1.9.5  forcats_1.0.1   
+ [9] stringr_1.6.0    dplyr_1.2.1      purrr_1.2.2      readr_2.2.0     
+[13] tidyr_1.3.2      tibble_3.3.1     ggplot2_4.0.3    tidyverse_2.0.0 
 
 loaded via a namespace (and not attached):
  [1] gtable_0.3.6       xfun_0.58          htmlwidgets_1.6.4  websocket_1.4.4   
- [5] processx_3.9.0     tzdb_0.5.0         vctrs_0.7.3        tools_4.5.2       
+ [5] processx_3.9.0     tzdb_0.5.0         vctrs_0.7.3        tools_4.6.1       
  [9] generics_0.1.4     pkgconfig_2.0.3    RColorBrewer_1.1-3 S7_0.2.2          
-[13] lifecycle_1.0.5    compiler_4.5.2     farver_2.1.2       textshaping_1.0.5 
-[17] ggsci_5.0.0        chromote_0.5.1     litedown_0.9       htmltools_0.5.9   
-[21] sass_0.4.10        yaml_2.3.12        pillar_1.11.1      later_1.4.8       
-[25] webshot2_0.1.2     commonmark_2.0.0   tidyselect_1.2.1   digest_0.6.39     
+[13] lifecycle_1.0.5    compiler_4.6.1     farver_2.1.2       textshaping_1.0.5 
+[17] ggsci_5.0.0        chromote_0.5.1     codetools_0.2-20   litedown_0.9      
+[21] htmltools_0.5.9    sass_0.4.10        yaml_2.3.12        pillar_1.11.1     
+[25] later_1.4.8        commonmark_2.0.0   tidyselect_1.2.1   digest_0.6.39     
 [29] stringi_1.8.7      labeling_0.4.3     rprojroot_2.1.1    fastmap_1.2.0     
-[33] grid_4.5.2         cli_3.6.6          magrittr_2.0.5     base64enc_0.1-6   
+[33] grid_4.6.1         cli_3.6.6          magrittr_2.0.5     base64enc_0.1-6   
 [37] withr_3.0.2        scales_1.4.0       promises_1.5.0     timechange_0.4.0  
 [41] rmarkdown_2.31     otel_0.2.0         cellranger_1.1.0   ragg_1.5.2        
 [45] hms_1.1.4          evaluate_1.0.5     knitr_1.51         markdown_2.0      
 [49] rlang_1.2.0        Rcpp_1.1.1-1.1     glue_1.8.1         xml2_1.5.2        
-[53] renv_1.1.4         jsonlite_2.0.0     R6_2.6.1           systemfonts_1.3.2 
-[57] fs_2.1.0          </code></pre>
+[53] renv_1.1.4         rstudioapi_0.19.0  jsonlite_2.0.0     R6_2.6.1          
+[57] systemfonts_1.3.2  fs_2.1.0          </code></pre>
 </div>
 </div>
 
