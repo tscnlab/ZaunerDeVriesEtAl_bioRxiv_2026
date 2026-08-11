@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it using the metadata below."
-title: "Toward scalable ambulatory light dosimetry: sensor-placement bias under naturalistic conditions"
+title: "Sensor placement causes outcome-dependent bias in ambulatory light-exposure estimates"
 type: software
 authors:
   - family-names: Zauner
@@ -35,8 +35,8 @@ keywords:
   - exposure misclassification
   - measurement error
   - sensor placement
-version: 0.9.9
-date-released: 2026-07-24
+version: 1.0.0
+date-released: 2026-08-11
 doi: "10.5281/zenodo.21533915"
 license: CC-BY-4.0
 repository-code: "https://github.com/tscnlab/ZaunerDeVriesEtAl_bioRxiv_2026"
