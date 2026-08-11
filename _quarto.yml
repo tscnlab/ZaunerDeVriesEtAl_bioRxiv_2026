@@ -14,7 +14,7 @@ project:
     - notebooks/JZ_error_stabilisation.qmd
 
 website:
-  site-url: https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/
+  site-url: https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/
   navbar:
     left:
       - href: index.qmd
@@ -45,7 +45,7 @@ website:
             text: Bias stability by sample size
     tools:
       - icon: github
-        href: https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026
+        href: https://github.com/tscnlab/ZaunerDeVriesEtAl_bioRxiv_2026
         text: GitHub repository
 
 execute:

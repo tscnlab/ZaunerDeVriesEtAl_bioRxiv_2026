@@ -1,17 +1,16 @@
-# Toward scalable ambulatory light dosimetry
+# Sensor placement causes outcome-dependent bias in ambulatory light-exposure estimates
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21533915.svg)](https://doi.org/10.5281/zenodo.21533915)
 
 This repository contains the manuscript, analysis notebooks, prepared
 intermediate data, and publication-ready outputs for:
 
-> **Toward scalable ambulatory light dosimetry: sensor-placement bias under
-> naturalistic conditions**
+> **Sensor placement causes outcome-dependent bias in ambulatory light-exposure estimates**
 
 - **Rendered manuscript and analysis notebooks:**
-  <https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/>
+  <https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/>
 - **Source repository:**
-  <https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026>
+  <https://github.com/tscnlab/ZaunerDeVriesEtAl_bioRxiv_2026>
 - **Archived releases and DOI:**
   <https://doi.org/10.5281/zenodo.21533915>
 
@@ -80,7 +79,7 @@ and notebooks rather than their generated copies.
 
 The archived computational environment uses:
 
-- R 4.5.0;
+- R 4.6.1;
 - Quarto 1.9.x (the project was checked with Quarto 1.9.37);
 - Git; and
 - an internet connection for package restoration and source-data retrieval.
@@ -94,8 +93,8 @@ for several PDF figures.
 Clone the current repository:
 
 ```bash
-git clone https://github.com/tscnlab/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026.git
-cd ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026
+git clone https://github.com/tscnlab/ZaunerDeVriesEtAl_bioRxiv_2026.git
+cd ZaunerDeVriesEtAl_bioRxiv_2026
 ```
 
 For an exact reproduction of the current archived release, check out its tag:

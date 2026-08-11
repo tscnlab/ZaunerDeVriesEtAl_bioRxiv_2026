@@ -1,47 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/notebooks/SWV_context_preparation.html</loc>
-    <lastmod>2026-07-23T08:10:23.735Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/notebooks/JZ_metric_preparation_wake_only.html</loc>
-    <lastmod>2026-07-23T07:24:32.003Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/notebooks/JZ_metric_preparation.html</loc>
-    <lastmod>2026-07-23T07:24:32.001Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/notebooks/JZ_metric_comparison_nonwear.html</loc>
-    <lastmod>2026-07-23T07:24:31.996Z</lastmod>
-  </url>
-  <url>
-    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/notebooks/JZ_error_stabilisation.html</loc>
+    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/notebooks/JZ_error_stabilisation.html</loc>
     <lastmod>2026-08-11T09:31:27.860Z</lastmod>
   </url>
   <url>
-    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/AGENTS.html</loc>
-    <lastmod>2026-07-07T16:36:19.931Z</lastmod>
+    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/notebooks/JZ_metric_preparation_wake_only.html</loc>
+    <lastmod>2026-07-22T09:01:09.218Z</lastmod>
   </url>
   <url>
-    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/index.html</loc>
-    <lastmod>2026-08-11T08:09:47.253Z</lastmod>
+    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/notebooks/JZ_metric_preparation_nonwear.html</loc>
+    <lastmod>2026-07-22T09:20:23.116Z</lastmod>
   </url>
   <url>
-    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/notebooks/JZ_metric_comparison.html</loc>
-    <lastmod>2026-07-30T06:52:44.121Z</lastmod>
+    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/notebooks/JZ_metric_preparation.html</loc>
+    <lastmod>2026-07-22T09:20:22.908Z</lastmod>
   </url>
   <url>
-    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/notebooks/JZ_metric_comparison_wake_only.html</loc>
-    <lastmod>2026-07-23T07:24:32.001Z</lastmod>
+    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/notebooks/SWV_context_preparation.html</loc>
+    <lastmod>2026-07-23T12:28:01.586Z</lastmod>
   </url>
   <url>
-    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/notebooks/JZ_metric_preparation_nonwear.html</loc>
-    <lastmod>2026-07-23T07:24:32.003Z</lastmod>
+    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/index.html</loc>
+    <lastmod>2026-08-11T10:01:44.630Z</lastmod>
   </url>
   <url>
-    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_JExpoSciEnvironEpidemiol_2026/notebooks/SWV_context_comparison.html</loc>
-    <lastmod>2026-07-23T07:24:32.003Z</lastmod>
+    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/notebooks/SWV_context_comparison.html</loc>
+    <lastmod>2026-07-22T11:25:47.679Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/notebooks/JZ_metric_comparison.html</loc>
+    <lastmod>2026-07-24T14:25:33.402Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/notebooks/JZ_metric_comparison_nonwear.html</loc>
+    <lastmod>2026-07-22T19:32:48.741Z</lastmod>
+  </url>
+  <url>
+    <loc>https://tscnlab.github.io/ZaunerDeVriesEtAl_bioRxiv_2026/notebooks/JZ_metric_comparison_wake_only.html</loc>
+    <lastmod>2026-07-22T19:32:51.938Z</lastmod>
   </url>
 </urlset>
