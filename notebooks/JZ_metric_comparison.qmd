@@ -919,6 +919,7 @@ df |>
 #| filename: Plot and save the table
 table
 gtsave(table, here("output/tables/Table_metrics.png"), vwidth = 2020)
+gtsave(table, here("output/tables/Table_metrics.docx"))
 ```
 
 A reduced data frame is extracted for computing summary statistics — keeping only the metric identifier, type, family, modelling scale, and the p-values and effect estimates for chest and wrist relative to glasses.
@@ -1167,6 +1168,7 @@ df_summary |>
 #| filename: Plot and save the summary table
 table_summary
 gtsave(table_summary, here("output/tables/Table_metrics_summary.png"), vwidth = 2000)
+gtsave(table_summary, here("output/tables/Table_metrics_summary.docx"))
 ```
 
 ## Visualize results

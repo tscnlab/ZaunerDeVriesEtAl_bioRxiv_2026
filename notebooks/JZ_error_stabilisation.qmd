@@ -523,6 +523,10 @@ gtsave(
   vwidth = 1500,
   zoom = 2
 )
+gtsave(
+  crossing_gt,
+  here("output/tables/Table_crossing.docx")
+)
 ```
 
 ## Interpretation

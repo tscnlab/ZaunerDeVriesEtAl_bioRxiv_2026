@@ -1153,6 +1153,7 @@ df_summary |>
 #| filename: Plot and save the summary table
 table_summary
 gtsave(table_summary, here("output/tables/Table_metrics_summary_nonwear.png"), vwidth = 2000)
+gtsave(table_summary, here("output/tables/Table_metrics_summary_nonwear.docx"))
 ```
 
 ## Visualize results

@@ -1294,6 +1294,10 @@ gtsave(
   here("output/tables/Table_metrics_summary_wake_only.png"),
   vwidth = 2000
 )
+gtsave(
+  table_summary,
+  here("output/tables/Table_metrics_summary_wake_only.docx")
+)
 ```
 
 ## Visualize normalized results
